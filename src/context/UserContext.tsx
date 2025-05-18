@@ -18,23 +18,44 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
 
   // Recuperar estado al cargar
-  useEffect(() => {
-    const storedToken = localStorage.getItem('jwtToken');
-    const storedUser = localStorage.getItem('user');
-    
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+// Añadir validación de datos
+useEffect(() => {
+  const storedToken = localStorage.getItem('jwtToken');
+  const storedUser = localStorage.getItem('user');
+  
+  if (storedToken && storedUser) {
+    try {
+      const parsedUser: User = JSON.parse(storedUser);
+      
+      // Validar estructura del usuario
+      if (parsedUser?.id_usuario && parsedUser?.global_role) {
+        setToken(storedToken);
+        setUser(parsedUser);
+      } else {
+        console.error('Datos de usuario inválidos');
+        logout();
+      }
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      logout();
     }
-  }, []);
+  }
+}, []);
 
   // Método de login
-  const login = (newToken: string, userData: User) => {
+const login = (newToken: string, userData: User) => {
+  try {
+    const userString = JSON.stringify(userData);
     localStorage.setItem('jwtToken', newToken);
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('user', userString);
     setToken(newToken);
     setUser(userData);
-  };
+    console.log(userData)
+  } catch (error) {
+    console.error('Error saving user data:', error);
+    logout();
+  }
+};
 
   // Método de logout
   const logout = () => {
@@ -51,7 +72,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         token, // Token disponible directamente aquí
         login,
         logout,
-        isAuthenticated: !!token, // Depende solo del token
+        isAuthenticated: !!token && !!user, // Depende solo del token
       }}
     >
       {children}

@@ -23,6 +23,7 @@ const apiClient: AxiosInstance = axios.create({
 // Interceptor para agregar el token
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('jwtToken');
+  console.log('Interceptor request - Token:', token);
   
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -33,12 +34,15 @@ apiClient.interceptors.request.use((config) => {
 
 // Interceptor para manejar errores
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  (error: AxiosError) => {
+  (response) => {
+    console.log('Respuesta exitosa:', response.config.url);
+    return response;
+  },
+  (error) => {
+    console.error('Error en respuesta:', error.config?.url, error.response?.status);
     if (error.response?.status === 401) {
       localStorage.removeItem('jwtToken');
       localStorage.removeItem('user');
-      window.location.href = '/login';
     }
     return Promise.reject(error);
   }

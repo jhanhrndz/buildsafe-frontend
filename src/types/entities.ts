@@ -11,6 +11,23 @@ export interface User {
     global_role: 'coordinador' | 'supervisor';
 }
 
+// Tipo para registro local (extiende User y añade contraseña)
+export interface RegisterPayload extends Omit<User, 
+  'id_usuario' | 'auth_provider' | 'google_id'
+> {
+  contrasena: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: User;
+}
+
+export interface LoginCredentials {
+  usuario: string;
+  contrasena: string;
+}
+
 export interface Obra {
     id_obra: number;
     id_coordinador: number;
