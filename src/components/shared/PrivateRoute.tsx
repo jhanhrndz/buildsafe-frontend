@@ -6,31 +6,31 @@ import type { ReactNode } from 'react';
 interface PrivateRouteProps {
   children: ReactNode;
   roles?: Array<'coordinador' | 'supervisor'>;
-  public?: boolean; // Nuevo prop para rutas públicas
 }
 
-export const PrivateRoute = ({ children, roles, public: isPublic = false }: PrivateRouteProps) => {
+export const PrivateRoute = ({
+  children,
+  roles,
+}: PrivateRouteProps) => {
   const { isAuthenticated, user } = useUserContext();
   const location = useLocation();
-  const fromLocation = location.state?.from || '/';
 
-  // Lógica para rutas públicas
-  if (isPublic) {
-    return isAuthenticated ? (
-      <Navigate to={fromLocation} replace />
-    ) : (
-      children
+  // 1) Si no está autenticado, a /login
+  if (!isAuthenticated) {
+    return (
+      <Navigate
+        to="/login"
+        state={{ from: location }}
+        replace
+      />
     );
   }
 
-  // Lógica para rutas privadas
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  // 2) Si hay roles y el user no coincide, a /no-autorizado
+  if (roles && !roles.includes(user!.global_role)) {
+    return <Navigate to="/no-autorizado" replace />;
   }
 
-  if (roles && user?.global_role && !roles.includes(user.global_role)) {
-    return <Navigate to="/no-autorizado" state={{ from: location }} replace />;
-  }
-
-  return children;
+  // 3) Si todo OK, renderiza children
+  return <>{children}</>;
 };

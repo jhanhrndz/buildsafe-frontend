@@ -4,7 +4,7 @@ import { UserProvider } from './context/UserContext';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './hooks/api';
 import { Login } from './components/login/Login';
-import { RegisterForm } from './components/register/Register';
+import { Register } from './components/register/Register';
 import { PrivateRoute } from './components/shared/PrivateRoute';
 import { NotAuthorized } from './components/shared/NotAuthorized';
 import Home from './components/home/Home';
@@ -17,7 +17,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RegisterForm />} />
+            <Route path="/register" element={<Register />} />
             
             {/* Rutas privadas */}
             <Route path="/" element={

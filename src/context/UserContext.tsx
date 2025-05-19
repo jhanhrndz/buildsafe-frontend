@@ -1,5 +1,10 @@
 // src/context/UserContext.tsx
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+} from 'react';
 import type { ReactNode } from 'react';
 import type { User } from '../types/entities';
 
@@ -14,50 +19,33 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  // 1) Inicializar token
+  const [token, setToken] = useState<string | null>(
+    () => localStorage.getItem('jwtToken')
+  );
 
-  // Recuperar estado al cargar
-// Añadir validación de datos
-useEffect(() => {
-  const storedToken = localStorage.getItem('jwtToken');
-  const storedUser = localStorage.getItem('user');
-  
-  if (storedToken && storedUser) {
+  // 2) Inicializar user SIN validación estricta
+  const [user, setUser] = useState<User | null>(() => {
+    const stored = localStorage.getItem('user');
+    if (!stored) return null;
     try {
-      const parsedUser: User = JSON.parse(storedUser);
-      
-      // Validar estructura del usuario
-      if (parsedUser?.id_usuario && parsedUser?.global_role) {
-        setToken(storedToken);
-        setUser(parsedUser);
-      } else {
-        console.error('Datos de usuario inválidos');
-        logout();
-      }
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      logout();
+      // Simplemente parseamos y asumimos que el objeto guardado
+      // coincide con nuestro tipo User
+      return JSON.parse(stored) as User;
+    } catch {
+      return null;
     }
-  }
-}, []);
+  });
 
-  // Método de login
-const login = (newToken: string, userData: User) => {
-  try {
-    const userString = JSON.stringify(userData);
+  // 3) login: guardamos el token y el user tal cual vienen
+  const login = (newToken: string, userData: User) => {
     localStorage.setItem('jwtToken', newToken);
-    localStorage.setItem('user', userString);
+    localStorage.setItem('user', JSON.stringify(userData));
     setToken(newToken);
     setUser(userData);
-    console.log(userData)
-  } catch (error) {
-    console.error('Error saving user data:', error);
-    logout();
-  }
-};
+  };
 
-  // Método de logout
+  // 4) logout
   const logout = () => {
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('user');
@@ -65,16 +53,17 @@ const login = (newToken: string, userData: User) => {
     setUser(null);
   };
 
+  // 5) derivado
+  const isAuthenticated = Boolean(token && user);
+  console.log('isautenticated', isAuthenticated)
+  // 6) memoizar
+  const contextValue = useMemo(
+    () => ({ user, token, login, logout, isAuthenticated }),
+    [user, token]
+  );
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token, // Token disponible directamente aquí
-        login,
-        logout,
-        isAuthenticated: !!token && !!user, // Depende solo del token
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
