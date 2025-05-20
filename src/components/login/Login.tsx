@@ -51,7 +51,7 @@ export const Login = () => {
   const handleGoogleLogin = async () => {
     const success = await loginGoogle();
     if (success) {
-      navigate('/');
+      //navigate('/');
     }
   };
 

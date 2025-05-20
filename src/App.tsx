@@ -10,6 +10,7 @@ import {DashboardLayout} from './components/dashboard/DashboardLayout';
 import NotFound from './components/shared/NotFound';
 import ObrasPage from './components/obras/ObrasPage';
 import ObraDetalle from './components/obras/ObraDetalle';
+import { CompleteRegistration } from './components/login/CompleteRegistration';
 
 function App() {
   
@@ -37,6 +38,15 @@ function App() {
               <Route path="obras/:id" element={<ObraDetalle />} />
               {/* Aquí puedes agregar más rutas hijas */}
             </Route> 
+
+            <Route
+              path="/complete-registration"
+              element={
+                <PrivateRoute>
+                  <CompleteRegistration />
+                </PrivateRoute>
+              }
+            />
             
             {/* Ruta 404 */}
             <Route path="*" element={<NotFound />} />

@@ -39,7 +39,12 @@ export const useAuth = () => {
     if (result) {
       console.log('Login exitoso. Datos recibidos:', result);
       login(result.token, result.user);
-      navigate('/');
+      
+      // Verificar datos incompletos
+      const isIncomplete = !result.user.documento || !result.user.global_role || !result.user.telefono;
+      console.log(isIncomplete);
+      navigate(isIncomplete ? '/complete-registration' : '/');
+      
       return true;
     }
     return false;
