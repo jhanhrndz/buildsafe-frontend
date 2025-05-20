@@ -8,12 +8,20 @@ export const useObra = () => {
   const queryClient = useQueryClient();
   const { user } = useUserContext();
 
-  // Obtener todas las obras
+  // Obtener obras del usuario autenticado
   const fetchObras = useQuery<Obra[]>({
     queryKey: ['obras'],
-    queryFn: () => get('/obras'),
+    queryFn: () => get(`/obras/mis-obras/${user?.id_usuario}`),
+    enabled: !!user?.id_usuario, // asegura que solo ejecute si hay un ID válido
   });
 
+  const getObraById = (id: number) => {
+    return useQuery<Obra>({
+      queryKey: ['obra', id],
+      queryFn: () => get(`/obras/${id}`),
+      enabled: !!id, // solo corre si id tiene valor
+    });
+  }
   // Crear nueva obra
   const createObra = useMutation({
     mutationFn: (nuevaObra: Omit<Obra, 'id_obra'>) => post('/obras', nuevaObra),
@@ -38,6 +46,7 @@ export const useObra = () => {
     error: fetchObras.error,
     createObra,
     updateObra,
-    deleteObra
+    deleteObra,
+    getObraById,
   };
 };

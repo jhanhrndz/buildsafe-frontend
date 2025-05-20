@@ -36,6 +36,7 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => {
     console.log('Respuesta exitosa:', response.config.url);
+    console.log('Datos de respuesta:', response.data);
     return response;
   },
   (error) => {

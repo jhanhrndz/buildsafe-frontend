@@ -15,6 +15,7 @@ export const AuthService = {
         '/auth/login',
         credentials
       );
+      console.log(response.data)
       return response.data;
     } catch (err: any) {
       console.error('Error /auth/login ➡', err.response?.data || err.message);

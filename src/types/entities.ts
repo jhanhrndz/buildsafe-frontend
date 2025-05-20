@@ -35,7 +35,10 @@ export interface Obra {
   nombre: string;
   descripcion: string;
   fecha_inicio?: string;
+  fecha_fin?: string;
   estado: 'activo' | 'inactivo' | 'finalizado';
+  coordinador?: User;
+  supervisores?: User[];
 }
 
 
