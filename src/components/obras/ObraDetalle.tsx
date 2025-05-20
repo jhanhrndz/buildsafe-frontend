@@ -1,7 +1,7 @@
 // src/pages/obras/ObraDetalle.tsx
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, CalendarIcon, InfoIcon, Edit2, Trash2 } from 'lucide-react';
+import { useParams, useNavigate, Outlet } from 'react-router-dom';
+import { ChevronLeft, CalendarIcon, InfoIcon, Edit2, Trash2, AlertCircle } from 'lucide-react';
 import { useDashboardContext } from '../../components/dashboard/DashboardLayout';
 import { useObra } from '../../hooks/features/useObra';
 import { useUserContext } from '../../context/UserContext';
@@ -13,6 +13,7 @@ import ErrorMessage from '../../components/shared/ErrorMessage';
 import { formatDate } from '../../utils/formatters';
 
 const ObraDetalle = () => {
+  const { idArea } = useParams(); 
   const { id } = useParams<{ id: string }>();
   const obraId = id ? parseInt(id, 10) : 0;
 
