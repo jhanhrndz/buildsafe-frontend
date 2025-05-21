@@ -42,7 +42,10 @@ export const CompleteRegistration = () => {
         apellidos: user.apellidos || '',
         correo: user.correo,
         telefono: user.telefono || '',
-        global_role: user.global_role || 'supervisor'
+        global_role: user.global_role || 'supervisor',
+        id_usuario: user.id_usuario!,
+        usuario: user.usuario!,
+        auth_provider: user.auth_provider!,
       });
     }
   }, [user]);
@@ -105,15 +108,20 @@ export const CompleteRegistration = () => {
 
     const payload = {
       ...formData,
-      documento: formData.documento?.trim(),
-      nombres: formData.nombres?.trim(),
-      apellidos: formData.apellidos?.trim(),
-      telefono: formData.telefono?.trim()
+      id_usuario: formData.id_usuario!,
+      usuario: formData.usuario!,
+      auth_provider: formData.auth_provider!,
+      documento: formData.documento?.trim()!,
+      nombres: formData.nombres?.trim()!,
+      apellidos: formData.apellidos?.trim()!,
+      telefono: formData.telefono?.trim()!,
+      correo: formData.correo!,
+      global_role: formData.global_role!
     };
 
     const updatedUser = await updateUser(user.id_usuario, payload);
     if (updatedUser) {
-      login(token, updatedUser);
+      login(token, payload);
       navigate('/');
     }
   };
