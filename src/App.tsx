@@ -4,7 +4,9 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './hooks/api';
 import { Login } from './components/login/Login';
 import { Register } from './components/register/Register';
-import { PrivateRoute } from './components/shared/PrivateRoute';
+import { PrivateRoute } from './components/routes/PrivateRoute';
+import { AuthRoute } from './components/routes/AuthRoute';
+import { CompleteRegistrationRoute } from './components/routes/CompleteRegistrationRoute';
 import Home from './components/home/Home';
 import { DashboardLayout } from './components/dashboard/DashboardLayout';
 import NotFound from './components/shared/NotFound';
@@ -13,17 +15,43 @@ import ObraDetalle from './components/obras/ObraDetalle';
 import { CompleteRegistration } from './components/login/CompleteRegistration';
 import AreaDetallePage from './components/areas/AreaDetallesPage';
 
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            
+            {/* Rutas de autenticación: protegidas para usuarios ya autenticados */}
+            <Route 
+              path="/login" 
+              element={
+                <AuthRoute>
+                  <Login />
+                </AuthRoute>
+              } 
+            />
+            
+            <Route 
+              path="/register" 
+              element={
+                <AuthRoute>
+                  <Register />
+                </AuthRoute>
+              } 
+            />
 
-            {/* Rutas privadas */}
+            {/* Ruta de completar registro */}
+            <Route
+              path="/complete-registration"
+              element={
+                <CompleteRegistrationRoute>
+                  <CompleteRegistration />
+                </CompleteRegistrationRoute>
+              }
+            /> 
+
+            {/* Rutas privadas que requieren autenticación completa */}
             <Route
               path="/"
               element={
@@ -45,15 +73,6 @@ function App() {
               {/* Aquí puedes agregar más rutas hijas */}
             </Route> 
 
-            <Route
-              path="/complete-registration"
-              element={
-                <PrivateRoute>
-                  <CompleteRegistration />
-                </PrivateRoute>
-              }
-            />
-
             {/* Ruta 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -62,4 +81,5 @@ function App() {
     </QueryClientProvider>
   )
 }
+
 export default App;
