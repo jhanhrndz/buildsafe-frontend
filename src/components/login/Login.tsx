@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useAuth } from '../../hooks/features/useAuth';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Lock, AlertCircle, Building } from 'lucide-react';
+import { User, Lock, AlertCircle, Building, Eye, EyeOff } from 'lucide-react';
 
 // Importamos el componente GoogleButton mejorado
 import GoogleButton from '../../components/shared/GoogleButton';
@@ -15,6 +15,8 @@ export const Login = () => {
     contrasena: '',
   });
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
 
   useEffect(() => {
     return () => {
@@ -28,6 +30,7 @@ export const Login = () => {
       [e.target.name]: e.target.value,
     }));
     if (error) clearError();
+    if (loginError) setLoginError('');
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -41,6 +44,9 @@ export const Login = () => {
     const success = await loginLocal({ usuario, contrasena });
     if (success) {
       navigate('/');
+    } else {
+      // Mostrar mensaje de error de inicio de sesión
+      setLoginError('Usuario o contraseña incorrectos. Por favor intenta nuevamente.');
     }
   };
 
@@ -55,7 +61,7 @@ export const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-5xl">
         {/* Card con efecto glassmorphism */}
-        <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row border border-gray-100">
+        <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row-reverse border border-gray-100">
           {/* Sección izquierda - Logo y título */}
           <div className="w-full md:w-2/5 bg-gradient-to-b from-blue-500 to-indigo-600 p-8 flex items-center justify-center">
             <div className="flex flex-col items-center justify-center text-white">
@@ -120,21 +126,38 @@ export const Login = () => {
                     <input
                       id="contrasena"
                       name="contrasena"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       value={credentials.contrasena}
                       onChange={handleChange}
                       disabled={isLoading}
-                      className="pl-10 w-full py-2.5 border border-gray-300 rounded-lg bg-white/50 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
+                      className="pl-10 pr-10 w-full py-2.5 border border-gray-300 rounded-lg bg-white/50 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
                       placeholder="••••••••"
                       autoComplete="current-password"
                       required
                     />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                        tabIndex={-1}
+                      >
+                        {showPassword ? (
+                          <EyeOff size={18} aria-hidden="true" />
+                        ) : (
+                          <Eye size={18} aria-hidden="true" />
+                        )}
+                        <span className="sr-only">
+                          {showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Recordarme y Olvidé mi contraseña */}
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input
                     id="remember-me"
@@ -151,9 +174,9 @@ export const Login = () => {
                     ¿Olvidaste tu contraseña?
                   </a>
                 </div>
-              </div>
+              </div> */}
 
-              {/* Error */}
+              {/* Error de API */}
               {error && (
                 <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
                   <div className="flex">
@@ -162,6 +185,20 @@ export const Login = () => {
                     </div>
                     <div className="ml-3">
                       <p className="text-sm text-red-700">{error}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Error de credenciales */}
+              {loginError && (
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded animate-fadeIn">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <AlertCircle size={20} className="text-red-500" />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700">{loginError}</p>
                     </div>
                   </div>
                 </div>
