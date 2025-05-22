@@ -1,49 +1,92 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+// src/hooks/features/useObra.ts
+import { useState, useCallback, useEffect } from 'react';
+import * as obraService from '../../services/obra';
 import { useUserContext } from '../../context/UserContext';
 import type { Obra } from '../../types/entities';
-import * as obraService from '../../services/obra';
 
 export const useObra = () => {
-  const queryClient = useQueryClient();
   const { user } = useUserContext();
+  const [obras, setObras] = useState<Obra[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Obtener obras del usuario autenticado
-  const fetchObras = useQuery<Obra[]>({
-    queryKey: ['obras'],
-    queryFn: () => obraService.getObrasByUsuario(user!.id_usuario),
-    enabled: !!user?.id_usuario,
-  });
+  const fetchObras = useCallback(async () => {
+    if (!user?.id_usuario) return;
 
-  // Retorna una función que crea un query para una obra específica
-  const getObraById = (id: number) =>
-    useQuery<Obra>({
-      queryKey: ['obra', id],
-      queryFn: () => obraService.getObraById(id),
-      enabled: !!id,
-    });
+    setIsLoading(true);
+    setError(null);
 
-  const createObra = useMutation({
-    mutationFn: obraService.createObra,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['obras'] }),
-  });
+    try {
+      const data = await obraService.ObraService.getMisObras(user.id_usuario);
+      setObras(data);
+    } catch (err) {
+      console.error('Error al cargar obras:', err);
+      setError('No se pudieron cargar las obras');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.id_usuario]);
 
-  const updateObra = useMutation({
-    mutationFn: obraService.updateObra,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['obras'] }),
-  });
+  const getObraById = useCallback(async (id: number): Promise<Obra | null> => {
+    try {
+      return await obraService.ObraService.getById(id);
+    } catch (err) {
+      console.error('Error al obtener obra:', err);
+      return null;
+    }
+  }, []);
 
-  const deleteObra = useMutation({
-    mutationFn: obraService.deleteObra,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['obras'] }),
-  });
+  const create = useCallback(async (obra: Omit<Obra, 'id_obra'>): Promise<boolean> => {
+    try {
+      await obraService.ObraService.create(obra);
+      await fetchObras();
+      return true;
+    } catch (err) {
+      console.error('Error creando obra:', err);
+      setError('No se pudo crear la obra');
+      return false;
+    }
+  }, [fetchObras]);
+
+  const update = useCallback(async (obra: Obra): Promise<boolean> => {
+    try {
+      await obraService.ObraService.update(obra);
+      await fetchObras();
+      return true;
+    } catch (err) {
+      console.error('Error actualizando obra:', err);
+      setError('No se pudo actualizar la obra');
+      return false;
+    }
+  }, [fetchObras]);
+
+  const remove = useCallback(async (id: number): Promise<boolean> => {
+    try {
+      await obraService.ObraService.remove(id);
+      await fetchObras();
+      return true;
+    } catch (err) {
+      console.error('Error eliminando obra:', err);
+      setError('No se pudo eliminar la obra');
+      return false;
+    }
+  }, [fetchObras]);
+
+  const clearError = () => setError(null);
+
+  useEffect(() => {
+    fetchObras();
+  }, [fetchObras]);
 
   return {
-    obras: fetchObras.data || [],
-    isLoading: fetchObras.isLoading,
-    error: fetchObras.error,
-    createObra,
-    updateObra,
-    deleteObra,
+    obras,
+    isLoading,
+    error,
+    fetchObras,
     getObraById,
+    create,
+    update,
+    remove,
+    clearError,
   };
 };

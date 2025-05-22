@@ -1,7 +1,7 @@
 // src/pages/obras/ObraDetalle.tsx
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Outlet } from 'react-router-dom';
-import { ChevronLeft, CalendarIcon, InfoIcon, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ChevronLeft, CalendarIcon, InfoIcon, Edit2, Trash2 } from 'lucide-react';
 import { useDashboardContext } from '../../components/dashboard/DashboardLayout';
 import { useObra } from '../../hooks/features/useObra';
 import { useUserContext } from '../../context/UserContext';
@@ -11,9 +11,9 @@ import ConfirmDialog from '../../components/shared/ConfirmDialog';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 import ErrorMessage from '../../components/shared/ErrorMessage';
 import { formatDate } from '../../utils/formatters';
+import type { Obra } from '../../types/entities';
 
 const ObraDetalle = () => {
-  const { idArea } = useParams(); 
   const { id } = useParams<{ id: string }>();
   const obraId = id ? parseInt(id, 10) : 0;
 
@@ -21,41 +21,57 @@ const ObraDetalle = () => {
   const { user } = useUserContext();
   const navigate = useNavigate();
 
-  // Obtienes el hook useObra completo
-  const { getObraById, deleteObra } = useObra();
+  const {
+    getObraById,
+    remove,
+    isLoading: isObraLoading,
+    error: obraError,
+    clearError
+  } = useObra();
 
-  // 1) Hooks de datos 
-  const { data: obra, isLoading, error } = getObraById(obraId);
-
+  const [obra, setObra] = useState<Obra | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  
-  // Determinar si el usuario es coordinador
+
   const isCoordinador = user?.global_role === 'coordinador';
 
-  // Actualizar el título al montar el componente
+  // Cargar obra al montar el componente
   useEffect(() => {
-    if (obra) {
-      updateTitle(`Obra: ${obra.nombre}`);
-    } else {
-      updateTitle('Detalle de Obra');
-    }
-  }, [updateTitle, obra]);
+    const loadObra = async () => {
+      try {
+        const obraData = await getObraById(obraId);
+        if (obraData) {
+          setObra(obraData);
+          updateTitle(`Obra: ${obraData.nombre}`);
+        } else {
+          setError('No se encontró la obra especificada');
+        }
+      } catch (err) {
+        setError('Error al cargar los detalles de la obra');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Función para eliminar la obra
+    if (obraId) loadObra();
+  }, [obraId, getObraById, updateTitle]);
+
+  // Manejar eliminación
   const handleDeleteObra = async () => {
-    if (!id) return;
+    if (!obraId) return;
     
     try {
-      await deleteObra.mutateAsync(parseInt(id));
+      await remove(obraId);
       setIsDeleteModalOpen(false);
       navigate('/obras');
     } catch (error) {
-      console.error("Error al eliminar la obra:", error);
+      // El error ya está manejado por el hook
     }
   };
 
-  // Función para determinar el estado visual de la obra
+  // Determinar estado
   const getStatusBadge = () => {
     if (!obra) return null;
     
@@ -75,7 +91,7 @@ const ObraDetalle = () => {
   };
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <ErrorMessage message="Error al cargar los detalles de la obra" />;
+  if (error) return <ErrorMessage message={error} />;
   if (!obra) return <ErrorMessage message="No se encontró la obra especificada" />;
 
   return (
@@ -91,7 +107,6 @@ const ObraDetalle = () => {
           </button>
           <h1 className="text-2xl font-semibold text-gray-800 flex-1">{obra.nombre}</h1>
           
-          {/* Acciones (sólo para coordinador) */}
           {isCoordinador && (
             <div className="flex gap-2">
               <button
@@ -146,10 +161,8 @@ const ObraDetalle = () => {
         </div>
       </div>
       
-      {/* Tabs para áreas, supervisores y reportes */}
       <ObraTabs obraId={obra.id_obra} isCoordinador={isCoordinador} />
       
-      {/* Modal de edición */}
       {isEditModalOpen && (
         <ObraForm
           onClose={() => setIsEditModalOpen(false)}
@@ -157,16 +170,18 @@ const ObraDetalle = () => {
         />
       )}
       
-      {/* Modal de confirmación para eliminar */}
       {isDeleteModalOpen && (
         <ConfirmDialog
           title="Eliminar obra"
           message={`¿Estás seguro que deseas eliminar la obra "${obra.nombre}"? Esta acción no se puede deshacer.`}
           confirmLabel="Eliminar"
           cancelLabel="Cancelar"
-          isLoading={deleteObra.isPending}
+          isLoading={isObraLoading}
           onConfirm={handleDeleteObra}
-          onCancel={() => setIsDeleteModalOpen(false)}
+          onCancel={() => {
+            setIsDeleteModalOpen(false);
+            clearError();
+          }}
           variant="danger"
         />
       )}

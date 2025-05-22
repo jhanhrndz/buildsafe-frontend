@@ -24,7 +24,7 @@ const AreaForm: React.FC<AreaFormProps> = ({
     id_obra: obraId,
     nombre: '',
     descripcion: '',
-    id_supervisor: null,
+    id_usuario: null,
   });
 
   const [errors, setErrors] = useState<{
@@ -143,7 +143,7 @@ const AreaForm: React.FC<AreaFormProps> = ({
                     <select
                       name="id_supervisor"
                       id="id_supervisor"
-                      value={formData.id_supervisor || ''}
+                      value={formData.id_usuario || ''}
                       onChange={handleChange}
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     >
