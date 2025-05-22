@@ -1,72 +1,108 @@
 // src/hooks/features/useArea.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useUserContext } from '../../context/UserContext';
+import { useState, useCallback, useEffect } from 'react';
+import { AreaService } from '../../services/area';
 import type { Area } from '../../types/entities';
-import * as areaService from '../../services/area';
 
-// Hook flexible que puede recibir un obraId opcional
 export const useArea = (obraId?: number) => {
-  const queryClient = useQueryClient();
-  const { user } = useUserContext();
+  const [areas, setAreas] = useState<Area[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  // Obtener áreas por obra (si se proporciona obraId)
-  const fetchAreas = useQuery<Area[]>({
-    queryKey: ['areas', obraId],
-    queryFn: () => obraId ? areaService.getAreasByObra(obraId) : [],
-    enabled: !!obraId,
-  });
+  // Obtener todas o por obra
+  const fetchAreas = useCallback(async () => {
+    if (!obraId) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await AreaService.getByObra(obraId);
+      setAreas(data);
+    } catch (err: any) {
+      console.error('Error al cargar áreas:', err);
+      setError(new Error('Mensaje de error'));
 
-  // Función para obtener un área específica por ID
-  const getAreaById = (areaId: number) =>
-    useQuery<Area>({
-      queryKey: ['area', areaId],
-      queryFn: () => areaService.getAreaById(areaId),
-      enabled: !!areaId,
-    });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [obraId]);
 
-  // Mutaciones para crear, actualizar y eliminar áreas
-  const createArea = useMutation({
-    mutationFn: areaService.createArea,
-    onSuccess: () => {
-      // Invalidamos queries relacionadas
-      if (obraId) {
-        queryClient.invalidateQueries({ queryKey: ['areas', obraId] });
+  // Cargar al montar
+  useEffect(() => {
+    if (obraId) fetchAreas();
+  }, [fetchAreas, obraId]);
+
+  const getAreaById = useCallback(async (id: number): Promise<Area | null> => {
+    try {
+      return await AreaService.getById(id);
+    } catch (err) {
+      console.error('Error al obtener área:', err);
+      return null;
+    }
+  }, []);
+
+  const getAsignada = useCallback(
+    async (usuarioId: number): Promise<Area | null> => {
+      if (!obraId) return null;
+      try {
+        return await AreaService.getAsignada(obraId, usuarioId);
+      } catch (err) {
+        console.error('Error al obtener área asignada:', err);
+        return null;
       }
-      queryClient.invalidateQueries({ queryKey: ['areas'] });
     },
-  });
+    [obraId]
+  );
 
-  const updateArea = useMutation<Area, Error, Area>({
-    mutationFn: areaService.updateArea,
-    onSuccess: (updatedArea) => {
-      if (obraId) {
-        queryClient.invalidateQueries({ queryKey: ['areas', obraId] });
-      }
-      queryClient.invalidateQueries({ queryKey: ['area', updatedArea.id_area] });
-      queryClient.invalidateQueries({ queryKey: ['areas'] });
-    },
-  });
+  const create = useCallback(async (data: Omit<Area, 'id_area'>): Promise<Area | null> => {
+    try {
+      const nueva = await AreaService.create(data);
+      await fetchAreas();
+      return nueva;
+    } catch (err: any) {
+      console.error('Error creando área:', err);
+      setError(new Error('Mensaje de error'));
 
+      return null;
+    }
+  }, [fetchAreas]);
 
-  const deleteArea = useMutation({
-    mutationFn: areaService.deleteArea,
-    onSuccess: (_, deletedAreaId) => {
-      // Invalidamos queries relacionadas
-      if (obraId) {
-        queryClient.invalidateQueries({ queryKey: ['areas', obraId] });
-      }
-      queryClient.invalidateQueries({ queryKey: ['area', deletedAreaId] });
-      queryClient.invalidateQueries({ queryKey: ['areas'] });
-    },
-  });
+  const update = useCallback(async (area: Area): Promise<boolean> => {
+    try {
+      await AreaService.update(area);
+      await fetchAreas();
+      return true;
+    } catch (err: any) {
+      console.error('Error actualizando área:', err);
+      setError(new Error('Mensaje de error'));
+
+      return false;
+    }
+  }, [fetchAreas]);
+
+  const remove = useCallback(async (id: number): Promise<boolean> => {
+    try {
+      await AreaService.remove(id);
+      await fetchAreas();
+      return true;
+    } catch (err: any) {
+      console.error('Error eliminando área:', err);
+      setError(new Error('Mensaje de error'));
+
+      return false;
+    }
+  }, [fetchAreas]);
+
+  const clearError = () => setError(null);
 
   return {
-    areas: fetchAreas.data || [],
-    isLoading: fetchAreas.isLoading,
-    error: fetchAreas.error,
-    createArea,
-    updateArea,
-    deleteArea,
+    areas,
+    isLoading,
+    error,
+    fetchAreas,
     getAreaById,
+    getAsignada,
+    create,
+    update,
+    remove,
+    clearError
   };
 };

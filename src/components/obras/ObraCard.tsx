@@ -17,15 +17,15 @@ const ObraCard = ({ obra, isCoordinador }: ObraCardProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const { deleteObra } = useObra();
+  const { remove, isLoading, error, clearError } = useObra();
 
   // Función para manejar la eliminación
   const handleDelete = async () => {
     try {
-      await deleteObra.mutateAsync(obra.id_obra);
+      await remove(obra.id_obra);
       setIsDeleteModalOpen(false);
     } catch (error) {
-      console.error("Error al eliminar obra:", error);
+      // El error ya está manejado por el hook, mantenemos el modal abierto
     }
   };
 
@@ -153,15 +153,18 @@ const ObraCard = ({ obra, isCoordinador }: ObraCardProps) => {
       {/* Modal de confirmación para eliminar */}
       {isDeleteModalOpen && (
         <ConfirmDialog
-          title="Eliminar obra"
-          message={`¿Estás seguro que deseas eliminar la obra "${obra.nombre}"? Esta acción no se puede deshacer.`}
-          confirmLabel="Eliminar"
-          cancelLabel="Cancelar"
-          isLoading={deleteObra.isPending}
-          onConfirm={handleDelete}
-          onCancel={() => setIsDeleteModalOpen(false)}
-          variant="danger"
-        />
+        title="Eliminar obra"
+        message={`¿Estás seguro que deseas eliminar la obra "${obra.nombre}"? Esta acción no se puede deshacer.`}
+        confirmLabel="Eliminar"
+        cancelLabel="Cancelar"
+        isLoading={isLoading} // Usamos el estado de carga general
+        onConfirm={handleDelete}
+        onCancel={() => {
+          setIsDeleteModalOpen(false);
+          clearError(); // Limpiar error al cancelar
+        }}
+        variant="danger"
+      />
       )}
     </>
   );

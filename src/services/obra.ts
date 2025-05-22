@@ -1,24 +1,25 @@
-import { useApi } from '../hooks/api';
+// services/obra.ts
+import { apiClient } from '../hooks/api';
 import type { Obra } from '../types/entities';
 
-const { get, post, put, del } = useApi();
+export const ObraService = {
+  async getMisObras(userId: number): Promise<Obra[]> {
+    return await apiClient.get(`/obras/mis-obras/${userId}`).then(r => r.data);
+  },
 
-export const getObrasByUsuario = async (userId: number): Promise<Obra[]> => {
-  return await get(`/obras/mis-obras/${userId}`);
-};
+  async getById(id: number): Promise<Obra> {
+    return await apiClient.get(`/obras/${id}`).then(r => r.data);
+  },
 
-export const getObraById = async (id: number): Promise<Obra> => {
-  return await get(`/obras/${id}`);
-};
+  async create(data: Omit<Obra, 'id_obra'>): Promise<void> {
+    await apiClient.post('/obras', data);
+  },
 
-export const createObra = async (obra: Omit<Obra, 'id_obra'>): Promise<void> => {
-  await post('/obras', obra);
-};
+  async update(data: Obra): Promise<void> {
+    await apiClient.put(`/obras/${data.id_obra}`, data);
+  },
 
-export const updateObra = async (obra: Obra): Promise<void> => {
-  await put(`/obras/${obra.id_obra}`, obra);
-};
-
-export const deleteObra = async (id: number): Promise<void> => {
-  await del(`/obras/${id}`);
+  async remove(id: number): Promise<void> {
+    await apiClient.delete(`/obras/${id}`);
+  },
 };

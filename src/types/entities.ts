@@ -35,7 +35,6 @@ export interface Obra {
   nombre: string;
   descripcion: string;
   fecha_inicio?: string;
-  fecha_fin?: string;
   estado: 'activo' | 'inactivo' | 'finalizado';
   coordinador?: User;
   supervisores?: User[];
@@ -47,7 +46,11 @@ export interface Area {
   id_obra: number;
   nombre: string;
   descripcion?: string;
-  id_supervisor?: number | null;
+  id_usuario?: number | null;
+  // datos expandidos:
+  supervisor_nombres?: string;
+  supervisor_apellidos?: string;
+  nombre_obra?: string;
 }
 
 export interface Camara {
@@ -57,4 +60,18 @@ export interface Camara {
   nombre: string;
   estado: 'activo' | 'inactivo';
   ultima_conexion?: string;
+}
+
+/**
+ * Supervisor con sus áreas (para listados con JSON_ARRAYAGG).
+ */
+export interface SupervisorWithAreas {
+  id_usuario: number;
+  nombres: string;
+  apellidos: string;
+  correo: string;
+  areas: Array<{
+    id_area: number;
+    nombre_area: string;
+  }>;
 }

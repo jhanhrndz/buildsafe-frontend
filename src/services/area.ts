@@ -1,31 +1,35 @@
-//services/area.ts
-import { useApi } from '../hooks/api';
+// src/services/area.ts
+import { apiClient } from '../hooks/api';
 import type { Area } from '../types/entities';
 
-const { get, post, put, del } = useApi();
+export const AreaService = {
+  async getAll(): Promise<Area[]> {
+    return await apiClient.get('/areas').then(res => res.data);
+  },
 
-export const getAreaById = async (id: number): Promise<Area> => {
-  return await get(`/areas/${id}`);
-}
+  async getById(id: number): Promise<Area> {
+    return await apiClient.get(`/areas/${id}`).then(res => res.data);
+  },
 
-export const getAreasByObra = async (obraId: number): Promise<Area[]> => {
-  return await get(`/areas/obra/${obraId}`);
-};
+  async getByObra(obraId: number): Promise<Area[]> {
+    return await apiClient.get(`/areas/obra/${obraId}`).then(res => res.data);
+  },
 
-export const getAreaAsignada = async (id_obra: number, id_usuario: number): Promise<Area> => {
-  return await get(`/areas/obra/${id_obra}/supervisor/${id_usuario}`);
-};
+  async getAsignada(obraId: number, usuarioId: number): Promise<Area | null> {
+    return await apiClient
+      .get(`/areas/obra/${obraId}/supervisor/${usuarioId}`)
+      .then(res => res.data);
+  },
 
-export const createArea = async (data: Omit<Area, 'id_area'>): Promise<void> => {
-  return await post('/areas', data);
-};
+  async create(data: Omit<Area, 'id_area'>): Promise<Area> {
+    return await apiClient.post('/areas', data).then(res => res.data);
+  },
 
-export const updateArea = async (area: Area): Promise<Area> => {
-  const updated = await put(`/areas/${area.id_area}`, area);
-  return updated as Area; // 👈 aquí aclaras que "updated" es un Area
-};
+  async update(area: Area): Promise<void> {
+    await apiClient.put(`/areas/${area.id_area}`, area);
+  },
 
-
-export const deleteArea = async (id: number): Promise<void> => {
-  return await del(`/areas/${id}`);
+  async remove(id: number): Promise<void> {
+    await apiClient.delete(`/areas/${id}`);
+  },
 };

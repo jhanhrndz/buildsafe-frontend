@@ -10,6 +10,7 @@ interface AreaCardProps {
     camaras_count?: number;
     reportes_count?: number;
   };
+  obraId: number;
   isCoordinador: boolean;
   onEdit?: (area: Area) => void;
   onDelete?: (areaId: number) => void;
