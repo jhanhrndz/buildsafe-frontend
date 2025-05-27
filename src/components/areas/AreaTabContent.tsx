@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AreaList from './AreaList';
 import type { Area, User } from '../../types/entities';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, AlertTriangle } from 'lucide-react';
 
 interface AreaTabsContentProps {
   obraId: number;
@@ -9,11 +9,11 @@ interface AreaTabsContentProps {
   currentUserId?: number; // ID del usuario actual para supervisores
   areas: Area[];
   isLoading: boolean;
-  error: Error | null;
+  error: string | null; // Cambiar de Error | null a string | null
   supervisores?: User[]; // Lista de supervisores disponibles
-  onCreateArea?: (areaData: Omit<Area, 'id_area'>) => Promise<void>;
-  onUpdateArea?: (areaData: Area) => Promise<void>;
-  onDeleteArea?: (areaId: number) => Promise<void>;
+  onCreateArea?: (areaData: Omit<Area, 'id_area'>) => Promise<boolean>;
+  onUpdateArea?: (areaData: Area) => Promise<boolean>;
+  onDeleteArea?: (areaId: number) => Promise<boolean>;
   onViewAreaDetails?: (areaId: number) => void;
 }
 
@@ -35,15 +35,26 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
   // Si hay errores, mostramos mensaje de error
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4 my-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <AlertCircle className="h-5 w-5 text-red-400" />
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">Error al cargar las áreas</h3>
-            <div className="mt-2 text-sm text-red-700">
-              <p>Hubo un problema al obtener la información. Por favor, intenta de nuevo.</p>
+      <div className="min-h-[400px] flex items-center justify-center p-8">
+        <div className="max-w-md w-full">
+          <div className="bg-gradient-to-br from-red-50 to-red-100/80 border border-red-200/60 rounded-xl p-6 shadow-sm">
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <AlertTriangle className="h-5 w-5 text-red-600" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-red-900 mb-2">
+                  Error al cargar las áreas
+                </h3>
+                <p className="text-sm text-red-700 leading-relaxed mb-4">
+                  Hubo un problema al obtener la información. Por favor, intenta de nuevo.
+                </p>
+                <div className="text-xs text-red-600/80 bg-red-50 px-3 py-2 rounded-lg border border-red-200/50">
+                  <strong>Detalles:</strong> {error}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -53,21 +64,24 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Lista de áreas con toda la funcionalidad */}
-      <AreaList
-        areas={areas}
-        isLoading={isLoading}
-        isCoordinador={isCoordinador}
-        currentUserId={currentUserId}
-        obraId={obraId}
-        supervisores={supervisores}
-        onCreateArea={onCreateArea}
-        onUpdateArea={onUpdateArea}
-        onDeleteArea={onDeleteArea}
-        onViewDetails={onViewAreaDetails}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-      />
+      {/* Contenedor principal con mejor espaciado */}
+      <div className="bg-white rounded-xl  ">
+        {/* Lista de áreas con toda la funcionalidad */}
+        <AreaList
+          areas={areas}
+          isLoading={isLoading}
+          isCoordinador={isCoordinador}
+          currentUserId={currentUserId}
+          obraId={obraId}
+          supervisores={supervisores}
+          onCreateArea={onCreateArea}
+          onUpdateArea={onUpdateArea}
+          onDeleteArea={onDeleteArea}
+          onViewDetails={onViewAreaDetails}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
+      </div>
     </div>
   );
 };
