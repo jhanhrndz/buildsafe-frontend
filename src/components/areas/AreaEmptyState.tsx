@@ -42,7 +42,6 @@ const AreaEmptyState: React.FC<AreaEmptyStateProps> = ({
       </div>
     );
   }
-
   // Si es coordinador y no hay áreas
   return (
     <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-lg border border-gray-200 text-center">

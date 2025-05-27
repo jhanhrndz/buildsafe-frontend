@@ -4,6 +4,7 @@ import AreaCard from './AreaCard';
 import AreaEmptyState from './AreaEmptyState';
 import AreaForm from './AreaForm';
 import type { Area, User } from '../../types/entities';
+import ConfirmDialog from '../shared/ConfirmDialog';
 
 interface AreaListProps {
   areas: Area[];
@@ -39,6 +40,8 @@ const AreaList: React.FC<AreaListProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingArea, setEditingArea] = useState<Area | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Filtrar áreas con memoización
   const filteredAreas = useMemo(() => {
@@ -77,11 +80,30 @@ const AreaList: React.FC<AreaListProps> = ({
       setIsSubmitting(false);
     }
   };
+  const handleRequestDelete = (area: Area) => {
+    setAreaToDelete(area);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!areaToDelete || !onDeleteArea) return;
+    setIsDeleting(true);
+    try {
+      await onDeleteArea(areaToDelete.id_area);
+      setAreaToDelete(null);
+    } catch (e) {
+      alert('No se pudo eliminar el área');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setAreaToDelete(null);
+  };
   // Manejar eliminación con confirmación
   const handleDelete = async (areaId: number) => {
     if (!onDeleteArea) return;
-    
+
     if (window.confirm('¿Estás seguro de eliminar esta área?')) {
       try {
         await onDeleteArea(areaId);
@@ -131,24 +153,40 @@ const AreaList: React.FC<AreaListProps> = ({
   // Mostrar estado vacío
   if (filteredAreas.length === 0) {
     return (
-      <div className="space-y-6">
-        <div className="relative">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Buscar áreas..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
-        </div>
+      <>
+        <div className="space-y-6">
+          <div className="relative">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Buscar áreas..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
+          </div>
 
-        <AreaEmptyState
-          searchTerm={searchTerm}
-          isCoordinador={isCoordinador}
-          onCreateClick={isCoordinador ? () => setIsModalOpen(true) : undefined}
-        />
-      </div>
+          <AreaEmptyState
+            searchTerm={searchTerm}
+            isCoordinador={isCoordinador}
+            onCreateClick={isCoordinador ? () => {
+              setEditingArea(undefined);
+              setIsModalOpen(true);
+            } : undefined}
+          />
+        </div>
+        {/* Modal de creación/edición */}
+        {isModalOpen && (
+          <AreaForm
+            onClose={handleCloseModal}
+            obraId={obraId}
+            areaToEdit={editingArea}
+            onSubmit={handleSubmit}
+            isLoading={isSubmitting}
+            supervisores={supervisores}
+          />
+        )}
+      </>
     );
   }
 
@@ -191,7 +229,10 @@ const AreaList: React.FC<AreaListProps> = ({
               setEditingArea(a);
               setIsModalOpen(true);
             } : undefined}
-            onDelete={isCoordinador ? handleDelete : undefined}
+            onDelete={isCoordinador ? (aId) => {
+              const areaObj = areas.find(a => a.id_area === aId);
+              if (areaObj) handleRequestDelete(areaObj);
+            } : undefined}
             onViewDetails={onViewDetails}
           />
         ))}
@@ -206,6 +247,18 @@ const AreaList: React.FC<AreaListProps> = ({
           onSubmit={handleSubmit}
           isLoading={isSubmitting}
           supervisores={supervisores}
+        />
+      )}
+      {areaToDelete && (
+        <ConfirmDialog
+          title="Eliminar área"
+          message={`¿Estás seguro de que deseas eliminar el área "${areaToDelete.nombre}"? Esta acción no se puede deshacer.`}
+          confirmLabel="Eliminar"
+          cancelLabel="Cancelar"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          isLoading={isDeleting}
+          variant="danger"
         />
       )}
     </div>
