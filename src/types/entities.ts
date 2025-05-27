@@ -47,10 +47,6 @@ export interface Area {
   nombre: string;
   descripcion?: string;
   id_usuario?: number | null;
-  // datos expandidos:
-  supervisor_nombres?: string;
-  supervisor_apellidos?: string;
-  nombre_obra?: string;
 }
 
 export interface Camara {

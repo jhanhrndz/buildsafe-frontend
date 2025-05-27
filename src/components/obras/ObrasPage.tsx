@@ -1,6 +1,5 @@
 // src/pages/obras/ObrasPage.tsx
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useObra } from '../../hooks/features/useObra';
 import { useUserContext } from '../../context/UserContext';
 import { useDashboardContext } from '../../components/dashboard/DashboardLayout';
@@ -12,10 +11,9 @@ import ErrorMessage from '../../components/shared/ErrorMessage';
 import type { Obra } from '../../types/entities';
 
 const ObrasPage = () => {
-  const navigate = useNavigate();
   const { updateTitle } = useDashboardContext();
   const { user } = useUserContext();
-  const { obras = [], isLoading, error } = useObra(); // Valor por defecto para obras
+  const { obras, isLoading, error, refresh } = useObra();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -23,33 +21,32 @@ const ObrasPage = () => {
 
   useEffect(() => {
     updateTitle('Gestión de Obras');
-    return () => updateTitle(''); // Limpieza al desmontar
+    return () => updateTitle('');
   }, [updateTitle]);
 
   const filteredObras = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    if (!term) return obras;
-
-    return obras.filter(obra => 
-      obra.nombre.toLowerCase().includes(term) ||
-      (obra.descripcion?.toLowerCase()?.includes(term) || false)
-    );
+    return obras?.filter(o =>
+      o.nombre.toLowerCase().includes(term) ||
+      o.descripcion?.toLowerCase().includes(term)
+    ) || [];
   }, [obras, searchTerm]);
 
-  // Estados de carga y error manejados una sola vez
-  if (isLoading) return <LoadingSpinner />;
-  if (error) return <ErrorMessage message={error || 'Error al cargar las obras'} />;
+  const handleCreateSuccess = () => {
+    refresh();
+  };
 
   const renderEmptyState = () => {
-    const hasSearch = searchTerm.trim().length > 0;
-    
+    const hasSearch = Boolean(searchTerm.trim());
     return (
       <div className="bg-white p-8 rounded-lg shadow-sm text-center">
         {hasSearch ? (
           <>
-            <p className="text-gray-600 mb-2">No se encontraron obras con "{searchTerm}"</p>
-            <button
-              onClick={() => setSearchTerm('')}
+            <p className="text-gray-600 mb-2">
+              No se encontraron obras con "{searchTerm}"
+            </p>
+            <button 
+              onClick={() => setSearchTerm('')} 
               className="text-blue-600 hover:text-blue-800"
             >
               Limpiar búsqueda
@@ -57,7 +54,9 @@ const ObrasPage = () => {
           </>
         ) : (
           <>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No hay obras registradas</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No hay obras registradas
+            </h3>
             <p className="text-gray-600 mb-4">
               {isCoordinador
                 ? 'Comienza creando tu primera obra para gestionar tus proyectos de construcción.'
@@ -76,6 +75,9 @@ const ObrasPage = () => {
       </div>
     );
   };
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <ErrorMessage message={error} />;
 
   return (
     <div className="space-y-6">
@@ -96,10 +98,15 @@ const ObrasPage = () => {
             />
           ))}
         </div>
-      ) : renderEmptyState()}
+      ) : (
+        renderEmptyState()
+      )}
 
       {isCreateModalOpen && (
-        <ObraForm onClose={() => setIsCreateModalOpen(false)} />
+        <ObraForm
+          onClose={() => setIsCreateModalOpen(false)}
+          onSuccess={handleCreateSuccess}
+        />
       )}
     </div>
   );

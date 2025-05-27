@@ -13,49 +13,43 @@ const AreaDetallesPage: React.FC = () => {
 
   const isCoordinador = user?.global_role === 'coordinador';
 
-  const { getAreaById, update, remove } = useArea();
+  const { getById, updateArea, deleteArea, error: areaError } = useArea();
+  
 
   const [area, setArea] = useState<Area | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const error = areaError || (loading ? null : !area ? 'Área no encontrada' : null);
+
 
   // Cargar el área al montar
   useEffect(() => {
     const loadArea = async () => {
       setLoading(true);
-      setError(null);
       try {
-        const data = await getAreaById(numericAreaId);
-        if (data) {
-          setArea(data);
-        } else {
-          setError('Área no encontrada');
-        }
-      } catch (err) {
-        console.error('Error al obtener el área:', err);
-        setError('No se pudo cargar el área');
+        const data = await getById(numericAreaId);
+        setArea(data || null);
+      } catch {
+        // El error ya está manejado por el contexto
       } finally {
         setLoading(false);
       }
     };
-
-    if (numericAreaId) {
-      loadArea();
-    }
-  }, [numericAreaId, getAreaById]);
+    
+    if (numericAreaId) loadArea();
+  }, [numericAreaId, getById]);
 
   const handleBack = () => navigate(-1);
 
   const handleEdit = async (areaData: Area) => {
-    const success = await update(areaData);
+    const success = await updateArea(areaData);
     if (success) {
-      const updated = await getAreaById(areaData.id_area);
+      const updated = await getById(areaData.id_area);
       if (updated) setArea(updated);
     }
   };
 
   const handleDelete = async (id: number) => {
-    const success = await remove(id);
+    const success = await deleteArea(id);
     if (success) {
       navigate('/obras');
     }
