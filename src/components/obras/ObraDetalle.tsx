@@ -1,7 +1,7 @@
 // src/pages/obras/ObraDetalle.tsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, CalendarIcon, InfoIcon, Edit2, Trash2, Building2, Clock } from 'lucide-react';
+import { ChevronLeft, CalendarIcon, InfoIcon, Edit2, Trash2, Building2, Clock, MoreVertical } from 'lucide-react';
 import { useDashboardContext } from '../../components/dashboard/DashboardLayout';
 import { useObra } from '../../hooks/features/useObra';
 import { useUserContext } from '../../context/UserContext';
@@ -26,7 +26,7 @@ const ObraDetalle = () => {
     isLoading: isObraLoading,
     error: obraError,
     clearError,
-    refresh // Añadir refresh para actualización después de editar
+    refresh
   } = useObra();
 
   const [obra, setObra] = useState<Obra | null>(null);
@@ -34,6 +34,7 @@ const ObraDetalle = () => {
   const [detailError, setDetailError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [showActionMenu, setShowActionMenu] = useState(false);
 
   const isCoordinador = user?.global_role === 'coordinador';
 
@@ -68,7 +69,7 @@ const ObraDetalle = () => {
     
     try {
       await deleteObra(obraId);
-      navigate('/obras', { replace: true }); // Redirección con replace
+      navigate('/obras', { replace: true });
     } catch (error) {
       console.error('Error eliminando obra:', error);
     }
@@ -77,139 +78,160 @@ const ObraDetalle = () => {
   // Actualizar datos después de editar
   const handleEditSuccess = () => {
     setIsEditModalOpen(false);
-    loadObra(); // Recargar datos actualizados
-    refresh?.(); // Actualizar lista global si existe
+    loadObra();
+    refresh?.();
   };
 
-  const getStatusBadge = () => {
+  const getStatusConfig = () => {
     if (!obra) return null;
     const statusConfig = {
       activo: { 
-        className: 'bg-emerald-50 text-emerald-700 border border-emerald-200', 
-        label: 'Activo',
-        icon: '●'
+        bg: 'bg-emerald-500/10',
+        text: 'text-emerald-700',
+        ring: 'ring-emerald-500/20',
+        dot: 'bg-emerald-500',
+        label: 'Activo'
       },
       inactivo: { 
-        className: 'bg-amber-50 text-amber-700 border border-amber-200', 
-        label: 'Inactivo',
-        icon: '●'
+        bg: 'bg-amber-500/10',
+        text: 'text-amber-700',
+        ring: 'ring-amber-500/20',
+        dot: 'bg-amber-500',
+        label: 'Inactivo'
       },
       finalizado: { 
-        className: 'bg-slate-50 text-slate-700 border border-slate-200', 
-        label: 'Finalizado',
-        icon: '●'
+        bg: 'bg-gray-500/10',
+        text: 'text-gray-700',
+        ring: 'ring-gray-500/20',
+        dot: 'bg-gray-500',
+        label: 'Finalizado'
       }
     };
-    const config = statusConfig[obra.estado] || statusConfig.activo;
-    return (
-      <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${config.className}`}>
-        <span className="text-xs">{config.icon}</span>
-        {config.label}
-      </div>
-    );
+    return statusConfig[obra.estado] || statusConfig.activo;
   };
 
   if (isDetailLoading) return <LoadingSpinner />;
   if (detailError) return <ErrorMessage message={detailError} />;
   if (!obra) return <ErrorMessage message="Obra no encontrada" />;
 
+  const statusConfig = getStatusConfig();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-        {/* Header con gradiente sutil */}
-        <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200/60">
-          <div className="absolute inset-0 bg-gradient-to-r"></div>
-          <div className="relative p-8">
-            {/* Navigation y título */}
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex items-center">
-                <button 
-                  onClick={() => navigate('/obras')} 
-                  className="mr-4 p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all duration-200"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Building2 size={24} className="text-blue-600" />
-                  </div>
-                  <div>
-                    <h1 className="text-3xl font-bold text-slate-800 mb-1">{obra.nombre}</h1>
-                    <p className="text-slate-500 text-sm">ID: {obra.id_obra}</p>
-                  </div>
-                </div>
-              </div>
+    <div className="min-h-screen bg-gray-50/50">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Header Navigation */}
+        <div className="mb-8 flex items-center justify-between">
+          <button 
+            onClick={() => navigate('/obras')} 
+            className="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-all hover:bg-white hover:text-gray-900 hover:shadow-sm"
+          >
+            <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+            <span>Volver a obras</span>
+          </button>
+
+          {isCoordinador && (
+            <div className="relative">
+              <button
+                onClick={() => setShowActionMenu(!showActionMenu)}
+                className="flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:bg-gray-50 hover:shadow-md"
+              >
+                <MoreVertical className="h-4 w-4" />
+                <span>Acciones</span>
+              </button>
               
-              {isCoordinador && (
-                <div className="flex gap-3">
-                  <button 
-                    onClick={() => setIsEditModalOpen(true)} 
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
+              {showActionMenu && (
+                <div className="absolute right-0 top-full z-10 mt-2 w-48 rounded-xl bg-white py-2 shadow-lg ring-1 ring-black/5">
+                  <button
+                    onClick={() => {
+                      setIsEditModalOpen(true);
+                      setShowActionMenu(false);
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-blue-50 hover:text-blue-700"
                   >
-                    <Edit2 size={16} />
-                    <span>Editar</span>
+                    <Edit2 className="h-4 w-4" />
+                    <span>Editar obra</span>
                   </button>
-                  <button 
-                    onClick={() => setIsDeleteModalOpen(true)} 
-                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
+                  <button
+                    onClick={() => {
+                      setIsDeleteModalOpen(true);
+                      setShowActionMenu(false);
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
                   >
-                    <Trash2 size={16} />
-                    <span>Eliminar</span>
+                    <Trash2 className="h-4 w-4" />
+                    <span>Eliminar obra</span>
                   </button>
                 </div>
               )}
             </div>
+          )}
+        </div>
 
-            {/* Información principal en cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Descripción */}
-              <div className="lg:col-span-2 bg-slate-50/50 rounded-xl p-6 border border-slate-300/60">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <InfoIcon size={18} className="text-blue-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-800">Descripción</h3>
-                </div>
-                <p className="text-slate-600 leading-relaxed">
-                  {obra.descripcion || 'Sin descripción disponible'}
-                </p>
-              </div>
-
-              {/* Estado */}
-              <div className="bg-slate-50/50 rounded-xl p-6 border border-slate-300/60">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Clock size={18} className="text-green-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-800">Estado</h3>
-                </div>
-                <div className="flex justify-center">
-                  {getStatusBadge()}
+        {/* Hero Section */}
+        <div className="relative mb-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200/50">
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-indigo-50/20" />
+          
+          <div className="relative px-8 py-10">
+            <div className="flex items-start gap-6">
+              {/* Icon */}
+              <div className="flex-shrink-0">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25">
+                  <Building2 className="h-8 w-8 text-white" />
                 </div>
               </div>
 
-              {/* Fecha de inicio */}
-              <div className="lg:col-span-3 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 rounded-xl p-6 border border-blue-300/30">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <CalendarIcon size={18} className="text-blue-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-800">Fecha de inicio</h3>
+              {/* Content */}
+              <div className="min-w-0 flex-1">
+                <div className="mb-4 flex flex-wrap items-center gap-4">
+                  <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                    {obra.nombre}
+                  </h1>
+                  {statusConfig && (
+                    <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium ring-1 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.ring}`}>
+                      <div className={`h-1.5 w-1.5 rounded-full ${statusConfig.dot}`} />
+                      {statusConfig.label}
+                    </div>
+                  )}
                 </div>
-                <p className="text-slate-700 font-medium text-lg">
-                  {obra.fecha_inicio ? formatDate(obra.fecha_inicio) : 'No especificada'}
-                </p>
+                
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <span className="font-medium">ID:</span>
+                  <span className="font-mono">{obra.id_obra}</span>
+                </div>
+
+                {obra.fecha_inicio && (
+                  <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
+                    <CalendarIcon className="h-4 w-4" />
+                    <span>Inicio: {formatDate(obra.fecha_inicio)}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Tabs con mejor estilo */}
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-300/60 overflow-hidden">
+        {/* Description Card */}
+        {obra.descripcion && (
+          <div className="mb-8 rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200/50">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+                <InfoIcon className="h-4 w-4 text-gray-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900">Descripción</h2>
+            </div>
+            <p className="text-gray-700 leading-relaxed">
+              {obra.descripcion}
+            </p>
+          </div>
+        )}
+
+        {/* Tabs Section */}
+        <div className="rounded-xl bg-white shadow-sm ring-1 ring-gray-200/50">
           <ObraTabs obraId={obra.id_obra} isCoordinador={isCoordinador} />
         </div>
 
-        {/* Modales sin cambios */}
+        {/* Modals */}
         {isEditModalOpen && (
           <ObraForm 
             onClose={handleEditSuccess}
@@ -233,6 +255,14 @@ const ObraDetalle = () => {
           />
         )}
       </div>
+
+      {/* Click outside to close menu */}
+      {showActionMenu && (
+        <div 
+          className="fixed inset-0 z-0" 
+          onClick={() => setShowActionMenu(false)}
+        />
+      )}
     </div>
   );
 };

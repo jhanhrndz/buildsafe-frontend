@@ -64,7 +64,7 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
     {
       id: 'areas' as TabType,
       label: 'Áreas',
-      icon: <Grid3x3 size={18} />,
+      icon: <Grid3x3 className="h-5 w-5" />,
       path: `/obras/${obraId}`,
       visible: true,
       color: 'blue'
@@ -72,7 +72,7 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
     {
       id: 'supervisores' as TabType,
       label: 'Supervisores',
-      icon: <Users size={18} />,
+      icon: <Users className="h-5 w-5" />,
       path: `/obras/${obraId}/supervisores`,
       visible: true,
       color: 'emerald'
@@ -80,7 +80,7 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
     {
       id: 'reportes' as TabType,
       label: 'Reportes',
-      icon: <ClipboardList size={18} />,
+      icon: <ClipboardList className="h-5 w-5" />,
       path: `/obras/${obraId}/reportes`,
       visible: isCoordinador,
       color: 'orange'
@@ -88,7 +88,7 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
     {
       id: 'estadisticas' as TabType,
       label: 'Estadísticas',
-      icon: <AreaChart size={18} />,
+      icon: <AreaChart className="h-5 w-5" />,
       path: `/obras/${obraId}/estadisticas`,
       visible: isCoordinador,
       color: 'purple'
@@ -98,7 +98,7 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
   const visibleTabs = useMemo(() => tabs.filter(tab => tab.visible), [tabs]);
 
   // Handlers para operaciones CRUD
- const handleCreateArea = async (areaData: Omit<Area, 'id_area'>): Promise<boolean> => {
+  const handleCreateArea = async (areaData: Omit<Area, 'id_area'>): Promise<boolean> => {
     try {
       if (!createArea) return false;
       return await createArea(areaData);
@@ -131,28 +131,24 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
   const getTabColors = (tabColor: string, isActive: boolean) => {
     const colorMap = {
       blue: {
-        active: 'bg-blue-50 text-blue-700 border-blue-200',
-        inactive: 'text-gray-600 hover:bg-blue-50 hover:text-blue-600',
-        border: 'border-blue-500',
-        icon: 'text-blue-600'
+        active: 'bg-blue-600 text-white shadow-blue-500/25',
+        inactive: 'text-gray-600 hover:text-blue-600 hover:bg-blue-50',
+        accent: 'text-blue-600'
       },
       emerald: {
-        active: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        inactive: 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-600',
-        border: 'border-emerald-500',
-        icon: 'text-emerald-600'
+        active: 'bg-emerald-600 text-white shadow-emerald-500/25',
+        inactive: 'text-gray-600 hover:text-emerald-600 hover:bg-emerald-50',
+        accent: 'text-emerald-600'
       },
       orange: {
-        active: 'bg-orange-50 text-orange-700 border-orange-200',
-        inactive: 'text-gray-600 hover:bg-orange-50 hover:text-orange-600',
-        border: 'border-orange-500',
-        icon: 'text-orange-600'
+        active: 'bg-orange-600 text-white shadow-orange-500/25',
+        inactive: 'text-gray-600 hover:text-orange-600 hover:bg-orange-50',
+        accent: 'text-orange-600'
       },
       purple: {
-        active: 'bg-purple-50 text-purple-700 border-purple-200',
-        inactive: 'text-gray-600 hover:bg-purple-50 hover:text-purple-600',
-        border: 'border-purple-500',
-        icon: 'text-purple-600'
+        active: 'bg-purple-600 text-white shadow-purple-500/25',
+        inactive: 'text-gray-600 hover:text-purple-600 hover:bg-purple-50',
+        accent: 'text-purple-600'
       }
     };
 
@@ -160,39 +156,32 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    <div className="overflow-hidden">
       {/* Navegación de pestañas */}
-      <div className="relative bg-gradient-to-r from-gray-50 via-white to-gray-50 border-b border-gray-200">
-        <nav className="flex overflow-x-auto p-2">
+      <div className="border-b border-gray-200 bg-white">
+        <nav className="flex space-x-1 p-1" aria-label="Tabs">
           {visibleTabs.map((tab) => {
             const colors = getTabColors(tab.color, activeTab === tab.id);
+            const isActive = activeTab === tab.id;
+            
             return (
               <button
                 key={tab.id}
                 onClick={() => navigate(tab.path)}
                 className={`
-                  group relative flex items-center px-6 py-4 text-sm font-medium whitespace-nowrap
-                  rounded-lg mx-1 transition-all duration-300 ease-in-out border
-                  ${activeTab === tab.id ? colors.active : `${colors.inactive} border-transparent hover:border-gray-200`}
+                  group relative flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium
+                  transition-all duration-200 ease-in-out
+                  ${isActive 
+                    ? `${colors.active} shadow-lg` 
+                    : `${colors.inactive} hover:shadow-sm`
+                  }
                 `}
-                aria-current={activeTab === tab.id ? 'page' : undefined}
+                aria-current={isActive ? 'page' : undefined}
               >
-                <span className={`
-                  mr-3 transition-all duration-300 group-hover:scale-110
-                  ${activeTab === tab.id ? colors.icon : 'text-gray-500 group-hover:text-inherit'}
-                `}>
+                <span className={`transition-colors duration-200 ${isActive ? 'text-white' : colors.accent}`}>
                   {tab.icon}
                 </span>
-                <span className="font-semibold">{tab.label}</span>
-                
-                {/* Indicador activo */}
-                {activeTab === tab.id && (
-                  <div className={`
-                    absolute bottom-0 left-1/2 transform -translate-x-1/2 
-                    w-12 h-1 ${colors.border} rounded-full
-                    animate-pulse
-                  `} />
-                )}
+                <span className="whitespace-nowrap">{tab.label}</span>
               </button>
             );
           })}
@@ -200,27 +189,23 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
       </div>
 
       {/* Contenido de la pestaña activa */}
-      <div className="relative p-8 min-h-[500px] bg-gradient-to-br from-white via-gray-50/30 to-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-transparent to-purple-50/20 pointer-events-none" />
-        
-        <div className="relative z-10">
-          {activeTab === 'areas' && (
-            <AreaTabsContent
-              obraId={obraId}
-              isCoordinador={isCoordinador}
-              areas={areas}
-              isLoading={isLoading}
-              error={error}
-              onCreateArea={handleCreateArea}
-              onUpdateArea={handleUpdateArea}
-              onDeleteArea={handleDeleteArea}
-            />
-          )}
+      <div className="bg-gray-50/30 p-8">
+        {activeTab === 'areas' && (
+          <AreaTabsContent
+            obraId={obraId}
+            isCoordinador={isCoordinador}
+            areas={areas}
+            isLoading={isLoading}
+            error={error}
+            onCreateArea={handleCreateArea}
+            onUpdateArea={handleUpdateArea}
+            onDeleteArea={handleDeleteArea}
+          />
+        )}
 
-          {activeTab === 'supervisores' && <SupervisoresTab />}
-          {activeTab === 'reportes' && <ReportesTab />}
-          {activeTab === 'estadisticas' && <EstadisticasTab />}
-        </div>
+        {activeTab === 'supervisores' && <SupervisoresTab />}
+        {activeTab === 'reportes' && <ReportesTab />}
+        {activeTab === 'estadisticas' && <EstadisticasTab />}
       </div>
     </div>
   );
@@ -228,128 +213,121 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
 
 // Componentes auxiliares para pestañas
 const SupervisoresTab = () => (
-  <div className="space-y-8">
-    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-      <div className="space-y-2">
-        <h2 className="text-3xl font-bold text-gray-900 bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent">
-          Supervisores Asignados
-        </h2>
-        <p className="text-gray-600">Gestiona los supervisores de esta obra</p>
+  <div className="space-y-6">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">Supervisores</h2>
+        <p className="mt-1 text-sm text-gray-600">Gestiona los supervisores asignados a esta obra</p>
       </div>
-      <button className="group flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-        <Plus size={18} className="mr-2 group-hover:rotate-90 transition-transform duration-300" />
+      <button className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md">
+        <Plus className="h-4 w-4" />
         Asignar Supervisor
       </button>
     </div>
-    <PlaceholderContent
-      icon={<Users size={64} className="text-emerald-400" />}
-      message="No hay supervisores asignados a esta obra"
-      secondaryMessage="Asigna supervisores para mejorar el control y seguimiento del proyecto"
+    
+    <EmptyState
+      icon={<Users className="h-12 w-12 text-emerald-400" />}
+      title="No hay supervisores asignados"
+      description="Asigna supervisores para mejorar el control y seguimiento del proyecto"
       actionText="Asignar primer supervisor"
-      bgGradient="from-emerald-50 to-emerald-100/50"
-      borderColor="border-emerald-200"
-      hoverBorder="hover:border-emerald-300"
-      buttonColor="bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+      colorScheme="emerald"
     />
   </div>
 );
 
 const ReportesTab = () => (
-  <div className="space-y-8">
-    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-      <div className="space-y-2">
-        <h2 className="text-3xl font-bold text-gray-900 bg-gradient-to-r from-orange-600 to-orange-800 bg-clip-text text-transparent">
-          Reportes de Seguridad
-        </h2>
-        <p className="text-gray-600">Genera y consulta reportes detallados</p>
+  <div className="space-y-6">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">Reportes</h2>
+        <p className="mt-1 text-sm text-gray-600">Genera y consulta reportes detallados de seguridad</p>
       </div>
-      <button className="group flex items-center px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white font-semibold rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-        <Plus size={18} className="mr-2 group-hover:rotate-90 transition-transform duration-300" />
+      <button className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-orange-700 hover:shadow-md">
+        <Plus className="h-4 w-4" />
         Generar Reporte
       </button>
     </div>
-    <PlaceholderContent
-      icon={<ClipboardList size={64} className="text-orange-400" />}
-      message="No hay reportes generados para esta obra"
-      secondaryMessage="Los reportes te ayudarán a mantener un registro detallado de las actividades"
+    
+    <EmptyState
+      icon={<ClipboardList className="h-12 w-12 text-orange-400" />}
+      title="No hay reportes generados"
+      description="Los reportes te ayudarán a mantener un registro detallado de las actividades"
       actionText="Generar primer reporte"
-      bgGradient="from-orange-50 to-orange-100/50"
-      borderColor="border-orange-200"
-      hoverBorder="hover:border-orange-300"
-      buttonColor="bg-orange-100 text-orange-700 hover:bg-orange-200"
+      colorScheme="orange"
     />
   </div>
 );
 
 const EstadisticasTab = () => (
-  <div className="space-y-8">
-    <div className="space-y-2">
-      <h2 className="text-3xl font-bold text-gray-900 bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
-        Estadísticas de Seguridad
-      </h2>
-      <p className="text-gray-600">Analiza métricas y tendencias del proyecto</p>
+  <div className="space-y-6">
+    <div>
+      <h2 className="text-2xl font-bold text-gray-900">Estadísticas</h2>
+      <p className="mt-1 text-sm text-gray-600">Analiza métricas y tendencias del proyecto</p>
     </div>
-    <PlaceholderContent
-      icon={<AreaChart size={64} className="text-purple-400" />}
-      message="No hay datos estadísticos disponibles"
-      secondaryMessage="Las estadísticas se generarán automáticamente cuando tengas registros suficientes"
-      bgGradient="from-purple-50 to-purple-100/50"
-      borderColor="border-purple-200"
-      hoverBorder="hover:border-purple-300"
-      buttonColor="bg-purple-100 text-purple-700 hover:bg-purple-200"
+    
+    <EmptyState
+      icon={<AreaChart className="h-12 w-12 text-purple-400" />}
+      title="No hay datos estadísticos disponibles"
+      description="Las estadísticas se generarán automáticamente cuando tengas registros suficientes"
+      colorScheme="purple"
     />
   </div>
 );
 
-const PlaceholderContent = ({
+const EmptyState = ({
   icon,
-  message,
-  secondaryMessage,
+  title,
+  description,
   actionText,
-  bgGradient,
-  borderColor,
-  hoverBorder,
-  buttonColor
+  colorScheme = 'gray'
 }: {
-  icon?: React.ReactNode;
-  message: string;
-  secondaryMessage?: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
   actionText?: string;
-  bgGradient: string;
-  borderColor: string;
-  hoverBorder: string;
-  buttonColor: string;
-}) => (
-  <div className={`
-    bg-gradient-to-br ${bgGradient}
-    border-2 border-dashed ${borderColor}
-    rounded-2xl p-16 text-center
-    transition-all duration-300 ${hoverBorder}
-    backdrop-blur-sm
-  `}>
-    <div className="flex flex-col items-center space-y-6">
-      {icon && (
-        <div className="p-6 bg-white/70 rounded-full shadow-lg backdrop-blur-sm">
+  colorScheme?: 'emerald' | 'orange' | 'purple' | 'gray';
+}) => {
+  const colorClasses = {
+    emerald: {
+      bg: 'bg-emerald-50',
+      border: 'border-emerald-200',
+      button: 'bg-emerald-600 hover:bg-emerald-700 text-white'
+    },
+    orange: {
+      bg: 'bg-orange-50',
+      border: 'border-orange-200',
+      button: 'bg-orange-600 hover:bg-orange-700 text-white'
+    },
+    purple: {
+      bg: 'bg-purple-50',
+      border: 'border-purple-200',
+      button: 'bg-purple-600 hover:bg-purple-700 text-white'
+    },
+    gray: {
+      bg: 'bg-gray-50',
+      border: 'border-gray-200',
+      button: 'bg-gray-600 hover:bg-gray-700 text-white'
+    }
+  };
+
+  const colors = colorClasses[colorScheme];
+
+  return (
+    <div className={`rounded-xl border-2 border-dashed p-12 text-center ${colors.bg} ${colors.border}`}>
+      <div className="mx-auto flex flex-col items-center">
+        <div className="rounded-full bg-white p-3 shadow-sm">
           {icon}
         </div>
-      )}
-      <div className="space-y-3 max-w-lg">
-        <h3 className="text-xl font-bold text-gray-800">{message}</h3>
-        {secondaryMessage && (
-          <p className="text-gray-600 leading-relaxed">{secondaryMessage}</p>
+        <h3 className="mt-6 text-lg font-semibold text-gray-900">{title}</h3>
+        <p className="mt-2 text-sm text-gray-600 max-w-sm">{description}</p>
+        {actionText && (
+          <button className={`mt-6 rounded-lg px-6 py-2.5 text-sm font-medium shadow-sm transition-all ${colors.button}`}>
+            {actionText}
+          </button>
         )}
       </div>
-      {actionText && (
-        <button className={`
-          px-8 py-3 ${buttonColor} 
-          rounded-xl font-semibold transition-all duration-300
-          shadow-md hover:shadow-lg transform hover:-translate-y-0.5
-        `}>
-          {actionText}
-        </button>
-      )}
     </div>
-  </div>
-);
+  );
+};
 
 export default ObraTabs;

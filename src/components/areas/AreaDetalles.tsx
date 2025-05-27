@@ -24,12 +24,11 @@ const AreaDetalles: React.FC<AreaDetallesProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'info' | 'camaras' | 'reportes'>('info');
 
-  const handleDelete = () => {
-    if (onDelete && window.confirm(`¿Estás seguro de que deseas eliminar el área "${area.nombre}"? Esta acción no se puede deshacer.`)) {
-      onDelete(area.id_area);
-      onBack(); // Volver a la lista después de eliminar
-    }
-  };
+const handleDelete = () => {
+  if (onDelete) {
+    onDelete(area.id_area); // Solo llama al handler del padre
+  }
+};
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">

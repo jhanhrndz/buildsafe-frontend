@@ -4,6 +4,8 @@ import AreaDetalles from './AreaDetalles';
 import { useArea } from '../../hooks/features/useArea';
 import { useUserContext } from '../../context/UserContext';
 import type { Area } from '../../types/entities';
+import ConfirmDialog from '../shared/ConfirmDialog';
+import AreaForm from './AreaForm';
 
 const AreaDetallesPage: React.FC = () => {
   const { areaId } = useParams<{ areaId: string }>();
@@ -14,13 +16,33 @@ const AreaDetallesPage: React.FC = () => {
   const isCoordinador = user?.global_role === 'coordinador';
 
   const { getById, updateArea, deleteArea, error: areaError } = useArea();
-  
+
 
   const [area, setArea] = useState<Area | null>(null);
   const [loading, setLoading] = useState(true);
   const error = areaError || (loading ? null : !area ? 'Área no encontrada' : null);
-
-
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const handleOpenEditModal = () => setIsEditModalOpen(true);
+  // Handler para cerrar el modal
+  const handleCloseEditModal = () => setIsEditModalOpen(false);
+  const handleSubmitEdit = async (areaData: Area | Omit<Area, 'id_area'>) => {
+    setIsSubmitting(true);
+    try {
+      if ('id_area' in areaData) {
+        const success = await updateArea(areaData);
+        if (success) {
+          const updated = await getById(areaData.id_area);
+          if (updated) setArea(updated);
+          setIsEditModalOpen(false);
+        }
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   // Cargar el área al montar
   useEffect(() => {
     const loadArea = async () => {
@@ -34,7 +56,7 @@ const AreaDetallesPage: React.FC = () => {
         setLoading(false);
       }
     };
-    
+
     if (numericAreaId) loadArea();
   }, [numericAreaId, getById]);
 
@@ -49,10 +71,21 @@ const AreaDetallesPage: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    const success = await deleteArea(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    const success = await deleteArea(numericAreaId);
+    setIsDeleting(false);
     if (success) {
       navigate('/obras');
     }
+    setShowDeleteModal(false);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
   };
 
   if (loading) {
@@ -88,9 +121,30 @@ const AreaDetallesPage: React.FC = () => {
         area={area}
         isCoordinador={isCoordinador}
         onBack={handleBack}
-        onEdit={isCoordinador ? handleEdit : undefined}
+        onEdit={isCoordinador ? handleOpenEditModal : undefined}
         onDelete={isCoordinador ? handleDelete : undefined}
       />
+      {showDeleteModal && (
+        <ConfirmDialog
+          title="Eliminar área"
+          message={`¿Estás seguro de que deseas eliminar el área "${area.nombre}"? Esta acción no se puede deshacer.`}
+          confirmLabel="Eliminar"
+          cancelLabel="Cancelar"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          isLoading={isDeleting}
+          variant="danger"
+        />)}
+      {isEditModalOpen && (
+        <AreaForm
+          onClose={handleCloseEditModal}
+          obraId={area.id_obra}
+          areaToEdit={area}
+          onSubmit={handleSubmitEdit}
+          isLoading={isSubmitting}
+          supervisores={[]} // Pasa la lista de supervisores si la tienes
+        />
+      )}
     </div>
   );
 };
