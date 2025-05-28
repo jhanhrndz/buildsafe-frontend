@@ -119,7 +119,9 @@ const AreaCard: React.FC<AreaCardProps> = ({
               <Camera size={16} className="text-green-600" />
             </div>
             <div className="ml-3">
-              <p className="text-lg font-semibold text-gray-900">{area.camaras_count || 0}</p>
+              <p className="text-lg font-semibold text-gray-900">
+                {area.camaras_count || 0} cámaras
+              </p>
               <p className="text-xs text-gray-600">Cámaras</p>
             </div>
           </div>

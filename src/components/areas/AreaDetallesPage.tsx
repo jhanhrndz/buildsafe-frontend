@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import AreaDetalles from './AreaDetalles';
 import { useArea } from '../../hooks/features/useArea';
 import { useUserContext } from '../../context/UserContext';
+import { useCamarasContext } from '../../context/CamarasContext';
 import type { Area, User } from '../../types/entities';
 import ConfirmDialog from '../shared/ConfirmDialog';
 import AreaForm from './AreaForm';
@@ -12,6 +13,7 @@ const AreaDetallesPage: React.FC = () => {
   const { areaId } = useParams<{ areaId: string }>();
   const navigate = useNavigate();
   const { user } = useUserContext();
+  const { camaras } = useCamarasContext();
   const numericAreaId = Number(areaId);
 
   const isCoordinador = user?.global_role === 'coordinador';
@@ -145,6 +147,7 @@ const AreaDetallesPage: React.FC = () => {
           supervisor: area.id_usuario
             ? supervisores.find(s => s.id_usuario === area.id_usuario)
             : undefined,
+          camaras_count: camaras.filter(c => c.id_area === area.id_area).length,
         }}
         isCoordinador={isCoordinador}
         onBack={handleBack}
