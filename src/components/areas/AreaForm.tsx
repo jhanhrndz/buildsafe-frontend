@@ -9,7 +9,8 @@ interface AreaFormProps {
   areaToEdit?: Area;
   onSubmit: (areaData: Omit<Area, 'id_area'> | Area) => void;
   isLoading?: boolean;
-  supervisores?: user[]; // Lista de supervisores disponibles
+  supervisores?: user[];
+  isCoordinador?: boolean; // <-- NUEVO
 }
 
 const AreaForm: React.FC<AreaFormProps> = ({
@@ -19,6 +20,7 @@ const AreaForm: React.FC<AreaFormProps> = ({
   onSubmit,
   isLoading = false,
   supervisores = [],
+  isCoordinador = false, // <-- NUEVO
 }) => {
   const [formData, setFormData] = useState<Omit<Area, 'id_area'> | Area>({
     id_obra: obraId,
@@ -56,14 +58,13 @@ const AreaForm: React.FC<AreaFormProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    
     setFormData({
       ...formData,
-      [name]: name === 'id_supervisor' 
-        ? (value === '' ? null : parseInt(value, 10)) 
+      [name]: name === 'id_usuario'
+        ? (value === '' ? null : parseInt(value, 10))
         : value,
     });
-    
+
     // Limpiar error al escribir
     if (name === 'nombre' && errors.nombre) {
       setErrors({ ...errors, nombre: undefined });
@@ -79,6 +80,8 @@ const AreaForm: React.FC<AreaFormProps> = ({
   };
 
   const isEditing = !!areaToEdit;
+
+  console.log('AreaForm props:', { areaToEdit, supervisores, isCoordinador });
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 bg-opacity-40 backdrop-blur-sm">
@@ -151,15 +154,15 @@ const AreaForm: React.FC<AreaFormProps> = ({
               </div>
 
               {/* Supervisor */}
-              {supervisores.length > 0 && (
+              {isCoordinador && supervisores.length > 0 && (
                 <div className="space-y-2">
-                  <label htmlFor="id_supervisor" className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                  <label htmlFor="id_usuario" className="flex items-center space-x-2 text-sm font-medium text-gray-700">
                     <User className="w-4 h-4 text-gray-500" />
                     <span>Supervisor asignado</span>
                   </label>
                   <select
-                    name="id_supervisor"
-                    id="id_supervisor"
+                    name="id_usuario"
+                    id="id_usuario"
                     value={formData.id_usuario || ''}
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-gray-50 transition-all duration-200 focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"

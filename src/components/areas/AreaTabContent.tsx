@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AreaList from './AreaList';
 import type { Area, User } from '../../types/entities';
 import { AlertCircle, AlertTriangle } from 'lucide-react';
+import AreaForm from './AreaForm';
 
 interface AreaTabsContentProps {
   obraId: number;
@@ -31,6 +32,9 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
   onViewAreaDetails
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingArea, setEditingArea] = useState<Area | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Si hay errores, mostramos mensaje de error
   if (error) {
@@ -62,6 +66,38 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
     );
   }
 
+  const handleOpenModal = (area?: Area) => {
+    setEditingArea(area || null);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setEditingArea(null);
+    setIsModalOpen(false);
+  };
+
+  const handleSubmit = async (areaData: Omit<Area, 'id_area'>) => {
+    setIsSubmitting(true);
+    try {
+      if (editingArea) {
+        // Actualizar área
+        if (onUpdateArea) {
+          await onUpdateArea({ ...areaData, id_area: editingArea.id_area });
+        }
+      } else {
+        // Crear nueva área
+        if (onCreateArea) {
+          await onCreateArea(areaData);
+        }
+      }
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error al guardar el área:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Contenedor principal con mejor espaciado */}
@@ -73,7 +109,7 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
           isCoordinador={isCoordinador}
           currentUserId={currentUserId}
           obraId={obraId}
-          supervisores={supervisores}
+          supervisores={supervisores} // <-- PASA AQUÍ
           onCreateArea={onCreateArea}
           onUpdateArea={onUpdateArea}
           onDeleteArea={onDeleteArea}
@@ -82,6 +118,18 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
           onSearchChange={setSearchTerm}
         />
       </div>
+
+      {isModalOpen && (
+        <AreaForm
+          onClose={handleCloseModal}
+          obraId={obraId}
+          areaToEdit={editingArea ?? undefined}
+          onSubmit={handleSubmit}
+          isLoading={isSubmitting}
+          supervisores={supervisores} // <-- PASA AQUÍ
+          isCoordinador={isCoordinador}
+        />
+      )}
     </div>
   );
 };

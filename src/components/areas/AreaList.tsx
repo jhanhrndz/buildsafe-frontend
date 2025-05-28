@@ -64,6 +64,12 @@ const AreaList: React.FC<AreaListProps> = ({
     return result;
   }, [areas, isCoordinador, currentUserId, searchTerm]);
 
+  const supervisoresMap = useMemo(() => {
+    const map = new Map<number, User>();
+    supervisores.forEach(s => map.set(s.id_usuario, s));
+    return map;
+  }, [supervisores]);
+
   // Manejar creación/actualización
   const handleSubmit = async (areaData: Area | Omit<Area, 'id_area'>) => {
     setIsSubmitting(true);
@@ -183,7 +189,8 @@ const AreaList: React.FC<AreaListProps> = ({
             areaToEdit={editingArea}
             onSubmit={handleSubmit}
             isLoading={isSubmitting}
-            supervisores={supervisores}
+            supervisores={supervisores} // <-- DEBE PASARSE AQUÍ
+            isCoordinador={isCoordinador} // <-- DEBE PASARSE AQUÍ
           />
         )}
       </>
@@ -222,10 +229,14 @@ const AreaList: React.FC<AreaListProps> = ({
         {filteredAreas.map((area) => (
           <AreaCard
             key={area.id_area}
-            area={area}
+            area={{
+              ...area,
+              supervisor: area.id_usuario ? supervisoresMap.get(area.id_usuario) : undefined,
+            }}
             obraId={obraId}
             isCoordinador={isCoordinador}
             onEdit={isCoordinador ? (a) => {
+              console.log('Editando área:', a);
               setEditingArea(a);
               setIsModalOpen(true);
             } : undefined}
@@ -246,7 +257,8 @@ const AreaList: React.FC<AreaListProps> = ({
           areaToEdit={editingArea}
           onSubmit={handleSubmit}
           isLoading={isSubmitting}
-          supervisores={supervisores}
+          supervisores={supervisores} // <-- DEBE PASARSE AQUÍ
+          isCoordinador={isCoordinador} // <-- DEBE PASARSE AQUÍ
         />
       )}
       {areaToDelete && (

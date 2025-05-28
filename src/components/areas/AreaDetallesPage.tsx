@@ -3,9 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import AreaDetalles from './AreaDetalles';
 import { useArea } from '../../hooks/features/useArea';
 import { useUserContext } from '../../context/UserContext';
-import type { Area } from '../../types/entities';
+import type { Area, User } from '../../types/entities';
 import ConfirmDialog from '../shared/ConfirmDialog';
 import AreaForm from './AreaForm';
+import { obraUsuarioService } from '../../services/obraUsuario';
 
 const AreaDetallesPage: React.FC = () => {
   const { areaId } = useParams<{ areaId: string }>();
@@ -25,6 +26,7 @@ const AreaDetallesPage: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [supervisores, setSupervisores] = useState<User[]>([]);
   const handleOpenEditModal = () => setIsEditModalOpen(true);
   // Handler para cerrar el modal
   const handleCloseEditModal = () => setIsEditModalOpen(false);
@@ -59,6 +61,26 @@ const AreaDetallesPage: React.FC = () => {
 
     if (numericAreaId) loadArea();
   }, [numericAreaId, getById]);
+
+  useEffect(() => {
+    // Cargar supervisores de la obra solo si hay área cargada
+    if (area?.id_obra) {
+      obraUsuarioService.getSupervisoresConAreas(area.id_obra)
+        .then(data => {
+          // Mapear a User[]
+          setSupervisores(data.map(s => ({
+            id_usuario: s.id_usuario,
+            usuario: '',
+            auth_provider: 'local',
+            correo: s.correo,
+            nombres: s.nombres,
+            apellidos: s.apellidos,
+            global_role: 'supervisor',
+          })));
+        })
+        .catch(() => setSupervisores([]));
+    }
+  }, [area?.id_obra]);
 
   const handleBack = () => navigate(-1);
 
@@ -118,7 +140,12 @@ const AreaDetallesPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-6">
       <AreaDetalles
-        area={area}
+        area={{
+          ...area,
+          supervisor: area.id_usuario
+            ? supervisores.find(s => s.id_usuario === area.id_usuario)
+            : undefined,
+        }}
         isCoordinador={isCoordinador}
         onBack={handleBack}
         onEdit={isCoordinador ? handleOpenEditModal : undefined}
@@ -135,14 +162,15 @@ const AreaDetallesPage: React.FC = () => {
           isLoading={isDeleting}
           variant="danger"
         />)}
-      {isEditModalOpen && (
+      {isEditModalOpen && area && (
         <AreaForm
           onClose={handleCloseEditModal}
           obraId={area.id_obra}
           areaToEdit={area}
           onSubmit={handleSubmitEdit}
           isLoading={isSubmitting}
-          supervisores={[]} // Pasa la lista de supervisores si la tienes
+          supervisores={supervisores} // <-- PASA LA LISTA AQUÍ
+          isCoordinador={isCoordinador}
         />
       )}
     </div>

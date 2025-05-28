@@ -15,6 +15,7 @@ type AreasContextType = {
   updateArea: (area: Area) => Promise<boolean>;
   deleteArea: (id: number) => Promise<boolean>;
   clearError: () => void;
+  assignSupervisorToArea: (areaId: number, usuarioId: number) => Promise<boolean>;
 };
 
 const AreasContext = createContext<AreasContextType>({} as AreasContextType);
@@ -102,6 +103,22 @@ export function AreasProvider({ children }: { children: ReactNode }) {
 
   const clearError = useCallback(() => setError(null), []);
 
+  const assignSupervisorToArea = useCallback(async (areaId: number, usuarioId: number) => {
+    try {
+      // Obtén el área actual
+      const area = await AreaService.getById(areaId);
+      if (!area) throw new Error('Área no encontrada');
+      // Actualiza el área con el nuevo supervisor
+      await AreaService.update({ ...area, id_usuario: usuarioId });
+      // Refresca la lista si corresponde
+      if (lastLoadedObraId) await loadAreas(lastLoadedObraId);
+      return true;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error al asignar supervisor');
+      return false;
+    }
+  }, [lastLoadedObraId, loadAreas]);
+
   return (
     <AreasContext.Provider
       value={{
@@ -114,6 +131,7 @@ export function AreasProvider({ children }: { children: ReactNode }) {
         createArea,
         updateArea,
         deleteArea,
+        assignSupervisorToArea,
         clearError,
       }}
     >
