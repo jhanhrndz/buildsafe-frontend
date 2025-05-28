@@ -54,8 +54,25 @@ export interface Camara {
   id_area: number;
   ip_stream: string;
   nombre: string;
-  estado: 'activo' | 'inactivo';
+  estado: 'activo' | 'inactivo'; // Debe coincidir con tu base de datos y backend
   ultima_conexion?: string;
+}
+
+// Para crear una cámara (sin id_camara ni ultima_conexion)
+export type CreateCamaraPayload = Omit<Camara, 'id_camara' | 'ultima_conexion'>;
+
+// Para actualizar una cámara (requiere id_camara)
+export type UpdateCamaraPayload = Partial<Omit<Camara, 'ultima_conexion'>> & { id_camara: number };
+
+// Si necesitas filtros o respuestas paginadas en el futuro:
+export interface CamaraFilters {
+  id_area?: number;
+  estado?: 'activo' | 'inactivo';
+}
+
+export interface CamarasResponse {
+  camaras: Camara[];
+  total: number;
 }
 
 /**

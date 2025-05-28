@@ -3,6 +3,7 @@ import AreaList from './AreaList';
 import type { Area, User } from '../../types/entities';
 import { AlertCircle, AlertTriangle } from 'lucide-react';
 import AreaForm from './AreaForm';
+import { useCamarasContext } from '../../context/CamarasContext';
 
 interface AreaTabsContentProps {
   obraId: number;
@@ -35,6 +36,7 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingArea, setEditingArea] = useState<Area | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { refreshByObra } = useCamarasContext();
 
   // Si hay errores, mostramos mensaje de error
   if (error) {
@@ -65,6 +67,12 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
       </div>
     );
   }
+
+  useEffect(() => {
+    if (obraId) {
+      refreshByObra(obraId);
+    }
+  }, [obraId, refreshByObra]);
 
   const handleOpenModal = (area?: Area) => {
     setEditingArea(area || null);

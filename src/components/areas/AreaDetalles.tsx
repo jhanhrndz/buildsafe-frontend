@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, User, Camera, ClipboardList, Edit, Trash2 } from 'lucide-react';
 import type { Area, User as UserType } from '../../types/entities';
+import CamaraList from '../camaras/CamaraList';
 
 interface AreaDetallesProps {
   area: Area & {
@@ -152,12 +153,7 @@ const handleDelete = () => {
         )}
         
         {activeTab === 'camaras' && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-10 text-center">
-            <Camera size={40} className="mx-auto text-gray-400 mb-3" />
-            <h3 className="text-lg font-medium text-gray-900 mb-1">Monitoreo de cámaras</h3>
-            <p className="text-gray-600 mb-6">Aquí podrás ver todas las cámaras instaladas en esta área.</p>
-            {/* Contenido pendiente de implementación */}
-          </div>
+          <CamaraList area={area} />
         )}
         
         {activeTab === 'reportes' && (

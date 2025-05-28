@@ -5,6 +5,7 @@ import AreaEmptyState from './AreaEmptyState';
 import AreaForm from './AreaForm';
 import type { Area, User } from '../../types/entities';
 import ConfirmDialog from '../shared/ConfirmDialog';
+import { useCamarasContext } from '../../context/CamarasContext';
 
 interface AreaListProps {
   areas: Area[];
@@ -42,6 +43,7 @@ const AreaList: React.FC<AreaListProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { camaras } = useCamarasContext();
 
   // Filtrar áreas con memoización
   const filteredAreas = useMemo(() => {
@@ -226,27 +228,32 @@ const AreaList: React.FC<AreaListProps> = ({
 
       {/* Grid de áreas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredAreas.map((area) => (
-          <AreaCard
-            key={area.id_area}
-            area={{
-              ...area,
-              supervisor: area.id_usuario ? supervisoresMap.get(area.id_usuario) : undefined,
-            }}
-            obraId={obraId}
-            isCoordinador={isCoordinador}
-            onEdit={isCoordinador ? (a) => {
-              console.log('Editando área:', a);
-              setEditingArea(a);
-              setIsModalOpen(true);
-            } : undefined}
-            onDelete={isCoordinador ? (aId) => {
-              const areaObj = areas.find(a => a.id_area === aId);
-              if (areaObj) handleRequestDelete(areaObj);
-            } : undefined}
-            onViewDetails={onViewDetails}
-          />
-        ))}
+        {filteredAreas.map((area) => {
+          // Calcula el número de cámaras para esta área
+          const camaras_count = camaras.filter(c => c.id_area === area.id_area).length;
+          return (
+            <AreaCard
+              key={area.id_area}
+              area={{
+                ...area,
+                supervisor: area.id_usuario ? supervisoresMap.get(area.id_usuario) : undefined,
+                camaras_count, // <-- aquí lo pasas
+              }}
+              obraId={obraId}
+              isCoordinador={isCoordinador}
+              onEdit={isCoordinador ? (a) => {
+                console.log('Editando área:', a);
+                setEditingArea(a);
+                setIsModalOpen(true);
+              } : undefined}
+              onDelete={isCoordinador ? (aId) => {
+                const areaObj = areas.find(a => a.id_area === aId);
+                if (areaObj) handleRequestDelete(areaObj);
+              } : undefined}
+              onViewDetails={onViewDetails}
+            />
+          );
+        })}
       </div>
 
       {/* Modal de creación/edición */}
