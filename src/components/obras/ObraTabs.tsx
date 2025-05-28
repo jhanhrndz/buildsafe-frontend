@@ -4,7 +4,9 @@ import { Grid3x3, Users, ClipboardList, AreaChart, Plus } from 'lucide-react';
 import { useUserContext } from '../../context/UserContext';
 import { useArea } from '../../hooks/features/useArea';
 import AreaTabsContent from '../areas/AreaTabContent';
-import type { Area } from '../../types/entities';
+import SupervisoresTab from '../supervisores/SupervisoresTab';
+import { obraUsuarioService } from '../../services/obraUsuario'; // <-- IMPORTANTE
+import type { Area, SupervisorWithAreas, User } from '../../types/entities';
 
 interface ObraTabsProps {
   obraId: number;
@@ -155,6 +157,33 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
     return colorMap[tabColor as keyof typeof colorMap] || colorMap.blue;
   };
 
+  // Estado para supervisores
+  const [supervisores, setSupervisores] = useState<SupervisorWithAreas[]>([]);
+  const [loadingSupervisores, setLoadingSupervisores] = useState(false);
+  const lastLoadedObraIdSupervisores = useRef<number | null>(null);
+
+  // Cargar supervisores cuando cambia obraId o cuando entras al tab de áreas
+  useEffect(() => {
+    if (activeTab === 'areas' && obraId) {
+      setLoadingSupervisores(true);
+      obraUsuarioService.getSupervisoresConAreas(obraId)
+        .then(data => setSupervisores(data))
+        .catch(() => setSupervisores([]))
+        .finally(() => setLoadingSupervisores(false));
+    }
+  }, [obraId, activeTab]);
+
+  // Convierte SupervisorWithAreas[] a User[]
+  const supervisoresUsers: User[] = supervisores.map(s => ({
+    id_usuario: s.id_usuario,
+    usuario: '', // o puedes dejarlo vacío si no lo tienes
+    auth_provider: 'local', // o el valor correcto si lo tienes
+    correo: s.correo,
+    nombres: s.nombres,
+    apellidos: s.apellidos,
+    global_role: 'supervisor',
+  }));
+
   return (
     <div className="overflow-hidden">
       {/* Navegación de pestañas */}
@@ -200,10 +229,13 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
             onCreateArea={handleCreateArea}
             onUpdateArea={handleUpdateArea}
             onDeleteArea={handleDeleteArea}
+            supervisores={supervisoresUsers} // <-- Ahora sí es User[]
           />
         )}
 
-        {activeTab === 'supervisores' && <SupervisoresTab />}
+        {activeTab === 'supervisores' && (
+          <SupervisoresTab obraId={obraId} isCoordinador={isCoordinador} />
+        )}
         {activeTab === 'reportes' && <ReportesTab />}
         {activeTab === 'estadisticas' && <EstadisticasTab />}
       </div>
@@ -212,29 +244,6 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
 };
 
 // Componentes auxiliares para pestañas
-const SupervisoresTab = () => (
-  <div className="space-y-6">
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Supervisores</h2>
-        <p className="mt-1 text-sm text-gray-600">Gestiona los supervisores asignados a esta obra</p>
-      </div>
-      <button className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md">
-        <Plus className="h-4 w-4" />
-        Asignar Supervisor
-      </button>
-    </div>
-    
-    <EmptyState
-      icon={<Users className="h-12 w-12 text-emerald-400" />}
-      title="No hay supervisores asignados"
-      description="Asigna supervisores para mejorar el control y seguimiento del proyecto"
-      actionText="Asignar primer supervisor"
-      colorScheme="emerald"
-    />
-  </div>
-);
-
 const ReportesTab = () => (
   <div className="space-y-6">
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
