@@ -9,6 +9,7 @@ export interface User {
   apellidos?: string;
   correo: string;
   telefono?: string;
+  picture?: string;
   global_role: 'coordinador' | 'supervisor';
 }
 

@@ -45,6 +45,7 @@ export const CompleteRegistration = () => {
         global_role: user.global_role || 'supervisor',
         id_usuario: user.id_usuario!,
         usuario: user.usuario!,
+        picture: user.picture,
         auth_provider: user.auth_provider!,
       });
     }

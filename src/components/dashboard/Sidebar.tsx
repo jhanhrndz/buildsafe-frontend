@@ -9,11 +9,11 @@ import {
   ChevronLeftIcon, 
   ChevronRightIcon,
   LogOutIcon,
-  HardHatIcon,
-  UserIcon
+  HardHatIcon
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../context/UserContext';
+import UserAvatar from './UserAvatar'
 
 // Tipos para las rutas y roles
 type UserRole = 'coordinador' | 'supervisor';
@@ -152,7 +152,7 @@ const Sidebar = () => {
                 </button>
               </div>
             ) : (
-              <div className="flex flex-col items-center w-full">
+              <div className="flex flex-col items-center space-y-3 w-full">
                 {/* Botón collapse - modo colapsado */}
                 <button
                   className="hidden md:flex p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200 border border-transparent hover:border-white/20"
@@ -169,10 +169,7 @@ const Sidebar = () => {
             {!isCollapsed ? (
               <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 overflow-hidden">
                 <div className="flex items-center space-x-3 w-full">
-                  {/* Avatar del usuario */}
-                  <div className="h-10 w-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white/20 flex-shrink-0">
-                    <UserIcon size={18} className="text-white" />
-                  </div>
+                  <UserAvatar />
                   <div className="flex-1 min-w-0 overflow-hidden">
                     <p className="font-medium text-sm text-white truncate">{userName}</p>
                     <div className="flex items-center space-x-1">
@@ -184,9 +181,7 @@ const Sidebar = () => {
               </div>
             ) : (
               <div className="flex justify-center">
-                <div className="h-10 w-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white/20">
-                  <UserIcon size={18} className="text-white" />
-                </div>
+                <UserAvatar />
               </div>
             )}
           </div>
