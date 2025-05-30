@@ -139,7 +139,7 @@ const Sidebar = () => {
                   </div>
                   <div className="flex-1 min-w-0 overflow-hidden">
                     <h2 className="text-3xl font-bold text-white">BuildSafe</h2>
-                    <p className="text-xs text-blue-100/80">Gestión de Obras</p>
+                    <p className="text-xs text-blue-100/80">Vigilancia inteligente para obras seguras.</p>
                   </div>
                 </div>
                 
