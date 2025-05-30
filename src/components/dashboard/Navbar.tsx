@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { 
   BellIcon,
-  UserIcon,
   LogOutIcon,
   SearchIcon,
   Settings,
@@ -10,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useUserContext } from '../../context/UserContext';
 import { useLocation, useNavigate } from 'react-router-dom';
+import UserAvatar from './UserAvatar';
 
 interface NavbarProps {
   setPageTitle?: (title: string) => void;
@@ -151,9 +151,7 @@ const Navbar = ({ setPageTitle }: NavbarProps) => {
               setShowNotifications(false);
             }}
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center text-white">
-              {user?.nombres?.[0]?.toUpperCase() || user?.usuario?.[0]?.toUpperCase() || <UserIcon size={16} />}
-            </div>
+            <UserAvatar />
             <div className="hidden md:block text-left">
               <p className="text-sm font-medium text-gray-800">
                 {user?.nombres 

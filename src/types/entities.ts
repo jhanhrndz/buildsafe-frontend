@@ -9,6 +9,7 @@ export interface User {
   apellidos?: string;
   correo: string;
   telefono?: string;
+  picture?: string;
   global_role: 'coordinador' | 'supervisor';
 }
 
@@ -54,7 +55,7 @@ export interface Camara {
   id_area: number;
   ip_stream: string;
   nombre: string;
-  estado: 'activo' | 'inactivo'; // Debe coincidir con tu base de datos y backend
+  estado: 'activa' | 'inactiva'; // Debe coincidir con tu base de datos y backend
   ultima_conexion?: string;
 }
 
