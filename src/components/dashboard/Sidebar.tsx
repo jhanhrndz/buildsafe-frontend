@@ -9,7 +9,8 @@ import {
   ChevronLeftIcon, 
   ChevronRightIcon,
   LogOutIcon,
-  HardHatIcon
+  HardHatIcon,
+  UserIcon
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../context/UserContext';
@@ -93,111 +94,197 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Overlay para móvil */}
+      {/* Overlay para móvil con blur */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 md:hidden transition-all duration-300"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
-      {/* Botón toggle para móvil */}
+      {/* Botón toggle para móvil mejorado */}
       <button
-        className="fixed top-4 left-4 z-30 p-2 rounded-md bg-blue-600 text-white md:hidden"
+        className="fixed top-4 left-4 z-30 p-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 md:hidden backdrop-blur-sm border border-white/10"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
       >
-        {isMobileOpen ? <XIcon size={20} /> : <MenuIcon size={20} />}
+        {isMobileOpen ? 
+          <XIcon size={20} className="transition-transform duration-200" /> : 
+          <MenuIcon size={20} className="transition-transform duration-200" />
+        }
       </button>
 
-      {/* Sidebar */}
+      {/* Sidebar con glassmorphism */}
       <aside
         className={`
-          fixed h-screen z-30 flex flex-col bg-gradient-to-b from-blue-800 to-blue-900 text-white shadow-xl transition-all duration-300 ease-in-out
-          ${isCollapsed ? 'w-16' : 'w-64'} 
+          fixed h-screen z-30 flex flex-col transition-all duration-300 ease-in-out
+          ${isCollapsed ? 'w-20' : 'w-72'} 
           ${isMobileOpen ? 'left-0' : '-left-full md:left-0'}
         `}
+        style={{ overflow: 'hidden' }}
       >
-        {/* Logo y Marca */}
-        <div className="p-4 border-b border-blue-700">
-          <div className="flex items-center justify-between">
+        {/* Background con gradiente y blur */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/95 to-indigo-600/95 backdrop-blur-xl" />
+        <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
+        
+        {/* Contenido del sidebar */}
+        <div className="relative z-10 flex flex-col h-full overflow-hidden">
+          {/* Header - Logo y toggle */}
+          <div className="p-6 border-b border-white/10 flex-shrink-0">
             {!isCollapsed ? (
-              <div className="flex items-center">
-                <HardHatIcon size={28} className="text-yellow-400" />
-                <span className="ml-2 text-xl font-bold text-white tracking-wider">BuildSafe</span>
+              <div className="flex items-center w-full overflow-hidden">
+                <div className="flex items-center space-x-3 flex-1 min-w-0 overflow-hidden pr-2">
+                  {/* Logo con efecto glassmorphism */}
+                  <div className="h-12 w-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                    <HardHatIcon size={24} className="text-yellow-400" />
+                  </div>
+                  <div className="flex-1 min-w-0 overflow-hidden">
+                    <h2 className="text-3xl font-bold text-white">BuildSafe</h2>
+                    <p className="text-xs text-blue-100/80">Gestión de Obras</p>
+                  </div>
+                </div>
+                
+                {/* Botón collapse - modo expandido */}
+                <button
+                  className="hidden md:flex p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200 border border-transparent hover:border-white/20 flex-shrink-0"
+                  onClick={() => setIsCollapsed(!isCollapsed)}
+                >
+                  <ChevronLeftIcon size={18} />
+                </button>
               </div>
             ) : (
-              <HardHatIcon size={28} className="text-yellow-400 mx-auto" />
+              <div className="flex flex-col items-center w-full">
+                {/* Botón collapse - modo colapsado */}
+                <button
+                  className="hidden md:flex p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200 border border-transparent hover:border-white/20"
+                  onClick={() => setIsCollapsed(!isCollapsed)}
+                >
+                  <ChevronRightIcon size={18} />
+                </button>
+              </div>
             )}
+          </div>
+
+          {/* Información del usuario con glassmorphism */}
+          <div className="px-6 py-4 border-b border-white/10 flex-shrink-0">
+            {!isCollapsed ? (
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 overflow-hidden">
+                <div className="flex items-center space-x-3 w-full">
+                  {/* Avatar del usuario */}
+                  <div className="h-10 w-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white/20 flex-shrink-0">
+                    <UserIcon size={18} className="text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0 overflow-hidden">
+                    <p className="font-medium text-sm text-white truncate">{userName}</p>
+                    <div className="flex items-center space-x-1">
+                      <div className="h-2 w-2 bg-green-400 rounded-full shadow-sm flex-shrink-0"></div>
+                      <p className="text-xs text-blue-100/80 capitalize truncate">{userRole}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-center">
+                <div className="h-10 w-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white/20">
+                  <UserIcon size={18} className="text-white" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Navegación */}
+          <nav className="flex-1 py-6 overflow-y-auto min-h-0">
+            <div className={`space-y-2 ${isCollapsed ? 'px-2' : 'px-4'}`}>
+              {filteredMenuItems.map((item, index) => (
+                <div key={item.path} className="relative">
+                  <Link
+                    to={item.path}
+                    className={`
+                      group relative flex items-center rounded-xl transition-all duration-200 w-full overflow-hidden
+                      ${isCollapsed ? 'px-3 py-3 justify-center' : 'px-4 py-3'}
+                      ${isActive(item.path) 
+                        ? 'bg-white/20 text-white shadow-lg border border-white/30 backdrop-blur-sm' 
+                        : 'text-blue-100/90 hover:bg-white/10 hover:text-white hover:border-white/20 border border-transparent'
+                      }
+                    `}
+                    onClick={() => {
+                      if (window.innerWidth < 768) {
+                        setIsMobileOpen(false);
+                      }
+                    }}
+                  >
+                    {/* Indicador activo */}
+                    {isActive(item.path) && !isCollapsed && (
+                      <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-yellow-400 to-yellow-500 rounded-r-full shadow-lg" />
+                    )}
+                    
+                    {/* Icono */}
+                    <div className={`
+                      flex items-center justify-center transition-all duration-200 flex-shrink-0
+                      ${isActive(item.path) ? 'text-yellow-400' : 'text-blue-200 group-hover:text-white'}
+                    `}>
+                      {item.icon}
+                    </div>
+                    
+                    {!isCollapsed && (
+                      <>
+                        <span className="ml-4 font-medium text-sm transition-all duration-200 flex-1 truncate">
+                          {item.name}
+                        </span>
+                        {/* Indicador de item activo */}
+                        {isActive(item.path) && (
+                          <div className="ml-auto w-2 h-2 rounded-full bg-yellow-400 shadow-sm animate-pulse flex-shrink-0" />
+                        )}
+                      </>
+                    )}
+                    
+                    {/* Indicador activo para modo colapsado */}
+                    {isActive(item.path) && isCollapsed && (
+                      <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-yellow-400 to-yellow-500 rounded-l-full shadow-lg" />
+                    )}
+                    
+                    {/* Tooltip para modo colapsado */}
+                    {isCollapsed && (
+                      <div className="absolute left-full ml-4 px-3 py-2 bg-gray-900/90 backdrop-blur-sm text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 border border-gray-700">
+                        {item.name}
+                        <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-2 h-2 bg-gray-900/90 rotate-45" />
+                      </div>
+                    )}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </nav>
+
+          {/* Footer con botón de logout mejorado */}
+          <div className="p-6 border-t border-white/10 mt-auto flex-shrink-0">
             <button
-              className="p-1 rounded-md text-white/70 hover:text-white hover:bg-blue-700"
-              onClick={() => setIsCollapsed(!isCollapsed)}
+              onClick={handleLogout}
+              className={`
+                group relative w-full flex items-center rounded-xl overflow-hidden
+                text-blue-100/90 hover:bg-red-500/20 hover:text-white hover:border-red-400/30 
+                transition-all duration-200 border border-transparent backdrop-blur-sm
+                ${isCollapsed ? 'px-3 py-3 justify-center' : 'px-4 py-3'}
+              `}
             >
-              {isCollapsed ? <ChevronRightIcon size={20} /> : <ChevronLeftIcon size={20} />}
+              <LogOutIcon size={20} className="group-hover:text-red-400 transition-colors duration-200 flex-shrink-0" />
+              {!isCollapsed && (
+                <span className="ml-3 text-sm font-medium truncate">Cerrar Sesión</span>
+              )}
+              
+              {/* Tooltip para modo colapsado */}
+              {isCollapsed && (
+                <div className="absolute left-full ml-4 px-3 py-2 bg-gray-900/90 backdrop-blur-sm text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 border border-gray-700">
+                  Cerrar Sesión
+                  <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-2 h-2 bg-gray-900/90 rotate-45" />
+                </div>
+              )}
             </button>
           </div>
         </div>
-
-        {/* Información del usuario */}
-        <div className="mt-2 p-4 border-b border-blue-700">
-          <div className="flex items-center">
-            {!isCollapsed && (
-              <div className="ml-3">
-                <p className="font-medium text-sm text-white">{userName}</p>
-                <p className="text-xs text-blue-200 capitalize">{userRole}</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Nav Items */}
-        <nav className="flex-grow p-2 overflow-y-auto">
-          <ul className="space-y-1">
-            {filteredMenuItems.map((item) => (
-              <li key={item.path}>
-                <Link
-                  to={item.path}
-                  className={`
-                    flex items-center px-4 py-3 rounded-lg transition-colors
-                    ${isActive(item.path) 
-                      ? 'bg-blue-700 text-white' 
-                      : 'text-blue-100 hover:bg-blue-700/60'
-                    }
-                  `}
-                  onClick={() => {
-                    if (window.innerWidth < 768) {
-                      setIsMobileOpen(false);
-                    }
-                  }}
-                >
-                  <span className="text-lg">{item.icon}</span>
-                  {!isCollapsed && (
-                    <span className="ml-3 font-medium text-sm">{item.name}</span>
-                  )}
-                  {isActive(item.path) && !isCollapsed && (
-                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white"></span>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* Footer con botón de logout */}
-        <div className="p-4 border-t border-blue-700 mt-auto">
-          <button
-            onClick={handleLogout}
-            className="flex items-center w-full px-4 py-2 rounded-lg text-blue-200 hover:bg-blue-700/60 transition-colors"
-          >
-            <LogOutIcon size={20} />
-            {!isCollapsed && (
-              <span className="ml-3 text-sm font-medium">Cerrar Sesión</span>
-            )}
-          </button>
-        </div>
       </aside>
 
-      {/* Espaciador para mantener el layout cuando el sidebar está visible */}
-      <div className={`transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-0 md:ml-64'}`} />
+      {/* Espaciador para mantener el layout */}
+      <div className={`transition-all duration-300 ${isCollapsed ? 'ml-20' : 'ml-0 md:ml-72'}`} />
     </>
   );
 };
