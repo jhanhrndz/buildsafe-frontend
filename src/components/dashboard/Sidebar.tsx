@@ -165,7 +165,7 @@ const Sidebar = () => {
           </div>
 
           {/* Información del usuario con glassmorphism */}
-          <div className="px-6 py-4 border-b border-white/10 flex-shrink-0">
+          <div className="px-4 py-3 border-b border-white/10 flex-shrink-0">
             {!isCollapsed ? (
               <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 overflow-hidden">
                 <div className="flex items-center space-x-3 w-full">

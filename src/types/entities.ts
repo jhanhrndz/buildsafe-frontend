@@ -55,7 +55,7 @@ export interface Camara {
   id_area: number;
   ip_stream: string;
   nombre: string;
-  estado: 'activo' | 'inactivo'; // Debe coincidir con tu base de datos y backend
+  estado: 'activa' | 'inactiva'; // Debe coincidir con tu base de datos y backend
   ultima_conexion?: string;
 }
 
