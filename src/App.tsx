@@ -18,6 +18,8 @@ import { ObrasProvider } from './context/ObrasContext';
 import { AreasProvider } from './context/AreasContext'; // Asegúrate de importar el AreasProvider
 import { SupervisoresProvider } from './context/SupervisoresContext';
 import { CamarasProvider } from './context/CamarasContext';
+import { ReportsProvider } from './context/ReportsContext';
+import ReportesGlobalPage from './components/reportes/ReportesGlobalPage';
 
 function App() {
   return (
@@ -27,59 +29,62 @@ function App() {
           <AreasProvider>
             <SupervisoresProvider>
               <CamarasProvider>
-                <BrowserRouter>
-                  <Routes>
-                    {/* Rutas de autenticación */}
-                    <Route 
-                      path="/login" 
-                      element={
-                        <AuthRoute>
-                          <Login />
-                        </AuthRoute>
-                      } 
-                    />
-                    
-                    <Route 
-                      path="/register" 
-                      element={
-                        <AuthRoute>
-                          <Register />
-                        </AuthRoute>
-                      } 
-                    />
+                <ReportsProvider>
+                  <BrowserRouter>
+                    <Routes>
+                      {/* Rutas de autenticación */}
+                      <Route 
+                        path="/login" 
+                        element={
+                          <AuthRoute>
+                            <Login />
+                          </AuthRoute>
+                        } 
+                      />
+                      
+                      <Route 
+                        path="/register" 
+                        element={
+                          <AuthRoute>
+                            <Register />
+                          </AuthRoute>
+                        } 
+                      />
 
-                    {/* Ruta de completar registro */}
-                    <Route
-                      path="/complete-registration"
-                      element={
-                        <CompleteRegistrationRoute>
-                          <CompleteRegistration />
-                        </CompleteRegistrationRoute>
-                      }
-                    /> 
+                      {/* Ruta de completar registro */}
+                      <Route
+                        path="/complete-registration"
+                        element={
+                          <CompleteRegistrationRoute>
+                            <CompleteRegistration />
+                          </CompleteRegistrationRoute>
+                        }
+                      /> 
 
-                    {/* Rutas privadas */}
-                    <Route
-                      path="/"
-                      element={
-                        <PrivateRoute>
-                          <DashboardLayout />
-                        </PrivateRoute>
-                      }
-                    >
-                      <Route index element={<Home />} />
-                      <Route path="obras" element={<ObrasPage />} />
-                      <Route path="obras/:id" element={<ObraDetalle />} />
-                      <Route path="obras/:id/supervisores" element={<ObraDetalle />} />
-                      <Route path="obras/:id/reportes" element={<ObraDetalle />} />
-                      <Route path="obras/:id/estadisticas" element={<ObraDetalle />} />
-                      <Route path="areas/:areaId" element={<AreaDetallePage />} />
-                    </Route> 
+                      {/* Rutas privadas */}
+                      <Route
+                        path="/"
+                        element={
+                          <PrivateRoute>
+                            <DashboardLayout />
+                          </PrivateRoute>
+                        }
+                      >
+                        <Route index element={<Home />} />
+                        <Route path="obras" element={<ObrasPage />} />
+                        <Route path="obras/:id" element={<ObraDetalle />} />
+                        <Route path="obras/:id/supervisores" element={<ObraDetalle />} />
+                        <Route path="obras/:id/reportes" element={<ObraDetalle />} />
+                        <Route path="obras/:id/estadisticas" element={<ObraDetalle />} />
+                        <Route path="areas/:areaId" element={<AreaDetallePage />} />
+                        <Route path="reportes" element={<ReportesGlobalPage />} />
+                      </Route>
 
-                    {/* Ruta 404 */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
+                      {/* Ruta 404 */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </BrowserRouter>
+                </ReportsProvider>
               </CamarasProvider>
             </SupervisoresProvider>
           </AreasProvider>
