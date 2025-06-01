@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { ArrowLeft, User, Camera, ClipboardList, Edit, Trash2 } from 'lucide-react';
 import type { Area, User as UserType } from '../../types/entities';
 import CamaraList from '../camaras/CamaraList';
+import AreaReportesTab from '../reportes/AreaReportesTab'; // <--- Importa el tab de reportes
+import { useReportsContext } from '../../context/ReportsContext'; // Agrega esto arriba
 
 interface AreaDetallesProps {
   area: Area & {
@@ -24,6 +26,10 @@ const AreaDetalles: React.FC<AreaDetallesProps> = ({
   onDelete
 }) => {
   const [activeTab, setActiveTab] = useState<'info' | 'camaras' | 'reportes'>('info');
+  const { reportes } = useReportsContext(); // Usa el contexto global
+
+  // Calcula el número real de reportes de esta área
+  const reportesCount = reportes.filter(r => r.id_area === area.id_area).length;
 
 const handleDelete = () => {
   if (onDelete) {
@@ -97,7 +103,7 @@ const handleDelete = () => {
             }`}
             onClick={() => setActiveTab('reportes')}
           >
-            Reportes ({area.reportes_count || 0})
+            Reportes ({reportesCount})
           </button>
         </nav>
       </div>
@@ -145,7 +151,7 @@ const handleDelete = () => {
                     <ClipboardList size={18} className="text-green-600 mr-2" />
                     <span className="text-green-600 font-medium">Reportes</span>
                   </div>
-                  <p className="mt-2 text-2xl font-semibold text-green-800">{area.reportes_count || 0}</p>
+                  <p className="mt-2 text-2xl font-semibold text-green-800">{reportesCount}</p>
                 </div>
               </div>
             </div>
@@ -157,12 +163,7 @@ const handleDelete = () => {
         )}
         
         {activeTab === 'reportes' && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-10 text-center">
-            <ClipboardList size={40} className="mx-auto text-gray-400 mb-3" />
-            <h3 className="text-lg font-medium text-gray-900 mb-1">Reportes de seguridad</h3>
-            <p className="text-gray-600 mb-6">Gestiona los reportes de incidencias y seguridad para esta área.</p>
-            {/* Contenido pendiente de implementación */}
-          </div>
+          <AreaReportesTab areaId={area.id_area} />
         )}
       </div>
     </div>

@@ -93,7 +93,7 @@ export interface SupervisorWithAreas {
 export interface ReporteResumen {
   id_reporte: number;
   descripcion: string;
-  estado: 'pendiente' | 'en_revision' | 'cerrado';
+  estado: 'pendiente' | 'en revision' | 'cerrado';
   fecha_hora: string;
   imagen_url?: string;
   id_area: number;
@@ -101,16 +101,38 @@ export interface ReporteResumen {
   id_obra?: number;
   nombre_obra?: string;
   id_usuario: number;
-  id_camara?: number | null; // <-- AGREGA ESTA LÍNEA
+  id_camara?: number | null;
   camara_ip_stream?: string | null;
   camara_nombre?: string | null;
+  usuario?: {
+    id: number;
+    nombres: string;
+    apellidos: string;
+    correo: string;
+  };
 }
 
 export interface ReporteDetail extends ReporteResumen {
   camara_ip_stream?: string;
   infracciones?: Array<{
-    id_epp: number;
+    id_epp?: number;
     nombre: string;
     categoria_epp: string;
   }>;
+  // NUEVO: info de usuario, área y obra
+  usuario?: {
+    id: number;
+    nombres: string;
+    apellidos: string;
+    correo: string;
+  };
+  nombre_area?: string;
+  nombre_obra?: string;
+}
+
+export interface CategoriaEpp {
+  id: number;
+  nombre: string;
+  nivel_riesgo: 'bajo' | 'medio' | 'alto';
+  normativa_relacionada?: string;
 }

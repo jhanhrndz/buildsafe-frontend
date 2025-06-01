@@ -18,6 +18,7 @@ import { ObrasProvider } from './context/ObrasContext';
 import { AreasProvider } from './context/AreasContext'; // Asegúrate de importar el AreasProvider
 import { SupervisoresProvider } from './context/SupervisoresContext';
 import { CamarasProvider } from './context/CamarasContext';
+import { ReportsProvider } from './context/ReportsContext';
 import ReportesGlobalPage from './components/reportes/ReportesGlobalPage';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <AreasProvider>
             <SupervisoresProvider>
               <CamarasProvider>
+                <ReportsProvider>
                   <BrowserRouter>
                     <Routes>
                       {/* Rutas de autenticación */}
@@ -75,13 +77,14 @@ function App() {
                         <Route path="obras/:id/reportes" element={<ObraDetalle />} />
                         <Route path="obras/:id/estadisticas" element={<ObraDetalle />} />
                         <Route path="areas/:areaId" element={<AreaDetallePage />} />
-                        <Route path="/reportes" element={<ReportesGlobalPage />} />
-                      </Route> 
+                        <Route path="reportes" element={<ReportesGlobalPage />} />
+                      </Route>
 
                       {/* Ruta 404 */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </BrowserRouter>
+                </ReportsProvider>
               </CamarasProvider>
             </SupervisoresProvider>
           </AreasProvider>
