@@ -5,6 +5,7 @@ import { useUserContext } from '../../context/UserContext';
 import CamaraCard from './CamaraCard';
 import CamaraForm from './CamaraForm';
 import type { Area } from '../../types/entities';
+import { useNavigate } from 'react-router-dom';
 
 interface CamaraListProps {
   area: Area;
@@ -15,6 +16,8 @@ const CamaraList: React.FC<CamaraListProps> = ({ area }) => {
   const { camaras, isLoading, error, refresh, createCamara, updateCamara, deleteCamara } = useCamarasContext();
   const [showForm, setShowForm] = React.useState(false);
   const [editingCamara, setEditingCamara] = React.useState<number | null>(null);
+
+  const navigate = useNavigate();
 
   // Cargar cámaras según rol
   useEffect(() => {
@@ -43,16 +46,25 @@ const CamaraList: React.FC<CamaraListProps> = ({ area }) => {
             </p>
           </div>
         </div>
-        
-        {canEdit && (
+        {/* Agrupa los botones en un solo div */}
+        <div className="flex gap-3">
+          {canEdit && (
+            <button
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md"
+              onClick={() => { setEditingCamara(null); setShowForm(true); }}
+            >
+              <Plus size={18} />
+              Nueva cámara
+            </button>
+          )}
           <button
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md"
-            onClick={() => { setEditingCamara(null); setShowForm(true); }}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md"
+            onClick={() => navigate(`/areas/${area.id_area}/monitoreo`)}
           >
-            <Plus size={18} />
-            Nueva cámara
+            <Camera size={18} />
+            Monitorear
           </button>
-        )}
+        </div>
       </div>
 
       {/* Contenido */}

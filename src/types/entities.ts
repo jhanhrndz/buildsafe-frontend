@@ -136,3 +136,8 @@ export interface CategoriaEpp {
   nivel_riesgo: 'bajo' | 'medio' | 'alto';
   normativa_relacionada?: string;
 }
+
+export interface CamaraStreamInfo {
+  id_camara: number;
+  stream_url: string;
+}

@@ -18,6 +18,7 @@ import { ObrasProvider } from './context/ObrasContext';
 import { AreasProvider } from './context/AreasContext'; // Asegúrate de importar el AreasProvider
 import { SupervisoresProvider } from './context/SupervisoresContext';
 import { CamarasProvider } from './context/CamarasContext';
+import MonitoreoPage from './components/camaras/MonitoreoPage';
 import { ReportsProvider } from './context/ReportsContext';
 import ReportesGlobalPage from './components/reportes/ReportesGlobalPage';
 
@@ -61,24 +62,26 @@ function App() {
                         }
                       /> 
 
-                      {/* Rutas privadas */}
-                      <Route
-                        path="/"
-                        element={
-                          <PrivateRoute>
-                            <DashboardLayout />
-                          </PrivateRoute>
-                        }
-                      >
-                        <Route index element={<Home />} />
-                        <Route path="obras" element={<ObrasPage />} />
-                        <Route path="obras/:id" element={<ObraDetalle />} />
-                        <Route path="obras/:id/supervisores" element={<ObraDetalle />} />
-                        <Route path="obras/:id/reportes" element={<ObraDetalle />} />
-                        <Route path="obras/:id/estadisticas" element={<ObraDetalle />} />
-                        <Route path="areas/:areaId" element={<AreaDetallePage />} />
-                        <Route path="reportes" element={<ReportesGlobalPage />} />
-                      </Route>
+                    {/* Rutas privadas */}
+                    <Route
+                      path="/"
+                      element={
+                        <PrivateRoute>
+                          <DashboardLayout />
+                        </PrivateRoute>
+                      }
+                    >
+                      <Route index element={<Home />} />
+                      <Route path="obras" element={<ObrasPage />} />
+                      <Route path="obras/:id" element={<ObraDetalle />} />
+                      <Route path="obras/:id/supervisores" element={<ObraDetalle />} />
+                      <Route path="obras/:id/reportes" element={<ObraDetalle />} />
+                      <Route path="obras/:id/estadisticas" element={<ObraDetalle />} />
+                      <Route path="areas/:areaId" element={<AreaDetallePage />} />
+                      <Route path="areas/:areaId/monitoreo" element={<MonitoreoPage />} />
+                      <Route path="reportes" element={<ReportesGlobalPage />} />
+                    </Route> 
+
 
                       {/* Ruta 404 */}
                       <Route path="*" element={<NotFound />} />
