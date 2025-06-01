@@ -18,6 +18,7 @@ import { ObrasProvider } from './context/ObrasContext';
 import { AreasProvider } from './context/AreasContext'; // Asegúrate de importar el AreasProvider
 import { SupervisoresProvider } from './context/SupervisoresContext';
 import { CamarasProvider } from './context/CamarasContext';
+import MonitoreoPage from './components/camaras/MonitoreoPage';
 
 function App() {
   return (
@@ -74,6 +75,7 @@ function App() {
                       <Route path="obras/:id/reportes" element={<ObraDetalle />} />
                       <Route path="obras/:id/estadisticas" element={<ObraDetalle />} />
                       <Route path="areas/:areaId" element={<AreaDetallePage />} />
+                      <Route path="areas/:areaId/monitoreo" element={<MonitoreoPage />} />
                     </Route> 
 
                     {/* Ruta 404 */}

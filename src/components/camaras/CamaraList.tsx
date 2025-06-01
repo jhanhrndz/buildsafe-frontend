@@ -5,6 +5,8 @@ import { useUserContext } from '../../context/UserContext';
 import CamaraCard from './CamaraCard';
 import CamaraForm from './CamaraForm';
 import type { Area } from '../../types/entities';
+import { useStreamController } from '../../hooks/features/useStream';
+import { useNavigate } from 'react-router-dom';
 
 interface CamaraListProps {
   area: Area;
@@ -15,6 +17,14 @@ const CamaraList: React.FC<CamaraListProps> = ({ area }) => {
   const { camaras, isLoading, error, refresh, createCamara, updateCamara, deleteCamara } = useCamarasContext();
   const [showForm, setShowForm] = React.useState(false);
   const [editingCamara, setEditingCamara] = React.useState<number | null>(null);
+
+  
+  const { streams, active, start, stop, getStreamUrl } = useStreamController();
+  const navigate = useNavigate();
+
+  const url = getStreamUrl(8); // úsala en <img src={url} /> para MJPEG
+
+  console.log('Url: ',url); // Para depuración, puedes ver la URL del stream
 
   // Cargar cámaras según rol
   useEffect(() => {
@@ -53,6 +63,13 @@ const CamaraList: React.FC<CamaraListProps> = ({ area }) => {
             Nueva cámara
           </button>
         )}
+        <button
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md"
+          onClick={() => navigate(`/areas/${area.id_area}/monitoreo`)}
+        >
+          <Camera size={18} />
+          Monitorear
+        </button>
       </div>
 
       {/* Contenido */}
