@@ -19,8 +19,6 @@ const CamaraList: React.FC<CamaraListProps> = ({ area }) => {
 
   const navigate = useNavigate();
 
-
-
   // Cargar cámaras según rol
   useEffect(() => {
     if (user?.global_role === 'coordinador') {

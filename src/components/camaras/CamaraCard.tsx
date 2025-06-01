@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Camera, Wifi, WifiOff, Edit2, Trash2, MoreVertical, Play, StopCircle } from 'lucide-react';
+import { Camera, Wifi, WifiOff, Edit2, Trash2, MoreVertical } from 'lucide-react';
 import type { Camara } from '../../types/entities';
-import { useStreamController } from '../../hooks/features/useStream';
 
 interface CamaraCardProps {
   camara: Camara;
@@ -12,25 +11,6 @@ interface CamaraCardProps {
 
 const CamaraCard: React.FC<CamaraCardProps> = ({ camara, canEdit, onEdit, onDelete }) => {
   const [showActionMenu, setShowActionMenu] = useState(false);
-  const [showStream, setShowStream] = useState(false);
-
-  // Hook de stream por cámara
-  const { streams, isLoading, error, active, start, stop, getStreamUrl } = useStreamController();
-
-  // Busca la url de stream de esta cámara
-  const streamUrl = getStreamUrl(camara.id_camara);
-
-  // Inicia el stream solo de esta cámara (por área)
-  const handleStartStream = async () => {
-    await start(camara.id_area); // Trae todas las cámaras del área
-    setShowStream(true);
-  };
-
-  // Detiene el stream
-  const handleStopStream = () => {
-    stop();
-    setShowStream(false);
-  };
 
   return (
     <>
@@ -121,14 +101,6 @@ const CamaraCard: React.FC<CamaraCardProps> = ({ camara, canEdit, onEdit, onDele
                 </span>
               </div>
             </div>
-
-            {/* Mensajes de error */}
-            {showStream && !streamUrl && (
-              <div className="mt-4 text-xs text-red-600">No se encontró el stream de esta cámara.</div>
-            )}
-            {error && (
-              <div className="mt-2 text-xs text-red-600">{error}</div>
-            )}
           </div>
         </div>
       </div>
