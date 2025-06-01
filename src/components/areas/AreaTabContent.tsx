@@ -4,6 +4,7 @@ import type { Area, User } from '../../types/entities';
 import { AlertCircle, AlertTriangle } from 'lucide-react';
 import AreaForm from './AreaForm';
 import { useCamarasContext } from '../../context/CamarasContext';
+import { useReportsContext } from '../../context/ReportsContext'; // <-- AGREGA ESTO
 
 interface AreaTabsContentProps {
   obraId: number;
@@ -36,7 +37,8 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingArea, setEditingArea] = useState<Area | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { refreshByObra } = useCamarasContext();
+  const { refreshByObra: refreshCamarasByObra } = useCamarasContext();
+  const { refreshByObra: refreshReportesByObra } = useReportsContext(); // <-- AGREGA ESTO
 
   // Si hay errores, mostramos mensaje de error
   if (error) {
@@ -70,9 +72,10 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
 
   useEffect(() => {
     if (obraId) {
-      refreshByObra(obraId);
+      refreshCamarasByObra(obraId);
+      refreshReportesByObra(obraId); // <--- ¡Esto es CLAVE!
     }
-  }, [obraId, refreshByObra]);
+  }, [obraId, refreshCamarasByObra, refreshReportesByObra]);
 
   const handleOpenModal = (area?: Area) => {
     setEditingArea(area || null);

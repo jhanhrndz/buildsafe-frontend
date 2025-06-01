@@ -6,6 +6,7 @@ import AreaForm from './AreaForm';
 import type { Area, User } from '../../types/entities';
 import ConfirmDialog from '../shared/ConfirmDialog';
 import { useCamarasContext } from '../../context/CamarasContext';
+import { useReportsContext } from '../../context/ReportsContext';
 
 interface AreaListProps {
   areas: Area[];
@@ -44,6 +45,9 @@ const AreaList: React.FC<AreaListProps> = ({
   const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const { camaras } = useCamarasContext();
+  const { reportes } = useReportsContext();
+  const getReportesCount = (areaId: number) =>
+    reportes.filter(r => r.id_area === areaId).length;
 
   // Filtrar áreas con memoización
   const filteredAreas = useMemo(() => {
@@ -231,13 +235,15 @@ const AreaList: React.FC<AreaListProps> = ({
         {filteredAreas.map((area) => {
           // Calcula el número de cámaras para esta área
           const camaras_count = camaras.filter(c => c.id_area === area.id_area).length;
+          console.log('Reportes en contexto:', reportes);
           return (
             <AreaCard
               key={area.id_area}
               area={{
                 ...area,
                 supervisor: area.id_usuario ? supervisoresMap.get(area.id_usuario) : undefined,
-                camaras_count, // <-- aquí lo pasas
+                camaras_count,
+                reportes_count: getReportesCount(area.id_area),
               }}
               obraId={obraId}
               isCoordinador={isCoordinador}

@@ -1,53 +1,49 @@
-// services/reporte.service.ts
 import { apiClient } from '../hooks/api';
-import type { 
-  ReporteResumen,
-  ReporteDetail,
-  ReporteFilters,
-  ReportesResponse,
-  CreateReportePayload
-} from '../types/entities';
+import type { ReporteResumen, ReporteDetail, CategoriaEpp } from '../types/entities';
 
 export const ReporteService = {
-  // Obtener todos los reportes
   async getAll(): Promise<ReporteResumen[]> {
-    return await apiClient.get('/reportes').then(r => r.data);
+    return await apiClient.get('/reportes').then(res => res.data);
   },
-
-  // Obtener reportes por área
-  async getByArea(id_area: number, filters?: ReporteFilters): Promise<ReportesResponse> {
-    const params = new URLSearchParams();
-    if (filters?.estado) params.append('estado', filters.estado);
-    if (filters?.limit) params.append('limit', filters.limit.toString());
-    if (filters?.fecha_desde) params.append('fecha_desde', filters.fecha_desde);
-    if (filters?.fecha_hasta) params.append('fecha_hasta', filters.fecha_hasta);
-    
-    const url = `/reportes/area/${id_area}${params.toString() ? '?' + params.toString() : ''}`;
-    return await apiClient.get(url).then(r => r.data);
-  },
-
-  // Obtener reportes por obra
-  async getByObra(id_obra: number, filters?: ReporteFilters): Promise<ReportesResponse> {
-    const params = new URLSearchParams();
-    if (filters?.estado) params.append('estado', filters.estado);
-    if (filters?.limit) params.append('limit', filters.limit.toString());
-    
-    const url = `/reportes/obra/${id_obra}${params.toString() ? '?' + params.toString() : ''}`;
-    return await apiClient.get(url).then(r => r.data);
-  },
-
-  // Obtener reporte por ID con detalles
   async getById(id: number): Promise<ReporteDetail> {
-    return await apiClient.get(`/reportes/${id}`).then(r => r.data);
+    return await apiClient.get(`/reportes/${id}`).then(res => res.data);
   },
-
-  // Crear reporte
-  async create(data: CreateReportePayload): Promise<ReporteDetail> {
-    return await apiClient.post('/reportes', data).then(r => r.data);
+  async getByArea(areaId: number): Promise<ReporteResumen[]> {
+    return await apiClient.get(`/reportes/area/${areaId}`).then(res => res.data);
   },
-
-  // Actualizar estado de reporte
-  async updateStatus(id: number, estado: 'pendiente' | 'en_revision' | 'resuelto'): Promise<ReporteDetail> {
-    return await apiClient.put(`/reportes/${id}/status`, { estado }).then(r => r.data);
+  async getByObra(obraId: number): Promise<ReporteResumen[]> {
+    return await apiClient.get(`/reportes/obra/${obraId}`).then(res => res.data);
+  },
+  async getByUsuario(usuarioId: number): Promise<ReporteResumen[]> {
+    return await apiClient.get(`/reportes/usuario/${usuarioId}`).then(res => res.data);
+  },
+  async getByCoordinador(coordinadorId: number): Promise<ReporteResumen[]> {
+    return await apiClient.get(`/reportes/obras-coordinador/${coordinadorId}`).then(res => res.data);
+  },
+  async create(data: FormData): Promise<{ id: number; imagen_url: string }> {
+    return await apiClient.post('/reportes', data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }).then(res => res.data);
+  },
+  async update(id: number, data: FormData): Promise<void> {
+    await apiClient.put(`/reportes/${id}`, data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+  async remove(id: number): Promise<void> {
+    await apiClient.delete(`/reportes/${id}`);
+  },
+  async detectInfracciones(imagen: File): Promise<{ infracciones: { clase: string }[] }> {
+    const formData = new FormData();
+    formData.append('imagen', imagen);
+    return await apiClient.post('/reportes/detect-infracciones', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }).then(res => res.data);
+  },
+  async getCategoriasEpp(): Promise<CategoriaEpp[]> {
+    return await apiClient.get('/categoriaEpps').then(res => res.data);
+  },
+  async updateEstado(id: number, estado: string): Promise<void> {
+    await apiClient.patch(`/reportes/${id}/estado`, { estado });
   }
 };

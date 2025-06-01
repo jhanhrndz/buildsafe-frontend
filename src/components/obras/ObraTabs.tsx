@@ -5,7 +5,9 @@ import { useUserContext } from '../../context/UserContext';
 import { useArea } from '../../hooks/features/useArea';
 import AreaTabsContent from '../areas/AreaTabContent';
 import SupervisoresTab from '../supervisores/SupervisoresTab';
+import ObraReportesTab from '../reportes/ObraReportesTab';
 import { obraUsuarioService } from '../../services/obraUsuario'; // <-- IMPORTANTE
+import { useReportsContext } from '../../context/ReportsContext';
 import type { Area, SupervisorWithAreas, User } from '../../types/entities';
 
 interface ObraTabsProps {
@@ -29,6 +31,8 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
     deleteArea,
     refresh
   } = useArea();
+
+  const { refreshByObra } = useReportsContext();
 
   // Referencia para trackear última obra cargada y evitar loops
   const lastLoadedObraId = useRef<number | null>(null);
@@ -60,6 +64,13 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
       loadAreas();
     }
   }, [activeTab, loadAreas]);
+
+  // Refrescar reportes al cambiar obraId
+  useEffect(() => {
+    if (obraId) {
+      refreshByObra(obraId);
+    }
+  }, [obraId, refreshByObra]);
 
   // Configuración de pestañas
   const tabs = useMemo(() => [
@@ -229,14 +240,18 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
             onCreateArea={handleCreateArea}
             onUpdateArea={handleUpdateArea}
             onDeleteArea={handleDeleteArea}
-            supervisores={supervisoresUsers} // <-- Ahora sí es User[]
+            supervisores={supervisoresUsers}
           />
         )}
 
         {activeTab === 'supervisores' && (
           <SupervisoresTab obraId={obraId} isCoordinador={isCoordinador} />
         )}
-        {activeTab === 'reportes' && <ReportesTab />}
+
+        {activeTab === 'reportes' && (
+          <ObraReportesTab obraId={obraId} />
+        )}
+
         {activeTab === 'estadisticas' && <EstadisticasTab />}
       </div>
     </div>
@@ -244,29 +259,6 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
 };
 
 // Componentes auxiliares para pestañas
-const ReportesTab = () => (
-  <div className="space-y-6">
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Reportes</h2>
-        <p className="mt-1 text-sm text-gray-600">Genera y consulta reportes detallados de seguridad</p>
-      </div>
-      <button className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-orange-700 hover:shadow-md">
-        <Plus className="h-4 w-4" />
-        Generar Reporte
-      </button>
-    </div>
-    
-    <EmptyState
-      icon={<ClipboardList className="h-12 w-12 text-orange-400" />}
-      title="No hay reportes generados"
-      description="Los reportes te ayudarán a mantener un registro detallado de las actividades"
-      actionText="Generar primer reporte"
-      colorScheme="orange"
-    />
-  </div>
-);
-
 const EstadisticasTab = () => (
   <div className="space-y-6">
     <div>

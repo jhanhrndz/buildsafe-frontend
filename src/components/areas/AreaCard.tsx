@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Edit, Trash2, Camera, ClipboardList, User, MoreVertical } from 'lucide-react';
 import type { Area, User as UserType } from '../../types/entities';
+import { useReportsContext } from '../../context/ReportsContext';
 
 interface AreaCardProps {
   area: Area & {
@@ -25,13 +26,14 @@ const AreaCard: React.FC<AreaCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { reportes } = useReportsContext();
 
 
   const handleViewDetails = () => {
     // Navegar directamente a la ruta del área
     navigate(`/areas/${area.id_area}`);
   };
-
+  console.log("reportes de area", area.reportes_count)
   return (
     <div className="group bg-white rounded-xl shadow-sm border border-gray-200/60 overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1">
       {/* Cabecera de la tarjeta */}
@@ -125,13 +127,15 @@ const AreaCard: React.FC<AreaCardProps> = ({
               <p className="text-xs text-gray-600">Cámaras</p>
             </div>
           </div>
-
+          
           <div className="flex items-center p-3 bg-orange-50/70 rounded-lg">
             <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
               <ClipboardList size={16} className="text-orange-600" />
             </div>
             <div className="ml-3">
-              <p className="text-lg font-semibold text-gray-900">{area.reportes_count || 0}</p>
+              <p className="text-lg font-semibold text-gray-900">
+                {area.reportes_count || 0}
+              </p>
               <p className="text-xs text-gray-600">Reportes</p>
             </div>
           </div>
