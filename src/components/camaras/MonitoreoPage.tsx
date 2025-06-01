@@ -10,7 +10,6 @@ const MonitoreoPage: React.FC = () => {
   const { streams, isLoading, error, start, getStreamUrl, stop } = useStreamController();
   const { camaras } = useCamarasContext();
   const [streamErrors, setStreamErrors] = useState<{ [id: number]: boolean }>({});
-  const [streamLoading, setStreamLoading] = useState<{ [id: number]: boolean }>({});
 
   useEffect(() => {
     if (areaId) start(Number(areaId));
@@ -24,12 +23,12 @@ const MonitoreoPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50/50">
-      <div className="mx-auto px-1 sm:px-2 lg:px-4">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Navigation */}
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-8 flex items-center justify-between">
           <button 
             onClick={() => navigate(-1)} 
-            className="group flex items-center gap-2 rounded-lg px-3 text-sm font-medium text-gray-600 transition-all hover:bg-white hover:text-gray-900 hover:shadow-sm"
+            className="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-all hover:bg-white hover:text-gray-900 hover:shadow-sm"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
             <span>Volver al área</span>
@@ -86,40 +85,20 @@ const MonitoreoPage: React.FC = () => {
               {streams.map(cam => {
                 const camaraInfo = camaras.find(c => c.id_camara === cam.id_camara);
                 const hasError = streamErrors[cam.id_camara];
-                const isLoading = streamLoading[cam.id_camara];
-
                 return (
                   <div key={cam.id_camara}
                     className="group bg-white rounded-xl shadow-sm ring-1 ring-gray-200/50 overflow-hidden hover:shadow-md transition-all duration-300"
                   >
                     <div className="relative bg-black flex items-center justify-center" style={{ height: '400px' }}>
-                      {!hasError && !isLoading ? (
+                      {!hasError ? (
                         <img
                           src={getStreamUrl(cam.id_camara)}
                           alt={`Stream ${getNombreCamara(cam.id_camara)}`}
                           className="w-full h-full object-contain"
-                          onLoad={() =>
-                            setStreamLoading(prev => {
-                              const copy = { ...prev };
-                              delete copy[cam.id_camara];
-                              return copy;
-                            })
+                          onError={() =>
+                            setStreamErrors(prev => ({ ...prev, [cam.id_camara]: true }))
                           }
-                          onError={() => {
-                            setStreamErrors(prev => ({ ...prev, [cam.id_camara]: true }));
-                            setStreamLoading(prev => {
-                              const copy = { ...prev };
-                              delete copy[cam.id_camara];
-                              return copy;
-                            });
-                          }}
                         />
-                      ) : isLoading ? (
-                        <div className="flex flex-col items-center justify-center w-full h-full text-center">
-                          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-3"></div>
-                          <span className="text-blue-600 font-semibold">Conectando a la cámara...</span>
-                          <span className="text-xs text-gray-400 mt-1">{camaraInfo?.ip_stream || 'Sin URL'}</span>
-                        </div>
                       ) : (
                         <div className="flex flex-col items-center justify-center w-full h-full text-center">
                           <WifiOff className="w-10 h-10 text-red-400 mb-2" />
@@ -127,14 +106,13 @@ const MonitoreoPage: React.FC = () => {
                           <span className="text-xs text-gray-400 mt-1">{camaraInfo?.ip_stream || 'Sin URL'}</span>
                           <button
                             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                            onClick={() => {
+                            onClick={() =>
                               setStreamErrors(prev => {
                                 const copy = { ...prev };
                                 delete copy[cam.id_camara];
                                 return copy;
-                              });
-                              setStreamLoading(prev => ({ ...prev, [cam.id_camara]: true }));
-                            }}
+                              })
+                            }
                           >
                             Reintentar
                           </button>
@@ -147,23 +125,9 @@ const MonitoreoPage: React.FC = () => {
                           {getNombreCamara(cam.id_camara)}
                         </h3>
                         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium
-                          ${hasError ? 'bg-red-50 text-red-700' : isLoading ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
-                          {hasError ? (
-                            <>
-                              <WifiOff className="w-4 h-4" />
-                              <span>Sin conexión</span>
-                            </>
-                          ) : isLoading ? (
-                            <>
-                              <div className="w-3 h-3 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
-                              <span>Conectando…</span>
-                            </>
-                          ) : (
-                            <>
-                              <Wifi className="w-4 h-4" />
-                              <span>Activa</span>
-                            </>
-                          )}
+                          ${hasError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+                          {hasError ? <WifiOff className="w-4 h-4" /> : <Wifi className="w-4 h-4" />}
+                          <span>{hasError ? 'Sin conexión' : 'Conectada'}</span>
                         </div>
                       </div>
                       <p className="text-sm text-gray-500 font-mono">

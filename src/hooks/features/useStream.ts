@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { getCamarasStreamByArea, getStreamUrl } from '../../services/stream';
-import type { CamaraStreamInfo } from '../../services/stream';
+import type { CamaraStreamInfo } from '../../types/entities';
 
 type UseStreamControllerResult = {
   streams: CamaraStreamInfo[];

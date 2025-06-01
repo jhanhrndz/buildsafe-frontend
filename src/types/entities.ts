@@ -89,3 +89,8 @@ export interface SupervisorWithAreas {
     nombre_area: string;
   }>;
 }
+
+export interface CamaraStreamInfo {
+  id_camara: number;
+  stream_url: string;
+}

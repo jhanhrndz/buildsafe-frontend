@@ -1,9 +1,5 @@
 import { useApi } from '../hooks/api';
-
-export interface CamaraStreamInfo {
-  id_camara: number;
-  stream_url: string;
-}
+import type { CamaraStreamInfo } from '../types/entities';
 
 /**
  * Obtiene la lista de cámaras con su stream_url para un área.
