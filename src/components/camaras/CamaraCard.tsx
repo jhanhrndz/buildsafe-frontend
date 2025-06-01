@@ -122,30 +122,6 @@ const CamaraCard: React.FC<CamaraCardProps> = ({ camara, canEdit, onEdit, onDele
               </div>
             </div>
 
-            {/* Botón de stream */}
-            {camara.estado === 'activa' && (
-              <div className="mt-3 flex gap-2">
-                {!showStream ? (
-                  <button
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs"
-                    onClick={handleStartStream}
-                    disabled={isLoading}
-                  >
-                    <Play size={14} />
-                    Ver stream
-                  </button>
-                ) : (
-                  <button
-                    className="flex items-center gap-2 px-3 py-1.5 bg-red-600 text-white rounded hover:bg-red-700 text-xs"
-                    onClick={handleStopStream}
-                  >
-                    <StopCircle size={14} />
-                    Detener
-                  </button>
-                )}
-              </div>
-            )}
-
             {/* Mensajes de error */}
             {showStream && !streamUrl && (
               <div className="mt-4 text-xs text-red-600">No se encontró el stream de esta cámara.</div>
@@ -156,30 +132,6 @@ const CamaraCard: React.FC<CamaraCardProps> = ({ camara, canEdit, onEdit, onDele
           </div>
         </div>
       </div>
-
-      {/* Modal para el stream */}
-      {showStream && streamUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
-          <div className="relative bg-white rounded-xl shadow-2xl p-4 max-w-3xl w-full flex flex-col items-center">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
-              onClick={handleStopStream}
-              title="Cerrar"
-            >
-              ×
-            </button>
-            <h2 className="mb-4 text-lg font-semibold text-gray-800">{camara.nombre}</h2>
-            <div className="w-full flex justify-center">
-              <img
-                src={streamUrl}
-                alt={`Stream cámara ${camara.nombre}`}
-                className="w-full max-h-[70vh] object-contain bg-black rounded-lg"
-                onError={handleStopStream}
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Overlay para cerrar el menú cuando se hace clic fuera */}
       {showActionMenu && (
