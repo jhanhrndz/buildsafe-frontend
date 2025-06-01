@@ -93,7 +93,7 @@ export interface SupervisorWithAreas {
 export interface ReporteResumen {
   id_reporte: number;
   descripcion: string;
-  estado: 'pendiente' | 'en revision' | 'cerrado';
+  estado: 'pendiente' | 'en revisión' | 'cerrado';
   fecha_hora: string;
   imagen_url?: string;
   id_area: number;
