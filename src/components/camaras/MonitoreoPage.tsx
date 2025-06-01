@@ -7,13 +7,18 @@ import { ArrowLeft } from 'lucide-react';
 const MonitoreoPage: React.FC = () => {
   const { areaId } = useParams<{ areaId: string }>();
   const navigate = useNavigate();
-  const { streams, isLoading, error, start, getStreamUrl } = useStreamController();
+  const { streams, isLoading, error, start, getStreamUrl, stop } = useStreamController();
   const { camaras } = useCamarasContext(); // <-- aquí traes todas las cámaras del área
 
   useEffect(() => {
     if (areaId) start(Number(areaId));
-    // return () => stop();
-  }, [areaId, start]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [areaId]);
+
+  useEffect(() => {
+    return () => stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Helper para obtener el nombre real de la cámara
   const getNombreCamara = (id_camara: number) => {

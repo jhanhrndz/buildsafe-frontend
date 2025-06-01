@@ -17,30 +17,39 @@ export function useStreamController(): UseStreamControllerResult {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [active, setActive] = useState(false);
+  const [currentArea, setCurrentArea] = useState<number | null>(null);
   const abortController = useRef<AbortController | null>(null);
 
-  const start = useCallback(async (areaId: number) => {
-    setIsLoading(true);
-    setError(null);
-    setActive(false);
-    abortController.current = new AbortController();
-    try {
-      const data = await getCamarasStreamByArea(areaId);
-      setStreams(data);
-      setActive(true);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error al obtener streams');
-      setStreams([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const start = useCallback(
+    async (areaId: number) => {
+      // Si ya está activo para el área, no vuelvas a llamar
+      if (active && currentArea === areaId && streams.length > 0) return;
+      setIsLoading(true);
+      setError(null);
+      setActive(false);
+      abortController.current = new AbortController();
+      try {
+        const data = await getCamarasStreamByArea(areaId);
+        setStreams(data);
+        setActive(true);
+        setCurrentArea(areaId);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Error al obtener streams');
+        setStreams([]);
+        setCurrentArea(null);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [active, currentArea, streams.length]
+  );
 
   const stop = useCallback(() => {
     abortController.current?.abort();
     setStreams([]);
     setActive(false);
     setError(null);
+    setCurrentArea(null);
   }, []);
 
   const getStreamUrlById = useCallback(
