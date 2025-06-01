@@ -74,7 +74,7 @@ const AreaReportesTab: React.FC<AreaReportesTabProps> = ({ areaId }) => {
   const getReportStats = () => {
     const total = reportes.length;
     const pendientes = reportes.filter(r => r.estado === 'pendiente').length;
-    const enRevision = reportes.filter(r => r.estado === 'en revision').length;
+    const enRevision = reportes.filter(r => r.estado === 'en revisión').length;
     const cerrados = reportes.filter(r => r.estado === 'cerrado').length;
     return { total, pendientes, enRevision, cerrados };
   };
