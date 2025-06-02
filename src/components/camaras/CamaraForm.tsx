@@ -6,6 +6,7 @@ import type { Camara, CreateCamaraPayload, UpdateCamaraPayload } from '../../typ
 interface CamaraFormProps {
   areaId: number;
   camaraId?: number | null;
+  nombre?: string;
   onClose: () => void;
 }
 
