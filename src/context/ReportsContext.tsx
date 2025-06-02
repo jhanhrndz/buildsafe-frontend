@@ -78,16 +78,31 @@ export function ReportsProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const create = useCallback(async (data: FormData) => {
-    try {
-      await ReporteService.create(data);
+const create = useCallback(async (data: FormData) => {
+  try {
+    // Verificar si la creación fue exitosa
+    const response = await ReporteService.create(data);
+    
+    // Si tenemos un ID en la respuesta, fue exitoso
+    if (response && response.id) {
       return true;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error al crear reporte');
-      return false;
     }
-  }, []);
-
+    
+    // Si no hay ID, hubo un problema
+    setError('Error al crear reporte: respuesta inesperada del servidor');
+    return false;
+  } catch (e) {
+    // Manejar diferentes tipos de errores
+    if (e instanceof Error) {
+      setError(`Error al crear reporte: ${e.message}`);
+    } else if (typeof e === 'string') {
+      setError(`Error al crear reporte: ${e}`);
+    } else {
+      setError('Error desconocido al crear reporte');
+    }
+    return false;
+  }
+}, []);
   const update = useCallback(async (id: number, data: FormData) => {
     try {
       await ReporteService.update(id, data);

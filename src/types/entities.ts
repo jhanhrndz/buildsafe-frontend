@@ -140,4 +140,5 @@ export interface CategoriaEpp {
 export interface CamaraStreamInfo {
   id_camara: number;
   stream_url: string;
+  nombre: string;
 }

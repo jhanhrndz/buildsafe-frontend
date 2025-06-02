@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, Loader2, Wand2, CheckCircle, AlertCircle, Upload, Camera, Eye, EyeOff } from 'lucide-react';
-
+import { useUserContext } from '../../context/UserContext';
+import { useReportsContext } from '../../context/ReportsContext';
 // Mock interfaces for the component
 interface User {
   id_usuario?: number;
@@ -10,7 +11,7 @@ interface User {
 interface CategoriaEpp {
   id: number;
   nombre: string;
-  nivel_riesgo: string;
+  nivel_riesgo: 'alto' | 'medio' | 'bajo';
 }
 
 interface ReportFormProps {
@@ -30,27 +31,6 @@ interface ReportFormProps {
   imagenFile?: File | null; // <-- agrega esto
 }
 
-// Mock context hooks
-const useUserContext = () => ({
-  user: { id_usuario: 1, global_role: 'coordinador' } as User
-});
-
-const useReportsContext = () => ({
-  create: async (formData: FormData) => true,
-  update: async (id: number, formData: FormData) => true,
-  detectInfracciones: async (file: File) => [{ clase: 'NO-Hardhat' }],
-  categoriasEpp: [
-    { id: 1, nombre: 'Casco', nivel_riesgo: 'Alto' },
-    { id: 2, nombre: 'Guantes', nivel_riesgo: 'Medio' },
-    { id: 3, nombre: 'Chaleco', nivel_riesgo: 'Alto' },
-    { id: 4, nombre: 'Botas', nivel_riesgo: 'Alto' },
-    { id: 5, nombre: 'Gafas', nivel_riesgo: 'Medio' }
-  ] as CategoriaEpp[],
-  loadCategoriasEpp: () => {},
-  isLoading: false,
-  error: null,
-  clearError: () => {}
-});
 
 const ReportForm: React.FC<ReportFormProps> = ({
   areaId,
@@ -106,12 +86,14 @@ const ReportForm: React.FC<ReportFormProps> = ({
   }, [initialValues]);
 
   useEffect(() => {
-    // Si viene imagenFile, úsala como imagen inicial
     if (imagenFile) {
       setImagen(imagenFile);
       setImagePreview(URL.createObjectURL(imagenFile));
+    } else if (initialValues?.imagen_url) {
+      // Si hay una imagen URL pero no un archivo, establece la preview
+      setImagePreview(initialValues.imagen_url);
     }
-  }, [imagenFile]);
+  }, [imagenFile, initialValues]);
 
   const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -131,7 +113,7 @@ const ReportForm: React.FC<ReportFormProps> = ({
         setAnalyzing(false);
         return;
       }
-      
+
       const infracciones = await detectInfracciones(fileToAnalyze);
       const clasesDetectadas = infracciones.map((inf) => inf.clase);
       const nombresEpp = clasesDetectadas
@@ -164,8 +146,19 @@ const ReportForm: React.FC<ReportFormProps> = ({
       return;
     }
 
-    if ((!imagen && !initialValues?.imagen_url) || selectedEpp.length === 0) {
-      setShowToast({ type: 'error', message: 'Debes subir una imagen y seleccionar al menos un EPP incumplido.' });
+    if (!imagen && !initialValues?.imagen_url && !imagePreview) {
+      setShowToast({
+        type: 'error',
+        message: 'Debes subir una imagen de evidencia.'
+      });
+      return;
+    }
+
+    if (selectedEpp.length === 0) {
+      setShowToast({
+        type: 'error',
+        message: 'Debes seleccionar al menos un EPP incumplido.'
+      });
       return;
     }
 
@@ -197,7 +190,7 @@ const ReportForm: React.FC<ReportFormProps> = ({
     } else {
       ok = await create(formData);
     }
-    
+
     setSubmitting(false);
     if (ok) {
       setShowToast({ type: 'success', message: isEdit ? 'Reporte actualizado correctamente.' : 'Reporte creado correctamente.' });
@@ -259,7 +252,7 @@ const ReportForm: React.FC<ReportFormProps> = ({
                   onChange={handleImagenChange}
                   className="hidden"
                   id="image-upload"
-                  required={!isEdit}
+                  //required={!isEdit}
                 />
                 <label
                   htmlFor="image-upload"
@@ -272,7 +265,7 @@ const ReportForm: React.FC<ReportFormProps> = ({
                   <p className="text-sm text-gray-400">PNG, JPG hasta 10MB</p>
                 </label>
               </div>
-              
+
               {imagePreview && (
                 <div className="mt-4 flex justify-center">
                   <div className="relative group/preview">
@@ -338,24 +331,25 @@ const ReportForm: React.FC<ReportFormProps> = ({
                   )}
                 </button>
               </div>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {categoriasEpp
                   .filter(epp => typeof epp.id === 'number' && !isNaN(Number(epp.id)))
                   .map((epp) => {
                     const id = Number(epp.id);
                     const checked = selectedEpp.includes(id);
-                    const riskColor = epp.nivel_riesgo === 'Alto' ? 'text-red-600' : 
-                                    epp.nivel_riesgo === 'Medio' ? 'text-amber-600' : 'text-green-600';
-                    
+                    const riskColor =
+                      epp.nivel_riesgo === 'alto' ? 'text-red-600' :
+                        epp.nivel_riesgo === 'medio' ? 'text-amber-600' :
+                          'text-green-600';
+
                     return (
                       <label
                         key={id}
-                        className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
-                          checked
-                            ? 'bg-gradient-to-r from-orange-50 to-amber-50 border-orange-300 shadow-sm'
-                            : 'bg-white border-gray-200 hover:border-orange-200'
-                        }`}
+                        className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${checked
+                          ? 'bg-gradient-to-r from-orange-50 to-amber-50 border-orange-300 shadow-sm'
+                          : 'bg-white border-gray-200 hover:border-orange-200'
+                          }`}
                       >
                         <input
                           type="checkbox"
@@ -437,13 +431,12 @@ const ReportForm: React.FC<ReportFormProps> = ({
 
         {/* Toast notification */}
         {showToast && (
-          <div className={`fixed left-1/2 -translate-x-1/2 bottom-8 z-50 px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-2 duration-300 border-2 ${
-            showToast.type === 'success' 
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
-              : 'bg-red-50 text-red-800 border-red-200'
-          }`}>
-            {showToast.type === 'success' ? 
-              <CheckCircle size={20} className="text-emerald-600" /> : 
+          <div className={`fixed left-1/2 -translate-x-1/2 bottom-8 z-50 px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-2 duration-300 border-2 ${showToast.type === 'success'
+            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+            : 'bg-red-50 text-red-800 border-red-200'
+            }`}>
+            {showToast.type === 'success' ?
+              <CheckCircle size={20} className="text-emerald-600" /> :
               <AlertCircle size={20} className="text-red-600" />
             }
             <span className="font-medium">{showToast.message}</span>

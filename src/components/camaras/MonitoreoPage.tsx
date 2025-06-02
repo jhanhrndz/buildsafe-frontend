@@ -10,7 +10,7 @@ const MonitoreoPage: React.FC = () => {
   const { areaId } = useParams<{ areaId: string }>();
   const navigate = useNavigate();
   const { streams, isLoading, error, start, getStreamUrl, stop } = useStreamController();
-  const { camaras } = useCamarasContext();
+  const { camaras, refresh, isLoading: isLoadingCamaras, error: camarasError } = useCamarasContext();
   const { create } = useReportsContext();
   const [streamErrors, setStreamErrors] = useState<{ [id: number]: boolean }>({});
   const [reportModal, setReportModal] = useState<{
@@ -18,33 +18,69 @@ const MonitoreoPage: React.FC = () => {
     image: File | null;
     idCamara: number | null;
   }>({ open: false, image: null, idCamara: null });
+  const isLoadingTotal = isLoading || isLoadingCamaras;
+  const errorTotal = error || camarasError;
+
 
   useEffect(() => {
-    if (areaId) start(Number(areaId));
+    if (areaId) {
+      refresh(Number(areaId), true); // Carga primero las cámaras
+    }
+  }, [areaId, refresh]);
+
+  useEffect(() => {
+    if (areaId) start(Number(areaId)); // Luego inicia los streams
     return () => stop();
   }, [areaId]);
 
+  useEffect(() => {
+    console.log('Estado del modal:', reportModal.open);
+  }, [reportModal]);
+
+
   const getNombreCamara = (id_camara: number) => {
+    // Si las cámaras aún no se cargan, usa un nombre temporal
+    if (isLoadingCamaras) return "Cargando...";
+
     const cam = camaras.find(c => c.id_camara === id_camara);
     return cam ? cam.nombre : `Cámara #${id_camara}`;
   };
 
   // Función para capturar el frame actual de la cámara
+  // En MonitoreoPage.tsx
+  // MonitoreoPage.tsx
+  // MonitoreoPage.tsx - Función capturarFrame corregida
   const capturarFrame = (id_camara: number) => {
-    const img = document.querySelector<HTMLImageElement>(`img[alt^="Stream"][alt*="${id_camara}"]`);
-    if (!img) return;
+    const img = document.querySelector<HTMLImageElement>(`img[data-id="${id_camara}"]`);
+    console.log(camaras);
+    if (!img) {
+      console.error('No se encontró la imagen para la cámara:', id_camara);
+      return;
+    }
+    console.log('Capturando frame de:', img.src);
+    // Configurar CORS
+    img.crossOrigin = "Anonymous";
+
     const canvas = document.createElement('canvas');
     canvas.width = img.naturalWidth || img.width;
     canvas.height = img.naturalHeight || img.height;
     const ctx = canvas.getContext('2d');
+
     if (!ctx) return;
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    canvas.toBlob(blob => {
-      if (blob) {
-        const file = new File([blob], `captura_camara_${id_camara}_${Date.now()}.jpg`, { type: 'image/jpeg' });
-        setReportModal({ open: true, image: file, idCamara: id_camara });
-      }
-    }, 'image/jpeg', 0.95);
+
+    try {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob => {
+        if (blob) {
+          const file = new File([blob], `captura_${id_camara}_${Date.now()}.jpg`, {
+            type: 'image/jpeg'
+          });
+          setReportModal({ open: true, image: file, idCamara: id_camara });
+        }
+      }, 'image/jpeg', 0.95);
+    } catch (error) {
+      console.error('Error capturando frame:', error);
+    }
   };
 
   return (
@@ -52,8 +88,8 @@ const MonitoreoPage: React.FC = () => {
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Navigation */}
         <div className="mb-8 flex items-center justify-between">
-          <button 
-            onClick={() => navigate(-1)} 
+          <button
+            onClick={() => navigate(-1)}
             className="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-all hover:bg-white hover:text-gray-900 hover:shadow-sm"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
@@ -64,7 +100,7 @@ const MonitoreoPage: React.FC = () => {
         {/* Hero Section */}
         <div className="relative mb-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200/50">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-indigo-50/20" />
-          
+
           <div className="relative px-8 py-10">
             <div className="flex items-start gap-6">
               {/* Icon */}
@@ -89,13 +125,13 @@ const MonitoreoPage: React.FC = () => {
 
         {/* Main Content */}
         <div className="space-y-6">
-          {isLoading ? (
+          {isLoadingTotal ? (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
               <p className="text-gray-600 font-medium">Cargando cámaras...</p>
               <p className="text-sm text-gray-500">Por favor espera un momento</p>
             </div>
-          ) : error ? (
+          ) : errorTotal ? (
             <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-red-700">
               <p className="font-medium">Error al cargar las cámaras</p>
               <p className="text-sm mt-1">{error}</p>
@@ -130,11 +166,10 @@ const MonitoreoPage: React.FC = () => {
                         <img
                           src={getStreamUrl(cam.id_camara)}
                           alt={`Stream ${getNombreCamara(cam.id_camara)}`}
-                          crossOrigin="anonymous" // <-- agrega esto
+                          crossOrigin="anonymous"
                           className="w-full h-full object-contain"
-                          onError={() =>
-                            setStreamErrors(prev => ({ ...prev, [cam.id_camara]: true }))
-                          }
+                          onError={() => setStreamErrors(prev => ({ ...prev, [cam.id_camara]: true }))}
+                          data-id={cam.id_camara} // 👈 Agrega esto
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center w-full h-full text-center">
