@@ -27,6 +27,7 @@ interface ReportFormProps {
   };
   isEdit?: boolean;
   reporteId?: number;
+  imagenFile?: File | null; // <-- agrega esto
 }
 
 // Mock context hooks
@@ -59,6 +60,7 @@ const ReportForm: React.FC<ReportFormProps> = ({
   initialValues,
   isEdit,
   reporteId,
+  imagenFile,
 }) => {
   const { user } = useUserContext();
   const {
@@ -102,6 +104,14 @@ const ReportForm: React.FC<ReportFormProps> = ({
       if (initialValues.imagen_url) setImagePreview(initialValues.imagen_url);
     }
   }, [initialValues]);
+
+  useEffect(() => {
+    // Si viene imagenFile, úsala como imagen inicial
+    if (imagenFile) {
+      setImagen(imagenFile);
+      setImagePreview(URL.createObjectURL(imagenFile));
+    }
+  }, [imagenFile]);
 
   const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

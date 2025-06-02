@@ -3,13 +3,21 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useStreamController } from '../../hooks/features/useStream';
 import { useCamarasContext } from '../../context/CamarasContext';
 import { ArrowLeft, Camera, Wifi, WifiOff } from 'lucide-react';
+import ReportForm from '../reportes/ReportForm'; // Asegúrate de que la ruta sea correcta
+import { useReportsContext } from '../../context/ReportsContext';
 
 const MonitoreoPage: React.FC = () => {
   const { areaId } = useParams<{ areaId: string }>();
   const navigate = useNavigate();
   const { streams, isLoading, error, start, getStreamUrl, stop } = useStreamController();
   const { camaras } = useCamarasContext();
+  const { create } = useReportsContext();
   const [streamErrors, setStreamErrors] = useState<{ [id: number]: boolean }>({});
+  const [reportModal, setReportModal] = useState<{
+    open: boolean;
+    image: File | null;
+    idCamara: number | null;
+  }>({ open: false, image: null, idCamara: null });
 
   useEffect(() => {
     if (areaId) start(Number(areaId));
@@ -19,6 +27,24 @@ const MonitoreoPage: React.FC = () => {
   const getNombreCamara = (id_camara: number) => {
     const cam = camaras.find(c => c.id_camara === id_camara);
     return cam ? cam.nombre : `Cámara #${id_camara}`;
+  };
+
+  // Función para capturar el frame actual de la cámara
+  const capturarFrame = (id_camara: number) => {
+    const img = document.querySelector<HTMLImageElement>(`img[alt^="Stream"][alt*="${id_camara}"]`);
+    if (!img) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth || img.width;
+    canvas.height = img.naturalHeight || img.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob(blob => {
+      if (blob) {
+        const file = new File([blob], `captura_camara_${id_camara}_${Date.now()}.jpg`, { type: 'image/jpeg' });
+        setReportModal({ open: true, image: file, idCamara: id_camara });
+      }
+    }, 'image/jpeg', 0.95);
   };
 
   return (
@@ -90,10 +116,21 @@ const MonitoreoPage: React.FC = () => {
                     className="group bg-white rounded-xl shadow-sm ring-1 ring-gray-200/50 overflow-hidden hover:shadow-md transition-all duration-300"
                   >
                     <div className="relative bg-black flex items-center justify-center" style={{ height: '400px' }}>
+                      {/* Botón para crear reporte */}
+                      {!hasError && (
+                        <button
+                          className="absolute top-3 right-3 z-20 bg-orange-600 text-white px-3 py-1.5 rounded shadow hover:bg-orange-700 transition"
+                          onClick={() => capturarFrame(cam.id_camara)}
+                          title="Crear reporte de este instante"
+                        >
+                          Crear reporte
+                        </button>
+                      )}
                       {!hasError ? (
                         <img
                           src={getStreamUrl(cam.id_camara)}
                           alt={`Stream ${getNombreCamara(cam.id_camara)}`}
+                          crossOrigin="anonymous" // <-- agrega esto
                           className="w-full h-full object-contain"
                           onError={() =>
                             setStreamErrors(prev => ({ ...prev, [cam.id_camara]: true }))
@@ -141,6 +178,21 @@ const MonitoreoPage: React.FC = () => {
           )}
         </div>
       </div>
+      {/* Modal del formulario de reporte */}
+      {reportModal.open && (
+        <ReportForm
+          areaId={Number(areaId)}
+          camaras={camaras}
+          onSuccess={() => setReportModal({ open: false, image: null, idCamara: null })}
+          onCancel={() => setReportModal({ open: false, image: null, idCamara: null })}
+          initialValues={{
+            id_camara: reportModal.idCamara ?? undefined,
+            imagen_url: reportModal.image ? URL.createObjectURL(reportModal.image) : undefined,
+          }}
+          // Pasa la imagen capturada como archivo
+          imagenFile={reportModal.image}
+        />
+      )}
     </div>
   );
 };
