@@ -61,6 +61,12 @@ const Sidebar = () => {
       path: '/configuracion',
       icon: <SettingsIcon size={20} />,
       allowedRoles: ['coordinador', 'supervisor']
+    },
+    {
+      name: 'Estadísticas',
+      path: '/estadisticas',
+      icon: <BarChartIcon size={20} />,
+      allowedRoles: ['coordinador'], // Solo coordinador
     }
   ];
 
