@@ -21,6 +21,7 @@ import { CamarasProvider } from './context/CamarasContext';
 import MonitoreoPage from './components/camaras/MonitoreoPage';
 import { ReportsProvider } from './context/ReportsContext';
 import ReportesGlobalPage from './components/reportes/ReportesGlobalPage';
+import EstadisticasGlobalPage from './components/estadisticas/EstadisticasGlobalPage';
 
 function App() {
   return (
@@ -80,6 +81,7 @@ function App() {
                       <Route path="areas/:areaId" element={<AreaDetallePage />} />
                       <Route path="areas/:areaId/monitoreo" element={<MonitoreoPage />} />
                       <Route path="reportes" element={<ReportesGlobalPage />} />
+                      <Route path="estadisticas" element={<EstadisticasGlobalPage />} />
                     </Route> 
 
 
