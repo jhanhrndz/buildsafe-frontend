@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { PlusCircle, Search, AlertCircle } from 'lucide-react';
+import { PlusCircle, Search, AlertCircle, Loader2, MapPin } from 'lucide-react';
 import AreaCard from './AreaCard';
 import AreaEmptyState from './AreaEmptyState';
 import AreaForm from './AreaForm';
@@ -112,6 +112,7 @@ const AreaList: React.FC<AreaListProps> = ({
   const handleCancelDelete = () => {
     setAreaToDelete(null);
   };
+  
   // Manejar eliminación con confirmación
   const handleDelete = async (areaId: number) => {
     if (!onDeleteArea) return;
@@ -141,8 +142,13 @@ const AreaList: React.FC<AreaListProps> = ({
   // Mostrar estado de carga
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full" />
+      <div className="flex justify-center items-center h-64 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-2xl">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+            <Loader2 className="w-6 h-6 text-white animate-spin" />
+          </div>
+          <p className="text-blue-600 font-medium">Cargando áreas...</p>
+        </div>
       </div>
     );
   }
@@ -150,12 +156,14 @@ const AreaList: React.FC<AreaListProps> = ({
   // Mostrar errores
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4 my-4">
-        <div className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-red-400" />
+      <div className="relative rounded-2xl border border-red-200/50 bg-gradient-to-r from-red-50/80 to-red-100/30 backdrop-blur-sm p-8 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg">
+            <AlertCircle className="w-6 h-6 text-white" />
+          </div>
           <div>
-            <h3 className="text-sm font-medium text-red-800">Error</h3>
-            <p className="mt-1 text-sm text-red-700">{error}</p>
+            <h3 className="font-bold text-red-800 mb-2 text-lg">Error al cargar áreas</h3>
+            <p className="text-red-700">{error}</p>
           </div>
         </div>
       </div>
@@ -165,28 +173,30 @@ const AreaList: React.FC<AreaListProps> = ({
   // Mostrar estado vacío
   if (filteredAreas.length === 0) {
     return (
-      <>
-        <div className="space-y-6">
-          <div className="relative">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              placeholder="Buscar áreas..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
+      <div className="p-8 space-y-8">
+        {/* Enhanced Search Bar */}
+        <div className="relative max-w-md mx-auto">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
           </div>
-
-          <AreaEmptyState
-            searchTerm={searchTerm}
-            isCoordinador={isCoordinador}
-            onCreateClick={isCoordinador ? () => {
-              setEditingArea(undefined);
-              setIsModalOpen(true);
-            } : undefined}
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder="Buscar áreas por nombre o descripción..."
+            className="w-full pl-12 pr-4 py-4 bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-300 text-gray-700 placeholder-gray-400"
           />
         </div>
+
+        <AreaEmptyState
+          searchTerm={searchTerm}
+          isCoordinador={isCoordinador}
+          onCreateClick={isCoordinador ? () => {
+            setEditingArea(undefined);
+            setIsModalOpen(true);
+          } : undefined}
+        />
+
         {/* Modal de creación/edición */}
         {isModalOpen && (
           <AreaForm
@@ -195,43 +205,50 @@ const AreaList: React.FC<AreaListProps> = ({
             areaToEdit={editingArea}
             onSubmit={handleSubmit}
             isLoading={isSubmitting}
-            supervisores={supervisores} // <-- DEBE PASARSE AQUÍ
-            isCoordinador={isCoordinador} // <-- DEBE PASARSE AQUÍ
+            supervisores={supervisores}
+            isCoordinador={isCoordinador}
           />
         )}
-      </>
+      </div>
     );
   }
 
   // Lista principal
   return (
-    <div className="space-y-6">
-      {/* Barra de búsqueda y acciones */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
+    <div className="p-8 space-y-8">
+      {/* Enhanced Search and Actions Bar */}
+            {/* Enhanced Header Section */}
+      
+      
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
+        {/* Enhanced Search Input */}
+        <div className="relative flex-1 max-w-lg">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
           <input
             type="text"
             value={searchTerm}
             onChange={handleSearchChange}
-            placeholder="Buscar áreas..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Buscar áreas por nombre o descripción..."
+            className="w-full pl-12 pr-4 py-4 bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-300 text-gray-700 placeholder-gray-400"
           />
         </div>
 
+        {/* Enhanced Create Button */}
         {isCoordinador && (
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 whitespace-nowrap"
+            className="inline-flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 whitespace-nowrap"
           >
-            <PlusCircle size={16} className="mr-2" />
+            <PlusCircle className="h-5 w-5" />
             Nueva Área
           </button>
         )}
       </div>
 
-      {/* Grid de áreas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Enhanced Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {filteredAreas.map((area) => {
           // Calcula el número de cámaras para esta área
           const camaras_count = camaras.filter(c => c.id_area === area.id_area).length;
@@ -270,10 +287,12 @@ const AreaList: React.FC<AreaListProps> = ({
           areaToEdit={editingArea}
           onSubmit={handleSubmit}
           isLoading={isSubmitting}
-          supervisores={supervisores} // <-- DEBE PASARSE AQUÍ
-          isCoordinador={isCoordinador} // <-- DEBE PASARSE AQUÍ
+          supervisores={supervisores}
+          isCoordinador={isCoordinador}
         />
       )}
+      
+      {/* Enhanced Confirm Dialog */}
       {areaToDelete && (
         <ConfirmDialog
           title="Eliminar área"

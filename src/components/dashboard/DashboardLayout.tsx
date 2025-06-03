@@ -29,7 +29,7 @@ export const DashboardLayout = () => {
     }, []);
 
     return (
-        <div className="h-screen bg-gray-50 flex overflow-hidden">
+        <div className="h-screen flex overflow-hidden">
             {/* Sidebar */}
             <Sidebar />
 

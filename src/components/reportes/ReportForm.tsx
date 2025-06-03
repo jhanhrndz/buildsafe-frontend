@@ -66,7 +66,7 @@ const ReportForm: React.FC<ReportFormProps> = ({
 
   const IA_TO_EPP_MAP: Record<string, string> = {
     'NO-Hardhat': 'Casco',
-    'NO-Mask': 'Guantes',
+    'NO-Mask': 'Mascara',
     'NO-Safety Vest': 'Chaleco',
   };
 

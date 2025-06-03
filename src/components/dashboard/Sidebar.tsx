@@ -110,7 +110,7 @@ const Sidebar = () => {
 
       {/* Botón toggle para móvil mejorado */}
       <button
-        className="fixed top-4 left-4 z-30 p-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 md:hidden backdrop-blur-sm border border-white/10"
+        className="fixed top-4 left-4 z-30 p-3 rounded-xl bg-white border border-gray-200 text-gray-700 shadow-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 md:hidden backdrop-blur-sm"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
       >
         {isMobileOpen ? 
@@ -129,29 +129,29 @@ const Sidebar = () => {
         style={{ overflow: 'hidden' }}
       >
         {/* Background con gradiente y blur */}
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/95 to-indigo-600/95 backdrop-blur-xl" />
-        <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-white backdrop-blur-xl" />
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm border-r border-gray-200" />
         
         {/* Contenido del sidebar */}
         <div className="relative z-10 flex flex-col h-full overflow-hidden">
           {/* Header - Logo y toggle */}
-          <div className="p-6 border-b border-white/10 flex-shrink-0">
+          <div className="p-6 border-b border-gray-200 flex-shrink-0">
             {!isCollapsed ? (
               <div className="flex items-center w-full overflow-hidden">
                 <div className="flex items-center space-x-3 flex-1 min-w-0 overflow-hidden pr-2">
                   {/* Logo con efecto glassmorphism */}
-                  <div className="h-12 w-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-                    <HardHatIcon size={24} className="text-yellow-400" />
+                  <div className="h-12 w-12 bg-gray-100 backdrop-blur-md border border-gray-200 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
+                    <HardHatIcon size={24} className="text-amber-500" />
                   </div>
                   <div className="flex-1 min-w-0 overflow-hidden">
-                    <h2 className="text-3xl font-bold text-white">BuildSafe</h2>
-                    <p className="text-xs text-blue-100/80">Vigilancia inteligente para obras seguras.</p>
+                    <h2 className="text-3xl font-bold text-gray-800">BuildSafe</h2>
+                    <p className="text-xs text-gray-500">Vigilancia inteligente para obras seguras.</p>
                   </div>
                 </div>
                 
                 {/* Botón collapse - modo expandido */}
                 <button
-                  className="hidden md:flex p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200 border border-transparent hover:border-white/20 flex-shrink-0"
+                  className="hidden md:flex p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200 border border-transparent hover:border-gray-200 flex-shrink-0"
                   onClick={() => setIsCollapsed(!isCollapsed)}
                 >
                   <ChevronLeftIcon size={18} />
@@ -161,7 +161,7 @@ const Sidebar = () => {
               <div className="flex flex-col items-center space-y-3 w-full">
                 {/* Botón collapse - modo colapsado */}
                 <button
-                  className="hidden md:flex p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200 border border-transparent hover:border-white/20"
+                  className="hidden md:flex p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200 border border-transparent hover:border-gray-200"
                   onClick={() => setIsCollapsed(!isCollapsed)}
                 >
                   <ChevronRightIcon size={18} />
@@ -171,16 +171,16 @@ const Sidebar = () => {
           </div>
 
           {/* Información del usuario con glassmorphism */}
-          <div className="px-4 py-3 border-b border-white/10 flex-shrink-0">
+          <div className="px-4 py-3 border-b border-gray-200 flex-shrink-0">
             {!isCollapsed ? (
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 overflow-hidden">
+              <div className="bg-gray-50/50 backdrop-blur-sm rounded-xl p-4 border border-gray-200 overflow-hidden">
                 <div className="flex items-center space-x-3 w-full">
                   <UserAvatar />
                   <div className="flex-1 min-w-0 overflow-hidden">
-                    <p className="font-medium text-sm text-white truncate">{userName}</p>
+                    <p className="font-medium text-sm text-gray-800 truncate">{userName}</p>
                     <div className="flex items-center space-x-1">
                       <div className="h-2 w-2 bg-green-400 rounded-full shadow-sm flex-shrink-0"></div>
-                      <p className="text-xs text-blue-100/80 capitalize truncate">{userRole}</p>
+                      <p className="text-xs text-gray-500 capitalize truncate">{userRole}</p>
                     </div>
                   </div>
                 </div>
@@ -203,8 +203,8 @@ const Sidebar = () => {
                       group relative flex items-center rounded-xl transition-all duration-200 w-full overflow-hidden
                       ${isCollapsed ? 'px-3 py-3 justify-center' : 'px-4 py-3'}
                       ${isActive(item.path) 
-                        ? 'bg-white/20 text-white shadow-lg border border-white/30 backdrop-blur-sm' 
-                        : 'text-blue-100/90 hover:bg-white/10 hover:text-white hover:border-white/20 border border-transparent'
+                        ? 'bg-gray-800 text-white shadow-lg border border-gray-700 backdrop-blur-sm' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:border-gray-200 border border-transparent'
                       }
                     `}
                     onClick={() => {
@@ -215,13 +215,13 @@ const Sidebar = () => {
                   >
                     {/* Indicador activo */}
                     {isActive(item.path) && !isCollapsed && (
-                      <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-yellow-400 to-yellow-500 rounded-r-full shadow-lg" />
+                      <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-amber-400 to-amber-500 rounded-r-full shadow-lg" />
                     )}
                     
                     {/* Icono */}
                     <div className={`
                       flex items-center justify-center transition-all duration-200 flex-shrink-0
-                      ${isActive(item.path) ? 'text-yellow-400' : 'text-blue-200 group-hover:text-white'}
+                      ${isActive(item.path) ? 'text-amber-400' : 'text-gray-500 group-hover:text-gray-700'}
                     `}>
                       {item.icon}
                     </div>
@@ -233,21 +233,21 @@ const Sidebar = () => {
                         </span>
                         {/* Indicador de item activo */}
                         {isActive(item.path) && (
-                          <div className="ml-auto w-2 h-2 rounded-full bg-yellow-400 shadow-sm animate-pulse flex-shrink-0" />
+                          <div className="ml-auto w-2 h-2 rounded-full bg-amber-400 shadow-sm animate-pulse flex-shrink-0" />
                         )}
                       </>
                     )}
                     
                     {/* Indicador activo para modo colapsado */}
                     {isActive(item.path) && isCollapsed && (
-                      <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-yellow-400 to-yellow-500 rounded-l-full shadow-lg" />
+                      <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-amber-400 to-amber-500 rounded-l-full shadow-lg" />
                     )}
                     
                     {/* Tooltip para modo colapsado */}
                     {isCollapsed && (
-                      <div className="absolute left-full ml-4 px-3 py-2 bg-gray-900/90 backdrop-blur-sm text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 border border-gray-700">
+                      <div className="absolute left-full ml-4 px-3 py-2 bg-gray-800/90 backdrop-blur-sm text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 border border-gray-600">
                         {item.name}
-                        <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-2 h-2 bg-gray-900/90 rotate-45" />
+                        <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-2 h-2 bg-gray-800/90 rotate-45" />
                       </div>
                     )}
                   </Link>
@@ -257,26 +257,26 @@ const Sidebar = () => {
           </nav>
 
           {/* Footer con botón de logout mejorado */}
-          <div className="p-6 border-t border-white/10 mt-auto flex-shrink-0">
+          <div className="p-6 border-t border-gray-200 mt-auto flex-shrink-0">
             <button
               onClick={handleLogout}
               className={`
                 group relative w-full flex items-center rounded-xl overflow-hidden
-                text-blue-100/90 hover:bg-red-500/20 hover:text-white hover:border-red-400/30 
+                text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 
                 transition-all duration-200 border border-transparent backdrop-blur-sm
                 ${isCollapsed ? 'px-3 py-3 justify-center' : 'px-4 py-3'}
               `}
             >
-              <LogOutIcon size={20} className="group-hover:text-red-400 transition-colors duration-200 flex-shrink-0" />
+              <LogOutIcon size={20} className="group-hover:text-red-500 transition-colors duration-200 flex-shrink-0" />
               {!isCollapsed && (
                 <span className="ml-3 text-sm font-medium truncate">Cerrar Sesión</span>
               )}
               
               {/* Tooltip para modo colapsado */}
               {isCollapsed && (
-                <div className="absolute left-full ml-4 px-3 py-2 bg-gray-900/90 backdrop-blur-sm text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 border border-gray-700">
+                <div className="absolute left-full ml-4 px-3 py-2 bg-gray-800/90 backdrop-blur-sm text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 border border-gray-600">
                   Cerrar Sesión
-                  <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-2 h-2 bg-gray-900/90 rotate-45" />
+                  <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-2 h-2 bg-gray-800/90 rotate-45" />
                 </div>
               )}
             </button>
