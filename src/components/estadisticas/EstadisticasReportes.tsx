@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { BarChart3, Building2, AlertTriangle, CheckCircle2, FileText } from 'lucide-react';
+import { BarChart3, Building2, AlertTriangle, CheckCircle2, FileText, Hourglass } from 'lucide-react';
 import type { Area } from '../../types/entities';
 
 const COLORS = {
@@ -24,6 +24,7 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
   const totalReportes = stats.totalReportes || 0;
   const reportesPendientes = stats.reportesPorEstado?.pendiente || 0;
   const reportesCerrados = stats.reportesPorEstado?.cerrado || 0;
+  const reportesRevision = stats.reportesPorEstado?.['en revisión'] || 0;
   const tasaResolucion = totalReportes ? ((reportesCerrados / totalReportes) * 100).toFixed(1) : '0';
 
   // Datos para gráficos
@@ -58,7 +59,7 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
   return (
     <section className="space-y-8">
       {/* Cards de resumen */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm">
           <div className="flex items-center gap-3 mb-2">
             <BarChart3 className="text-blue-600" size={24} />
@@ -75,6 +76,15 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
           </div>
           <p className="text-3xl font-bold text-amber-600">{reportesPendientes}</p>
           <span className="text-sm text-gray-500">por resolver</span>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3 mb-2">
+            <Hourglass className="text-blue-600" size={24} />
+            <h3 className="text-sm font-medium text-gray-500">Revisión</h3>
+          </div>
+          <p className="text-3xl font-bold text-blue-600">{reportesRevision}</p>
+          <span className="text-sm text-gray-500">en revisión</span>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -177,7 +187,7 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
                   Estado
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Supervisor
+                  Usuario
                 </th>
               </tr>
             </thead>
@@ -201,8 +211,9 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
                       {reporte.estado}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {reporte.usuario?.nombres} {reporte.usuario?.apellidos}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm  text-gray-500">
+                    <div className="font-medium text-gray-900"> {reporte.usuario?.nombres} {reporte.usuario?.apellidos} </div>
+                    <div className="text-xs text-blue-400"> {reporte.usuario?.global_role} </div>
                   </td>
                 </tr>
               ))}

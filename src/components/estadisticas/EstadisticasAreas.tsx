@@ -60,7 +60,7 @@ const EstadisticasAreas = ({ stats }: EstadisticasAreasProps) => {
   // Calcular estadísticas detalladas por área
   const estadisticasArea: EstadisticaArea[] = stats.areasDeMisObras.map((area: Area) => {
     const obra = stats.misObras.find((o: Obra) => o.id_obra === area.id_obra);
-    const supervisor = stats.supervisoresDeMisObras.find((s: Supervisor) => 
+    const supervisor = stats.supervisoresDeMisObras.find((s: any) => 
       s.areas.some((a: Area) => a.id_area === area.id_area)
     );
     const camaras = stats.camaras.filter((c: Camara) => c.id_area === area.id_area);

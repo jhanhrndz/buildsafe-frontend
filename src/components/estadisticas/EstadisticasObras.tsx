@@ -5,9 +5,8 @@ import {
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Building2, Users, Camera, FileText, LayoutGrid, Activity, FileBarChart } from 'lucide-react';
+import { Building2, Users, Camera, FileText, LayoutGrid, Activity } from 'lucide-react';
 import type { Obra, Area, User as Supervisor, Camara, ReporteResumen } from '../../types/entities';
-import { ActionCodeURL } from 'firebase/auth/web-extension';
 
 const COLORS = {
   primary: ['#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe'],
@@ -66,7 +65,9 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
   const dataMensual: DatoMensual[] = stats.misObras
     // Primero creamos un punto de datos para cada mes desde la primera obra
     .reduce((acc: DatoMensual[], obra: Obra) => {
-      const mesInicio = format(parseISO(obra.fecha_inicio), 'MMM yyyy', { locale: es });
+      const mesInicio = obra.fecha_inicio
+        ? format(parseISO(obra.fecha_inicio), 'MMM yyyy', { locale: es })
+        : 'Fecha desconocida';
       
       let existingMonth = acc.find(m => m.mes === mesInicio);
       if (!existingMonth) {
@@ -75,7 +76,7 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
           obrasIniciadas: 0,
           totalReportes: 0,
           reportesPendientes: 0,
-          timestamp: parseISO(obra.fecha_inicio).getTime()
+          timestamp: obra.fecha_inicio ? parseISO(obra.fecha_inicio).getTime() : 0
         };
         acc.push(existingMonth);
       }
@@ -118,7 +119,7 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
   // Calcular estadísticas por obra
   const estadisticasObra: EstadisticaObra[] = stats.misObras.map((obra: Obra) => {
     const areasObra = stats.areasDeMisObras.filter((a: Area) => a.id_obra === obra.id_obra);
-    const supervisoresObra = stats.supervisoresDeMisObras.filter((s: Supervisor) => 
+    const supervisoresObra = stats.supervisoresDeMisObras.filter((s: any) => 
       s.areas?.some((a: Area) => areasObra.some(ao => ao.id_area === a.id_area))
     );
     const camarasObra = stats.camaras.filter((c: Camara) => 
