@@ -9,7 +9,8 @@ import {
   ChevronLeftIcon, 
   ChevronRightIcon,
   LogOutIcon,
-  HardHatIcon
+  HardHatIcon,
+  AreaChart
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../context/UserContext';
@@ -57,17 +58,18 @@ const Sidebar = () => {
       allowedRoles: ['coordinador', 'supervisor']
     },
     {
+      name: 'Estadísticas',
+      path: '/estadisticas',
+      icon: <AreaChart size={20} />,
+      allowedRoles: ['coordinador'], // Solo coordinador
+    },
+    {
       name: 'Configuración',
       path: '/configuracion',
       icon: <SettingsIcon size={20} />,
       allowedRoles: ['coordinador', 'supervisor']
-    },
-    {
-      name: 'Estadísticas',
-      path: '/estadisticas',
-      icon: <BarChartIcon size={20} />,
-      allowedRoles: ['coordinador'], // Solo coordinador
     }
+    
   ];
 
   // Filtrar menú items según el rol del usuario
