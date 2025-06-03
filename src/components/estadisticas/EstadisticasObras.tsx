@@ -5,8 +5,9 @@ import {
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Building2, Users, Camera, FileText, LayoutGrid } from 'lucide-react';
+import { Building2, Users, Camera, FileText, LayoutGrid, Activity, FileBarChart } from 'lucide-react';
 import type { Obra, Area, User as Supervisor, Camara, ReporteResumen } from '../../types/entities';
+import { ActionCodeURL } from 'firebase/auth/web-extension';
 
 const COLORS = {
   primary: ['#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe'],
@@ -48,8 +49,6 @@ interface EstadisticaObra extends Obra {
 }
 
 const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
-  const [obraSeleccionada, setObraSeleccionada] = useState<string | null>(null);
-
   // Estadísticas generales
   const totalObras = stats.misObras.length;
   const obrasActivas = stats.misObras.filter((o: Obra) => o.estado === 'activo').length;
@@ -279,9 +278,23 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
       </div>
 
       {/* Tabla detallada */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="font-bold text-gray-700">Detalle de Obras</h3>
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-5">
+        <div className="px-6 py-5 border-b border-gray-200 bg-blue-50 hover:bg-blue-100 transition-all duration-300 ease-in-out cursor-pointer group">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors duration-300">
+              <Activity 
+                className="h-5 w-5 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" 
+              />
+            </div>
+            <div className="flex flex-col">
+              <h3 className="font-bold text-gray-800 text-lg group-hover:text-gray-900 transition-colors duration-300">
+                Detalle de Obras
+              </h3>
+              <p className="text-sm text-gray-500 group-hover:text-gray-600 transition-colors duration-300 mt-1">
+                Listado completo de obras y sus métricas
+              </p>
+            </div>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -329,7 +342,7 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {obra.fecha_creacion ? format(parseISO(obra.fecha_creacion), 'dd/MM/yyyy') : '-'}
+                    {obra.created_at ? format(parseISO(obra.created_at), 'dd/MM/yyyy') : '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {obra.fecha_inicio ? format(parseISO(obra.fecha_inicio), 'dd/MM/yyyy') : '-'}

@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
-  Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
-  PieChart, Pie, Cell
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Users, AlertTriangle, CheckCircle2, LayoutGrid } from 'lucide-react';
@@ -118,8 +114,22 @@ const EstadisticasSupervisores = ({ stats }: { stats: any }) => {
 
       {/* Tabla detallada */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="font-bold text-gray-700">Detalle de Supervisores</h3>
+        <div className="px-6 py-5 border-b border-gray-200 bg-blue-50 hover:bg-blue-100 transition-all duration-300 ease-in-out cursor-pointer group">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors duration-300">
+              <Users 
+                className="h-5 w-5 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" 
+              />
+            </div>
+            <div className="flex flex-col">
+              <h3 className="font-bold text-gray-800 text-lg group-hover:text-gray-900 transition-colors duration-300">
+                Detalle de Supervisores
+              </h3>
+              <p className="text-sm text-gray-500 group-hover:text-gray-600 transition-colors duration-300 mt-1">
+                Listado completo de los supervisores y sus estadísticas
+              </p>
+            </div>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
