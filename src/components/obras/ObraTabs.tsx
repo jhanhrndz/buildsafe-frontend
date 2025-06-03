@@ -154,9 +154,9 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
         accent: 'text-emerald-600'
       },
       orange: {
-        active: 'bg-orange-600 text-white shadow-orange-500/25',
-        inactive: 'text-gray-600 hover:text-orange-600 hover:bg-orange-50',
-        accent: 'text-orange-600'
+        active: 'bg-orange-500 text-white shadow-orange-500/25',
+        inactive: 'text-gray-600 hover:text-orange-400 hover:bg-orange-50',
+        accent: 'text-orange-500'
       },
       purple: {
         active: 'bg-purple-600 text-white shadow-purple-500/25',
@@ -196,7 +196,7 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
   }));
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100">
       {/* Navegación de pestañas */}
       <div className="border-b border-gray-200 bg-white">
         <nav className="flex space-x-1 p-1" aria-label="Tabs">

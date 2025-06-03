@@ -21,6 +21,8 @@ interface ReporteDetail {
   imagen_url?: string;
   usuario?: Usuario;
   infracciones?: Infraccion[];
+  id_camara?: number | null;
+  camara_nombre?: string | null;
 }
 
 interface ReportDetailProps {
@@ -71,8 +73,8 @@ const ReportDetail: React.FC<ReportDetailProps> = ({ reporte, onClose }) => {
         {/* Header */}
         <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 px-8 py-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
-          <button 
-            className="absolute top-6 right-6 text-white/90 hover:text-white hover:bg-white/20 rounded-full p-2.5 transition-all duration-200 hover:scale-105 z-10" 
+          <button
+            className="absolute top-6 right-6 text-white/90 hover:text-white hover:bg-white/20 rounded-full p-2.5 transition-all duration-200 hover:scale-105 z-10"
             onClick={onClose}
           >
             <X size={22} />
@@ -167,6 +169,23 @@ const ReportDetail: React.FC<ReportDetailProps> = ({ reporte, onClose }) => {
             )}
           </div>
 
+          {/* Camera Section - Fixed condition */}
+          {(reporte.id_camara || reporte.camara_nombre) && (
+            <div className="bg-white border-2 border-gray-100 rounded-2xl p-5 hover:border-orange-200 hover:shadow-lg transition-all duration-300 group">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-100 to-teal-200 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
+                  <Camera className="w-6 h-6 text-cyan-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Cámara</p>
+                  <p className="text-gray-900 font-bold text-lg mt-1">
+                    {reporte.camara_nombre || `Cámara ${reporte.id_camara}`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Evidence Section */}
           {reporte.imagen_url && (
             <div className="group">
@@ -178,10 +197,10 @@ const ReportDetail: React.FC<ReportDetailProps> = ({ reporte, onClose }) => {
               </div>
               <div className="bg-gradient-to-br from-gray-50 to-slate-100 rounded-2xl p-6 border-2 border-gray-200 hover:border-orange-300 transition-colors duration-300">
                 <div className="flex justify-center">
-                  <img 
-                    src={reporte.imagen_url} 
-                    alt="Evidencia del reporte" 
-                    className="rounded-xl border-2 border-white max-w-full h-auto max-h-96 object-contain shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]" 
+                  <img
+                    src={reporte.imagen_url}
+                    alt="Evidencia del reporte"
+                    className="rounded-xl border-2 border-white max-w-full h-auto max-h-96 object-contain shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
                   />
                 </div>
               </div>

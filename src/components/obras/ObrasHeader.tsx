@@ -15,59 +15,51 @@ const ObrasHeader = ({
   isCoordinador
 }: ObrasHeaderProps) => {
   return (
-    <div className="bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl shadow-sm p-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-        {/* Título */}
-        <div className="flex items-center gap-3">
-          <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Obras</h1>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        {/* Title Section */}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Obras</h1>
+          <p className="text-gray-600">Gestiona y supervisa tus proyectos</p>
         </div>
         
-        {/* Buscador y botón */}
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          {/* Buscador */}
-          <div className="relative w-full sm:w-72">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Search size={18} className="text-gray-400" />
-            </div>
+        {/* Actions Section */}
+        <div className="flex flex-col sm:flex-row gap-4 lg:w-auto w-full">
+          {/* Search */}
+          <div className="relative flex-1 lg:w-80">
+            <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Buscar obras..."
-              className="block w-full pl-12 pr-12 py-3 bg-white border border-gray-200 rounded-lg 
+              className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl 
                          text-gray-900 placeholder-gray-500
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         hover:border-gray-300 transition-all duration-200
-                         shadow-sm"
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white
+                         hover:bg-white transition-all duration-200"
             />
             {searchTerm && (
               <button
                 onClick={() => onSearchChange('')}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 
-                           hover:text-gray-600 transition-colors duration-200"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 <X size={18} />
               </button>
             )}
           </div>
           
-          {/* Botón de nueva obra (solo para coordinadores) */}
+          {/* Create Button */}
           {isCoordinador && (
             <button
               onClick={onCreateClick}
               className="inline-flex items-center justify-center px-6 py-3 
-                         bg-gradient-to-r from-blue-600 to-blue-700 
-                         text-white font-medium rounded-lg 
-                         hover:from-blue-700 hover:to-blue-800 
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                         active:scale-[0.98]
-                         transition-all duration-200 
-                         shadow-sm hover:shadow-md
-                         w-full sm:w-auto"
+                         bg-blue-600 text-white font-semibold rounded-xl 
+                         hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                         active:scale-95 transition-all duration-200 
+                         shadow-sm hover:shadow-md whitespace-nowrap"
             >
-              <PlusCircle size={18} className="mr-2" />
-              <span>Nueva Obra</span>
+              <PlusCircle size={20} className="mr-2" />
+              Nueva Obra
             </button>
           )}
         </div>
