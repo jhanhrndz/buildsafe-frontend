@@ -6,6 +6,7 @@ import {
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Building2, Users, Camera, FileText, LayoutGrid } from 'lucide-react';
+import type { Obra, Area, User as Supervisor, Camara, ReporteResumen } from '../../types/entities';
 
 const COLORS = {
   primary: ['#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe'],
@@ -16,49 +17,118 @@ const COLORS = {
   }
 };
 
-const EstadisticasObras = ({ stats }: { stats: any }) => {
+// Interfaz para las props del componente
+interface EstadisticasObrasProps {
+  stats: {
+    misObras: Obra[];
+    areasDeMisObras: Area[];
+    supervisoresDeMisObras: Supervisor[];
+    camaras: Camara[];
+    reportesDeMisObras: ReporteResumen[];
+    totalReportes: number;
+  };
+}
+
+// Interfaz para los datos mensuales
+interface DatoMensual {
+  mes: string;
+  obrasIniciadas: number;
+  totalReportes: number;
+  reportesPendientes: number;
+  timestamp: number;
+}
+
+// Interfaz para estadísticas extendidas de obra
+interface EstadisticaObra extends Obra {
+  totalAreas: number;
+  totalSupervisores: number;
+  totalCamaras: number;
+  totalReportes: number;
+  reportesPendientes: number;
+}
+
+const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
   const [obraSeleccionada, setObraSeleccionada] = useState<string | null>(null);
 
   // Estadísticas generales
   const totalObras = stats.misObras.length;
-  const obrasActivas = stats.misObras.filter(o => o.estado === 'activo').length;
+  const obrasActivas = stats.misObras.filter((o: Obra) => o.estado === 'activo').length;
   const totalAreas = stats.areasDeMisObras.length;
   const totalSupervisores = new Set(stats.supervisoresDeMisObras.map(s => s.id_usuario)).size;
   const totalCamaras = stats.camaras.length;
 
   // Obras por estado
-  const obrasPorEstado = stats.misObras.reduce((acc: Record<string, number>, obra: any) => {
+  const obrasPorEstado = stats.misObras.reduce((acc: Record<string, number>, obra: Obra) => {
     acc[obra.estado] = (acc[obra.estado] || 0) + 1;
     return acc;
   }, {});
 
-  // Obras y reportes por mes
-  const dataMensual = stats.misObras.reduce((acc: any[], obra: any) => {
-    if (obra.fecha_inicio) {
-      const mes = format(parseISO(obra.fecha_inicio), 'MMM yyyy', { locale: es });
-      const reportes = stats.reportesDeMisObras.filter(r => r.id_obra === obra.id_obra).length;
+  // Modificar el cálculo de dataMensual
+  const dataMensual: DatoMensual[] = stats.misObras
+    // Primero creamos un punto de datos para cada mes desde la primera obra
+    .reduce((acc: DatoMensual[], obra: Obra) => {
+      const mesInicio = format(parseISO(obra.fecha_inicio), 'MMM yyyy', { locale: es });
       
-      const existingMonth = acc.find(m => m.mes === mes);
-      if (existingMonth) {
-        existingMonth.obras += 1;
-        existingMonth.reportes += reportes;
-      } else {
-        acc.push({ mes, obras: 1, reportes });
+      let existingMonth = acc.find(m => m.mes === mesInicio);
+      if (!existingMonth) {
+        existingMonth = {
+          mes: mesInicio,
+          obrasIniciadas: 0,
+          totalReportes: 0,
+          reportesPendientes: 0,
+          timestamp: parseISO(obra.fecha_inicio).getTime()
+        };
+        acc.push(existingMonth);
       }
-    }
-    return acc;
-  }, []);
+      
+      // Incrementar contador de obras iniciadas
+      existingMonth.obrasIniciadas += 1;
+
+      // Obtener reportes de esta obra
+      const areasObra = stats.areasDeMisObras.filter(a => a.id_obra === obra.id_obra);
+      const reportesObra = stats.reportesDeMisObras.filter(r => 
+        areasObra.some(area => area.id_area === r.id_area)
+      );
+
+      // Agregar reportes al mes correspondiente
+      reportesObra.forEach(reporte => {
+        const mesReporte = format(parseISO(reporte.fecha_hora), 'MMM yyyy', { locale: es });
+        let monthData = acc.find(m => m.mes === mesReporte);
+        
+        if (!monthData) {
+          monthData = {
+            mes: mesReporte,
+            obrasIniciadas: existingMonth.obrasIniciadas,
+            totalReportes: 0,
+            reportesPendientes: 0,
+            timestamp: parseISO(reporte.fecha_hora).getTime()
+          };
+          acc.push(monthData);
+        }
+
+        monthData.totalReportes += 1;
+        if (reporte.estado === 'pendiente') {
+          monthData.reportesPendientes += 1;
+        }
+      });
+
+      return acc;
+    }, [])
+    .sort((a, b) => a.timestamp - b.timestamp);
 
   // Calcular estadísticas por obra
-  const estadisticasObra = stats.misObras.map((obra: any) => {
-    const areasObra = stats.areasDeMisObras.filter(a => a.id_obra === obra.id_obra);
-    const supervisoresObra = stats.supervisoresDeMisObras.filter(s => 
-      s.areas.some(a => areasObra.some(ao => ao.id_area === a.id_area))
+  const estadisticasObra: EstadisticaObra[] = stats.misObras.map((obra: Obra) => {
+    const areasObra = stats.areasDeMisObras.filter((a: Area) => a.id_obra === obra.id_obra);
+    const supervisoresObra = stats.supervisoresDeMisObras.filter((s: Supervisor) => 
+      s.areas?.some((a: Area) => areasObra.some(ao => ao.id_area === a.id_area))
     );
-    const camarasObra = stats.camaras.filter(c => 
+    const camarasObra = stats.camaras.filter((c: Camara) => 
       areasObra.some(a => a.id_area === c.id_area)
     );
-    const reportesObra = stats.reportesDeMisObras.filter(r => r.id_obra === obra.id_obra);
+    
+    const reportesObra = stats.reportesDeMisObras.filter((r: ReporteResumen) => 
+      areasObra.some(area => area.id_area === r.id_area)
+    );
 
     return {
       ...obra,
@@ -66,7 +136,7 @@ const EstadisticasObras = ({ stats }: { stats: any }) => {
       totalSupervisores: supervisoresObra.length,
       totalCamaras: camarasObra.length,
       totalReportes: reportesObra.length,
-      reportesPendientes: reportesObra.filter(r => r.estado === 'pendiente').length,
+      reportesPendientes: reportesObra.filter(r => r.estado === 'pendiente').length
     };
   });
 
@@ -153,26 +223,55 @@ const EstadisticasObras = ({ stats }: { stats: any }) => {
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={dataMensual}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="mes" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <RechartsTooltip />
+              <XAxis 
+                dataKey="mes"
+                tick={{ fontSize: 12 }}
+                angle={-45}
+                textAnchor="end"
+                height={60}
+              />
+              <YAxis 
+                yAxisId="left"
+                name="Obras"
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis 
+                yAxisId="right" 
+                orientation="right"
+                name="Reportes"
+                tick={{ fontSize: 12 }}
+              />
+              <RechartsTooltip 
+                formatter={(value: number, name: string) => [value, name]}
+                labelFormatter={(label) => `Mes: ${label}`}
+              />
               <Legend />
               <Line
                 yAxisId="left"
-                type="monotone"
-                dataKey="obras"
+                type="stepAfter"
+                dataKey="obrasIniciadas"
                 stroke="#6366f1"
                 strokeWidth={2}
-                name="Obras"
+                name="Obras Iniciadas"
+                dot={{ r: 4 }}
               />
               <Line
                 yAxisId="right"
                 type="monotone"
-                dataKey="reportes"
+                dataKey="totalReportes"
+                stroke="#10b981"
+                strokeWidth={2}
+                name="Total Reportes"
+                dot={{ r: 4 }}
+              />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="reportesPendientes"
                 stroke="#ef4444"
                 strokeWidth={2}
-                name="Reportes"
+                name="Reportes Pendientes"
+                dot={{ r: 4 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -195,6 +294,9 @@ const EstadisticasObras = ({ stats }: { stats: any }) => {
                   Estado
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Creación
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Inicio
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -213,10 +315,7 @@ const EstadisticasObras = ({ stats }: { stats: any }) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {estadisticasObra.map((obra: any) => (
-                <tr 
-                  key={obra.id_obra}
-                  className="hover:bg-gray-50 transition-colors duration-150 ease-in-out"
-                >
+                <tr key={obra.id_obra} className="hover:bg-gray-50 transition-colors duration-150 ease-in-out">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{obra.nombre}</div>
                     <div className="text-sm text-gray-500">{obra.descripcion}</div>
@@ -228,6 +327,9 @@ const EstadisticasObras = ({ stats }: { stats: any }) => {
                         'bg-gray-100 text-gray-800'}`}>
                       {obra.estado}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {obra.fecha_creacion ? format(parseISO(obra.fecha_creacion), 'dd/MM/yyyy') : '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {obra.fecha_inicio ? format(parseISO(obra.fecha_inicio), 'dd/MM/yyyy') : '-'}

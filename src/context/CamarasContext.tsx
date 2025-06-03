@@ -14,6 +14,7 @@ type CamarasContextType = {
   updateCamara: (data: UpdateCamaraPayload) => Promise<boolean>;
   deleteCamara: (id: number) => Promise<boolean>;
   clearError: () => void;
+  fetchCamarasAndReturn: (obraId: number) => Promise<Camara[]>; 
 };
 
 const CamarasContext = createContext<CamarasContextType>({} as CamarasContextType);
@@ -98,6 +99,15 @@ export function CamarasProvider({ children }: { children: ReactNode }) {
     }
   }, [refresh]);
 
+  const fetchCamarasAndReturn = useCallback(async (obraId: number) => {
+    try {
+      const data = await CamaraService.getByObra(obraId);
+      return data;
+    } catch (e) {
+      return [];
+    }
+  }, []);
+
   const clearError = useCallback(() => setError(null), []);
 
   return (
@@ -113,6 +123,7 @@ export function CamarasProvider({ children }: { children: ReactNode }) {
         updateCamara,
         deleteCamara,
         clearError,
+        fetchCamarasAndReturn
       }}
     >
       {children}

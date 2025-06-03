@@ -1,65 +1,180 @@
 import React from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
+  PieChart, Pie, Cell
 } from 'recharts';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { Users, AlertTriangle, CheckCircle2, LayoutGrid } from 'lucide-react';
+
+const COLORS = {
+  primary: ['#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe'],
+  secondary: ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0'],
+  warning: ['#f59e0b', '#fbbf24', '#fcd34d', '#fde68a'],
+};
 
 const EstadisticasSupervisores = ({ stats }: { stats: any }) => {
-  // Supervisores con más reportes
-  const dataSupervisores = stats.reportesPorSupervisor.map((s: any) => ({
-    name: `${s.supervisor.nombres} ${s.supervisor.apellidos}`,
-    reportes: s.total,
-  }));
+  // Estadísticas generales
+  const totalSupervisores = stats.supervisoresDeMisObras.length;
+  const supervisoresActivos = stats.supervisoresDeMisObras.filter(
+    (s: any) => s.areas?.length > 0
+  ).length;
+  const totalAreasSupervisadas = stats.supervisoresDeMisObras.reduce(
+    (acc: number, s: any) => acc + (s.areas?.length || 0), 0
+  );
+  const promedioAreasXSupervisor = totalSupervisores ? 
+    (totalAreasSupervisadas / totalSupervisores).toFixed(1) : '0';
 
-  // Tabla de supervisores
-  const resumenSupervisores = stats.supervisoresDeMisObras.map((s: any) => ({
-    nombre: `${s.nombres} ${s.apellidos}`,
-    correo: s.correo,
-    areas: s.areas.length,
-    reportes: stats.reportesDeMisObras.filter((r: any) => r.id_usuario === s.id_usuario).length,
-  }));
+  // Datos para gráficos
+  const dataPorReportes = stats.supervisoresStats?.map((supervisor: any) => ({
+    name: `${supervisor.nombres} ${supervisor.apellidos}`,
+    total: supervisor.totalReportes,
+    pendientes: supervisor.reportesPendientes
+  })).sort((a: any, b: any) => b.total - a.total);
+
+  const dataPorAreas = stats.supervisoresStats?.map((supervisor: any) => ({
+    name: `${supervisor.nombres} ${supervisor.apellidos}`,
+    areas: supervisor.totalAreas
+  })).sort((a: any, b: any) => b.areas - a.areas);
 
   return (
-    <section>
-      <h2 className="text-2xl font-bold mb-4">Supervisores</h2>
+    <section className="space-y-8">
+      {/* Cards de resumen */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white p-6 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3 mb-2">
+            <Users className="text-indigo-600" size={24} />
+            <h3 className="text-sm font-medium text-gray-500">Total Supervisores</h3>
+          </div>
+          <p className="text-3xl font-bold text-indigo-600">{totalSupervisores}</p>
+          <span className="text-sm text-gray-500">{supervisoresActivos} activos</span>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3 mb-2">
+            <LayoutGrid className="text-emerald-600" size={24} />
+            <h3 className="text-sm font-medium text-gray-500">Áreas Supervisadas</h3>
+          </div>
+          <p className="text-3xl font-bold text-emerald-600">{totalAreasSupervisadas}</p>
+          <span className="text-sm text-gray-500">{promedioAreasXSupervisor} promedio</span>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3 mb-2">
+            <CheckCircle2 className="text-amber-600" size={24} />
+            <h3 className="text-sm font-medium text-gray-500">Reportes Totales</h3>
+          </div>
+          <p className="text-3xl font-bold text-amber-600">
+            {stats.supervisoresStats?.reduce((acc: number, s: any) => acc + s.totalReportes, 0)}
+          </p>
+          <span className="text-sm text-gray-500">generados</span>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3 mb-2">
+            <AlertTriangle className="text-rose-600" size={24} />
+            <h3 className="text-sm font-medium text-gray-500">Reportes Pendientes</h3>
+          </div>
+          <p className="text-3xl font-bold text-rose-600">
+            {stats.supervisoresStats?.reduce((acc: number, s: any) => acc + s.reportesPendientes, 0)}
+          </p>
+          <span className="text-sm text-gray-500">por resolver</span>
+        </div>
+      </div>
+
+      {/* Gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Total y ranking */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <h3 className="font-bold mb-2">Total de Supervisores</h3>
-          <p className="text-4xl font-bold text-amber-600 mb-4">{stats.supervisoresDeMisObras.length}</p>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={dataSupervisores.slice(0, 10)}>
+        {/* Reportes por supervisor */}
+        <div className="bg-white p-6 rounded-xl shadow-sm">
+          <h3 className="font-bold text-gray-700 mb-4">Reportes por Supervisor</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={dataPorReportes}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
+              <YAxis />
               <RechartsTooltip />
-              <Bar dataKey="reportes" fill="#fbbf24" />
+              <Legend />
+              <Bar dataKey="total" name="Total Reportes" fill={COLORS.primary[0]} />
+              <Bar dataKey="pendientes" name="Pendientes" fill={COLORS.warning[0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Áreas por supervisor */}
+        <div className="bg-white p-6 rounded-xl shadow-sm">
+          <h3 className="font-bold text-gray-700 mb-4">Áreas por Supervisor</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={dataPorAreas}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <RechartsTooltip />
+              <Bar dataKey="areas" name="Áreas Asignadas" fill={COLORS.secondary[0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
-      {/* Tabla de supervisores */}
-      <div className="mt-8">
-        <h3 className="font-bold mb-2">Resumen de Supervisores</h3>
-        <table className="min-w-full bg-white rounded-xl shadow">
-          <thead>
-            <tr>
-              <th className="p-2">Nombre</th>
-              <th className="p-2">Correo</th>
-              <th className="p-2">Áreas</th>
-              <th className="p-2">Reportes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {resumenSupervisores.map((s: any, idx: number) => (
-              <tr key={idx}>
-                <td className="p-2">{s.nombre}</td>
-                <td className="p-2">{s.correo}</td>
-                <td className="p-2">{s.areas}</td>
-                <td className="p-2">{s.reportes}</td>
+
+      {/* Tabla detallada */}
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="font-bold text-gray-700">Detalle de Supervisores</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Supervisor
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Áreas Asignadas
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Reportes
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Último Reporte
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Estado
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {stats.supervisoresStats?.map((supervisor: any) => (
+                <tr key={supervisor.id_usuario} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      {supervisor.nombres} {supervisor.apellidos}
+                    </div>
+                    <div className="text-sm text-gray-500">{supervisor.correo}</div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-center">
+                    <div className="font-medium text-gray-900">{supervisor.totalAreas}</div>
+                    <div className="text-xs text-gray-500">asignadas</div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-center">
+                    <div className="font-medium text-gray-900">{supervisor.totalReportes}</div>
+                    <div className="text-xs text-red-500">{supervisor.reportesPendientes} pendientes</div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {supervisor.ultimoReporte 
+                      ? format(new Date(supervisor.ultimoReporte), 'dd/MM/yyyy HH:mm', { locale: es })
+                      : 'Sin reportes'}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                      ${supervisor.totalAreas > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                      {supervisor.totalAreas > 0 ? 'Activo' : 'Sin áreas'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );
