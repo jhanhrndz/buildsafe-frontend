@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { BarChart3, Building2, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { BarChart3, Building2, AlertTriangle, CheckCircle2, FileText, Hourglass } from 'lucide-react';
 import type { Area } from '../../types/entities';
 
 const COLORS = {
@@ -24,6 +24,7 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
   const totalReportes = stats.totalReportes || 0;
   const reportesPendientes = stats.reportesPorEstado?.pendiente || 0;
   const reportesCerrados = stats.reportesPorEstado?.cerrado || 0;
+  const reportesRevision = stats.reportesPorEstado?.['en revisión'] || 0;
   const tasaResolucion = totalReportes ? ((reportesCerrados / totalReportes) * 100).toFixed(1) : '0';
 
   // Datos para gráficos
@@ -58,7 +59,7 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
   return (
     <section className="space-y-8">
       {/* Cards de resumen */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm">
           <div className="flex items-center gap-3 mb-2">
             <BarChart3 className="text-blue-600" size={24} />
@@ -75,6 +76,15 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
           </div>
           <p className="text-3xl font-bold text-amber-600">{reportesPendientes}</p>
           <span className="text-sm text-gray-500">por resolver</span>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3 mb-2">
+            <Hourglass className="text-blue-600" size={24} />
+            <h3 className="text-sm font-medium text-gray-500">Revisión</h3>
+          </div>
+          <p className="text-3xl font-bold text-blue-600">{reportesRevision}</p>
+          <span className="text-sm text-gray-500">en revisión</span>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -142,9 +152,23 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
       </div>
 
       {/* Tabla de últimos reportes */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="font-bold text-gray-700">Últimos Reportes</h3>
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-5">
+        <div className="px-6 py-5 border-b border-gray-200 bg-blue-50 hover:bg-blue-100 transition-all duration-300 ease-in-out cursor-pointer group">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors duration-300">
+              <FileText 
+                className="h-5 w-5 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" 
+              />
+            </div>
+            <div className="flex flex-col">
+              <h3 className="font-bold text-gray-800 text-lg group-hover:text-gray-900 transition-colors duration-300">
+                Últimos Reportes
+              </h3>
+              <p className="text-sm text-gray-500 group-hover:text-gray-600 transition-colors duration-300 mt-1">
+                Documentos y análisis más recientes
+              </p>
+            </div>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -163,7 +187,7 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
                   Estado
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Supervisor
+                  Usuario
                 </th>
               </tr>
             </thead>
@@ -187,8 +211,9 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
                       {reporte.estado}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {reporte.usuario?.nombres} {reporte.usuario?.apellidos}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm  text-gray-500">
+                    <div className="font-medium text-gray-900"> {reporte.usuario?.nombres} {reporte.usuario?.apellidos} </div>
+                    <div className="text-xs text-blue-400"> {reporte.usuario?.global_role} </div>
                   </td>
                 </tr>
               ))}

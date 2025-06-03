@@ -60,7 +60,7 @@ const EstadisticasAreas = ({ stats }: EstadisticasAreasProps) => {
   // Calcular estadísticas detalladas por área
   const estadisticasArea: EstadisticaArea[] = stats.areasDeMisObras.map((area: Area) => {
     const obra = stats.misObras.find((o: Obra) => o.id_obra === area.id_obra);
-    const supervisor = stats.supervisoresDeMisObras.find((s: Supervisor) => 
+    const supervisor = stats.supervisoresDeMisObras.find((s: any) => 
       s.areas.some((a: Area) => a.id_area === area.id_area)
     );
     const camaras = stats.camaras.filter((c: Camara) => c.id_area === area.id_area);
@@ -198,9 +198,23 @@ const EstadisticasAreas = ({ stats }: EstadisticasAreasProps) => {
       </div>
 
       {/* Tabla detallada */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="font-bold text-gray-700">Detalle de Áreas</h3>
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-5">
+        <div className="px-6 py-5 border-b border-gray-200 bg-blue-50 hover:bg-blue-100 transition-all duration-300 ease-in-out cursor-pointer group">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors duration-300">
+              <LayoutGrid 
+                className="h-5 w-5 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" 
+              />
+            </div>
+            <div className="flex flex-col">
+              <h3 className="font-bold text-gray-800 text-lg group-hover:text-gray-900 transition-colors duration-300">
+                Detalle de Areas
+              </h3>
+              <p className="text-sm text-gray-500 group-hover:text-gray-600 transition-colors duration-300 mt-1">
+                Listado completo de áreas y sus métricas
+              </p>
+            </div>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
