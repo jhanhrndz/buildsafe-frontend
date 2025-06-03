@@ -23,6 +23,7 @@ type ReportsContextType = {
   loadCategoriasEpp: () => Promise<void>;
   clearError: () => void;
   updateEstadoReporte: (id: number, estado: string) => Promise<boolean>;
+  fetchReportesAndReturn: (obraId: number) => Promise<ReporteResumen[]>; 
 };
 
 const ReportsContext = createContext<ReportsContextType>({} as ReportsContextType);
@@ -157,6 +158,15 @@ const create = useCallback(async (data: FormData) => {
     }
   }, []);
 
+  const fetchReportesAndReturn = useCallback(async (obraId: number) => {
+    try {
+      const data = await ReporteService.getByObra(obraId);
+      return data;
+    } catch (e) {
+      return [];
+    }
+  }, []);
+
   return (
     <ReportsContext.Provider value={{
       reportes,
@@ -175,6 +185,7 @@ const create = useCallback(async (data: FormData) => {
       loadCategoriasEpp,
       clearError,
       updateEstadoReporte,
+      fetchReportesAndReturn
     }}>
       {children}
     </ReportsContext.Provider>

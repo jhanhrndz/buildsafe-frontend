@@ -16,6 +16,7 @@ type AreasContextType = {
   deleteArea: (id: number) => Promise<boolean>;
   clearError: () => void;
   assignSupervisorToArea: (areaId: number, usuarioId: number) => Promise<boolean>;
+  fetchAreasAndReturn: (obraId: number) => Promise<Area[]>; 
 };
 
 const AreasContext = createContext<AreasContextType>({} as AreasContextType);
@@ -119,6 +120,15 @@ export function AreasProvider({ children }: { children: ReactNode }) {
     }
   }, [lastLoadedObraId, loadAreas]);
 
+  const fetchAreasAndReturn = useCallback(async (obraId: number) => {
+    try {
+      const data = await AreaService.getByObra(obraId);
+      return data;
+    } catch (e) {
+      return [];
+    }
+  }, []);
+
   return (
     <AreasContext.Provider
       value={{
@@ -133,6 +143,7 @@ export function AreasProvider({ children }: { children: ReactNode }) {
         deleteArea,
         assignSupervisorToArea,
         clearError,
+        fetchAreasAndReturn
       }}
     >
       {children}

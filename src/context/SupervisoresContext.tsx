@@ -9,6 +9,7 @@ interface SupervisoresContextProps {
     fetchSupervisores: (obraId: number) => Promise<void>;
     asignarSupervisor: (obraId: number, email: string) => Promise<void>;
     quitarSupervisor: (obraId: number, usuarioId: number) => Promise<void>; // <-- cambia aquí
+    fetchSupervisoresAndReturn: (obraId: number) => Promise<SupervisorWithAreas[]>;
 }
 
 const SupervisoresContext = createContext<SupervisoresContextProps | undefined>(undefined);
@@ -60,6 +61,15 @@ export const SupervisoresProvider: React.FC<{ children: React.ReactNode }> = ({ 
         [fetchSupervisores]
     );
 
+    const fetchSupervisoresAndReturn = useCallback(async (obraId: number) => {
+        try {
+            const data = await obraUsuarioService.getSupervisoresConAreas(obraId);
+            return data;
+        } catch (e) {
+            return [];
+        }
+    }, []);
+
     return (
         <SupervisoresContext.Provider value={{
             supervisores,
@@ -67,7 +77,8 @@ export const SupervisoresProvider: React.FC<{ children: React.ReactNode }> = ({ 
             error,
             fetchSupervisores,
             asignarSupervisor,
-            quitarSupervisor
+            quitarSupervisor,
+            fetchSupervisoresAndReturn
         }}>
             {children}
         </SupervisoresContext.Provider>

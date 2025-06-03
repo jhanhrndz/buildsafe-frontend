@@ -6,7 +6,8 @@ import {
 } from 'recharts';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { LayoutGrid, Camera, Users, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { LayoutGrid, Camera, Users, AlertTriangle } from 'lucide-react';
+import type { Obra, Area, User as Supervisor, Camara, ReporteResumen } from '../../types/entities';
 
 const COLORS = {
   primary: ['#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe'],
@@ -14,27 +15,56 @@ const COLORS = {
   accent: ['#f59e0b', '#fbbf24', '#fcd34d', '#fde68a'],
 };
 
-const EstadisticasAreas = ({ stats }: { stats: any }) => {
-  const [obraFiltrada, setObraFiltrada] = useState<string>('todas');
+// Interfaces para el componente
+interface EstadisticasAreasProps {
+  stats: {
+    misObras: Obra[];
+    areasDeMisObras: Area[];
+    supervisoresDeMisObras: Supervisor[];
+    camaras: Camara[];
+    reportesDeMisObras: ReporteResumen[];
+  };
+}
+
+// Interfaz para estadísticas detalladas de área
+interface EstadisticaArea extends Area {
+  nombreObra: string;
+  supervisor: string;
+  totalCamaras: number;
+  camarasActivas: number;
+  totalReportes: number;
+  reportesPendientes: number;
+  ultimoReporte: number | null;
+}
+
+// Interfaz para datos del gráfico
+interface AreaPorObra {
+  name: string;
+  areas: number;
+  reportes: number;
+}
+
+const EstadisticasAreas = ({ stats }: EstadisticasAreasProps) => {
+  const [obraFiltrada, setObraFiltrada] = useState<number | 'todas'>('todas');
 
   // Estadísticas generales
   const totalAreas = stats.areasDeMisObras.length;
-  const areasConSupervisor = stats.areasDeMisObras.filter(a => a.id_usuario).length;
-  const areasConCamaras = stats.areasDeMisObras.filter(a => 
-    stats.camaras.some(c => c.id_area === a.id_area)
+  const areasConSupervisor = stats.areasDeMisObras.filter((a: Area) => a.id_usuario).length;
+  const areasConCamaras = stats.areasDeMisObras.filter((a: Area) => 
+    stats.camaras.some((c: Camara) => c.id_area === a.id_area)
   ).length;
-  const areasConReportes = stats.areasDeMisObras.filter(a =>
-    stats.reportesDeMisObras.some(r => r.id_area === a.id_area)
+  const areasConReportes = stats.areasDeMisObras.filter((a: Area) =>
+    stats.reportesDeMisObras.some((r: ReporteResumen) => r.id_area === a.id_area)
   ).length;
 
   // Calcular estadísticas detalladas por área
-  const estadisticasArea = stats.areasDeMisObras.map((area: any) => {
-    const obra = stats.misObras.find((o: any) => o.id_obra === area.id_obra);
-    const supervisor = stats.supervisoresDeMisObras.find(s => 
-      s.areas.some(a => a.id_area === area.id_area)
+  const estadisticasArea: EstadisticaArea[] = stats.areasDeMisObras.map((area: Area) => {
+    const obra = stats.misObras.find((o: Obra) => o.id_obra === area.id_obra);
+    const supervisor = stats.supervisoresDeMisObras.find((s: Supervisor) => 
+      s.areas.some((a: Area) => a.id_area === area.id_area)
     );
-    const camaras = stats.camaras.filter(c => c.id_area === area.id_area);
-    const reportes = stats.reportesDeMisObras.filter(r => r.id_area === area.id_area);
+    const camaras = stats.camaras.filter((c: Camara) => c.id_area === area.id_area);
+    const reportes = stats.reportesDeMisObras.filter((r: ReporteResumen) => r.id_area === area.id_area);
     const reportesPendientes = reportes.filter(r => r.estado === 'pendiente');
 
     return {
@@ -50,11 +80,18 @@ const EstadisticasAreas = ({ stats }: { stats: any }) => {
   });
 
   // Datos para gráficos
-  const dataAreasPorObra = stats.misObras.map((obra: any) => ({
-    name: obra.nombre,
-    areas: stats.areasDeMisObras.filter(a => a.id_obra === obra.id_obra).length,
-    reportes: stats.reportesDeMisObras.filter(r => r.id_obra === obra.id_obra).length
-  }));
+  const dataAreasPorObra: AreaPorObra[] = stats.misObras
+    .filter((obra: Obra) => obraFiltrada === 'todas' || obra.id_obra === obraFiltrada)
+    .map((obra: Obra) => {
+      const areasDeObra = stats.areasDeMisObras.filter(a => a.id_obra === obra.id_obra);
+      return {
+        name: obra.nombre,
+        areas: areasDeObra.length,
+        reportes: stats.reportesDeMisObras.filter(r => 
+          areasDeObra.some(area => area.id_area === r.id_area)
+        ).length
+      };
+    });
 
   return (
     <section className="space-y-8">
@@ -99,7 +136,7 @@ const EstadisticasAreas = ({ stats }: { stats: any }) => {
         <select
           className="w-full md:w-64 px-4 py-2 rounded-lg border border-gray-200"
           value={obraFiltrada}
-          onChange={(e) => setObraFiltrada(e.target.value)}
+          onChange={(e) => setObraFiltrada(e.target.value === 'todas' ? 'todas' : Number(e.target.value))}
         >
           <option value="todas">Todas las obras</option>
           {stats.misObras.map((obra: any) => (
@@ -191,7 +228,9 @@ const EstadisticasAreas = ({ stats }: { stats: any }) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {estadisticasArea
-                .filter((area: any) => obraFiltrada === 'todas' || area.id_obra === obraFiltrada)
+                .filter((area: any) => 
+                  obraFiltrada === 'todas' || area.id_obra === obraFiltrada
+                )
                 .map((area: any) => (
                   <tr key={area.id_area} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
