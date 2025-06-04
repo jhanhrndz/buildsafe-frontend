@@ -204,7 +204,7 @@ const ReportForm: React.FC<ReportFormProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300 min-h-screen">
+    <div className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300 min-h-screen">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[95vh] overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
         {/* Header */}
         <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 px-8 py-6 relative overflow-hidden">

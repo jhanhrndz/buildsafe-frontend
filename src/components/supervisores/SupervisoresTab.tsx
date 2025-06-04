@@ -519,9 +519,9 @@ const AddSupervisorModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4 min-h-screen">
       <div 
-        className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-lg transform transition-all border border-white/20"
+        className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-lg transform transition-all "
         style={{ animation: 'modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
       >
         {/* Enhanced Modal Header */}
