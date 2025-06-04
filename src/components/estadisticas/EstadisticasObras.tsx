@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, 
   Tooltip as RechartsTooltip, ResponsiveContainer, Legend, LineChart, Line
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Building2, Users, Camera, FileText, LayoutGrid, Activity } from 'lucide-react';
+import { Building2, Users, Camera, FileText, LayoutGrid, Activity, Search, X,  Calendar } from 'lucide-react';
 import type { Obra, Area, User as Supervisor, Camara, ReporteResumen } from '../../types/entities';
 
 const COLORS = {
@@ -45,9 +45,22 @@ interface EstadisticaObra extends Obra {
   totalCamaras: number;
   totalReportes: number;
   reportesPendientes: number;
+  created_at?: string;
 }
 
 const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
+  // Estados locales
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilters, setDateFilters] = useState({
+    createdAt: '',
+    startDate: ''
+  });
+  const [quantityFilter, setQuantityFilter] = useState({
+    type: 'none',
+    value: ''
+  });
+
   // Estadísticas generales
   const totalObras = stats.misObras.length;
   const obrasActivas = stats.misObras.filter((o: Obra) => o.estado === 'activo').length;
@@ -139,6 +152,39 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
       reportesPendientes: reportesObra.filter(r => r.estado === 'pendiente').length
     };
   });
+
+  // Filtrado de obras
+  const filteredObras = useMemo(() => {
+    return estadisticasObra.filter((obra: EstadisticaObra) => {
+      const searchString = searchTerm.toLowerCase();
+      const matchesSearch = 
+        obra.nombre?.toLowerCase().includes(searchString) ||
+        obra.descripcion?.toLowerCase().includes(searchString);
+
+      const matchesStatus = statusFilter === 'all' || obra.estado === statusFilter;
+
+      const createdDate = obra.created_at ? new Date(obra.created_at).toISOString().split('T')[0] : '';
+      const startDate = obra.fecha_inicio ? new Date(obra.fecha_inicio).toISOString().split('T')[0] : '';
+      
+      const matchesDates = 
+        (!dateFilters.createdAt || createdDate === dateFilters.createdAt) &&
+        (!dateFilters.startDate || startDate === dateFilters.startDate);
+
+      const matchesQuantity = () => {
+        if (quantityFilter.type === 'none' || !quantityFilter.value) return true;
+        const value = parseInt(quantityFilter.value);
+        switch (quantityFilter.type) {
+          case 'areas': return obra.totalAreas === value;
+          case 'supervisores': return obra.totalSupervisores === value;
+          case 'camaras': return obra.totalCamaras === value;
+          case 'reportes': return obra.totalReportes === value;
+          default: return true;
+        }
+      };
+
+      return matchesSearch && matchesStatus && matchesDates && matchesQuantity();
+    });
+  }, [estadisticasObra, searchTerm, statusFilter, dateFilters, quantityFilter]);
 
   return (
     <section className="space-y-8">
@@ -341,63 +387,206 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
+
+        {/* Filters Section */}
+        <div className="px-6 py-4 border-b border-gray-100 bg-gray-100">
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Search Bar */}
+            <div className="flex items-center gap-3 flex-1">
+              <span className="text-sm font-medium text-gray-600 whitespace-nowrap">Buscar:</span>
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <input
+                  type="text"
+                  placeholder="Nombre o descripción de la obra..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white/70"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Status Filter */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-600 whitespace-nowrap">Estado:</span>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-48 py-2 px-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              >
+                <option value="all">Todos los estados</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+                <option value="finalizado">Finalizado</option>
+              </select>
+            </div>
+
+            {/* Date Filters */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-600 whitespace-nowrap">Creación:</span>
+                <input
+                  type="date"
+                  value={dateFilters.createdAt}
+                  onChange={(e) => setDateFilters(prev => ({ ...prev, createdAt: e.target.value }))}
+                  className="w-auto py-2 px-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-600 whitespace-nowrap">Inicio:</span>
+                <input
+                  type="date"
+                  value={dateFilters.startDate}
+                  onChange={(e) => setDateFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                  className="w-auto py-2 px-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Quantity Filter */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-600 whitespace-nowrap">Cantidad:</span>
+              <div className="flex gap-2">
+                <select
+                  value={quantityFilter.type}
+                  onChange={(e) => setQuantityFilter(prev => ({ ...prev, type: e.target.value }))}
+                  className="w-40 py-2 px-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                >
+                  <option value="none">Seleccionar...</option>
+                  <option value="areas">Áreas</option>
+                  <option value="supervisores">Supervisores</option>
+                  <option value="camaras">Cámaras</option>
+                  <option value="reportes">Reportes</option>
+                </select>
+                <input
+                  type="number"
+                  min="0"
+                  value={quantityFilter.value}
+                  onChange={(e) => setQuantityFilter(prev => ({ ...prev, value: e.target.value }))}
+                  placeholder="#"
+                  className="w-20 py-2 px-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Results Counter */}
+            <div className="flex items-center px-3 py-2 bg-blue-50 rounded-lg">
+              <span className="text-sm text-blue-600">
+                <span className="font-semibold">{filteredObras.length}</span> obra{filteredObras.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto xl:overflow-visible m-4">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-100">
+            <thead className="bg-gray-10">
               <tr>
-                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
-                  Obra
-                </th>
-                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
-                  Estado
-                </th>
-                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
-                  Creación
-                </th>
-                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
-                  Inicio
-                </th>
-                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">
-                  Áreas
-                </th>
-                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">
-                  Supervisores
-                </th>
-                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">
-                  Cámaras
-                </th>
-                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">
-                  Reportes
-                </th>
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">Obra</th>
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">Estado</th>
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">Creación</th>
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">Inicio</th>
+                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">Áreas</th>
+                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">Supervisores</th>
+                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">Cámaras</th>
+                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">Reportes</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {estadisticasObra.map((obra: any) => (
-                <tr key={obra.id_obra} className="hover:bg-gray-50 transition-colors duration-150 ease-in-out">
+              {filteredObras.map((obra: any) => (
+                <tr key={obra.id_obra} className="group">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{obra.nombre}</div>
-                    <div className="text-sm text-gray-500">{obra.descripcion}</div>
+                    <div className="flex items-center gap-2 group/obra rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center group-hover/obra:bg-indigo-200 transition-all duration-300">
+                        <Building2 className="h-3.5 w-3.5 text-indigo-600 group-hover/obra:text-indigo-700" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900 group-hover/obra:text-indigo-700">{obra.nombre}</span>
+                        <span className="text-xs text-gray-500 group-hover/obra:text-indigo-600">{obra.descripcion}</span>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                      ${obra.estado === 'activo' ? 'bg-green-100 text-green-800' : 
-                        obra.estado === 'inactivo' ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-gray-100 text-gray-800'}`}>
-                      {obra.estado}
-                    </span>
+                    <div className="flex items-center gap-2 group/estado">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300
+                        ${obra.estado === 'activo' ? 'border border-green-300 bg-green-50 text-green-800 group-hover/estado:bg-green-100' : 
+                        obra.estado === 'inactivo' ? 'border border-amber-300 bg-amber-50 text-amber-800 group-hover/estado:bg-amber-100' : 
+                        'border border-gray-300 bg-gray-50 text-gray-800 group-hover/estado:bg-gray-100'}`}>
+                        <Activity className="h-3 w-3" />
+                        {obra.estado}
+                      </span>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {obra.created_at ? format(parseISO(obra.created_at), 'dd/MM/yyyy') : '-'}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-2 group/date rounded-lg p-1.5 transition-all duration-300">
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover/date:bg-gray-200">
+                        <Calendar className="h-3.5 w-3.5 text-gray-500 group-hover/date:text-gray-700" />
+                      </div>
+                      <span className="text-sm text-gray-500 group-hover/date:text-gray-700">
+                        {obra.created_at ? format(parseISO(obra.created_at), 'dd/MM/yyyy') : '-'}
+                      </span>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {obra.fecha_inicio ? format(parseISO(obra.fecha_inicio), 'dd/MM/yyyy') : '-'}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-2 group/inicio rounded-lg p-1.5 transition-all duration-300">
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover/inicio:bg-gray-200">
+                        <Calendar className="h-3.5 w-3.5 text-gray-500 group-hover/inicio:text-gray-700" />
+                      </div>
+                      <span className="text-sm text-gray-500 group-hover/inicio:text-gray-700">
+                        {obra.fecha_inicio ? format(parseISO(obra.fecha_inicio), 'dd/MM/yyyy') : '-'}
+                      </span>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">{obra.totalAreas}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">{obra.totalSupervisores}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">{obra.totalCamaras}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                    <div className="font-medium text-gray-900">{obra.totalReportes}</div>
-                    <div className="text-xs text-red-500">{obra.reportesPendientes} pendientes</div>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex justify-center">
+                      <div className="flex items-center gap-2 group/areas rounded-lg p-1.5 transition-all duration-300">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center group-hover/areas:bg-emerald-200">
+                          <LayoutGrid className="h-3.5 w-3.5 text-emerald-600 group-hover/areas:text-emerald-700" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 group-hover/areas:text-emerald-700">{obra.totalAreas}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex justify-center">
+                      <div className="flex items-center gap-2 group/users rounded-lg p-1.5 transition-all duration-300">
+                        <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center group-hover/users:bg-amber-200">
+                          <Users className="h-3.5 w-3.5 text-amber-600 group-hover/users:text-amber-700" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 group-hover/users:text-amber-700">{obra.totalSupervisores}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex justify-center">
+                      <div className="flex items-center gap-2 group/cameras rounded-lg p-1.5 transition-all duration-300">
+                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover/cameras:bg-blue-200">
+                          <Camera className="h-3.5 w-3.5 text-blue-600 group-hover/cameras:text-blue-700" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 group-hover/cameras:text-blue-700">{obra.totalCamaras}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="flex items-center gap-2 group/reports rounded-lg p-1.5 transition-all duration-300">
+                        <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center group-hover/reports:bg-rose-200">
+                          <FileText className="h-3.5 w-3.5 text-rose-600 group-hover/reports:text-rose-700" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 group-hover/reports:text-rose-700">{obra.totalReportes}</span>
+                      </div>
+                      {obra.reportesPendientes > 0 && (
+                            <span className="text-xs text-rose-500 group-hover/reports:text-rose-600">{obra.reportesPendientes} pendientes</span>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
