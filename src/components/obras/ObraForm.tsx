@@ -78,7 +78,7 @@ const ObraForm = ({ onClose, obraToEdit, onSuccess }: ObraFormProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/20 backdrop-blur-sm">
       <div className="flex items-center justify-center min-h-screen px-4 py-8">
         <div className="relative bg-white rounded-2xl shadow-2xl transform transition-all sm:max-w-2xl sm:w-full overflow-hidden">
           {/* Header */}
