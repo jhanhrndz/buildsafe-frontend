@@ -97,14 +97,6 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
       path: `/obras/${obraId}/reportes`,
       visible: isCoordinador,
       color: 'orange'
-    },
-    {
-      id: 'estadisticas' as TabType,
-      label: 'Estadísticas',
-      icon: <AreaChart className="h-5 w-5" />,
-      path: `/obras/${obraId}/estadisticas`,
-      visible: isCoordinador,
-      color: 'purple'
     }
   ], [obraId, isCoordinador]);
 
@@ -252,28 +244,10 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
           <ObraReportesTab obraId={obraId} />
         )}
 
-        {activeTab === 'estadisticas' && <EstadisticasTab />}
       </div>
     </div>
   );
 };
-
-// Componentes auxiliares para pestañas
-const EstadisticasTab = () => (
-  <div className="space-y-6">
-    <div>
-      <h2 className="text-2xl font-bold text-gray-900">Estadísticas</h2>
-      <p className="mt-1 text-sm text-gray-600">Analiza métricas y tendencias del proyecto</p>
-    </div>
-    
-    <EmptyState
-      icon={<AreaChart className="h-12 w-12 text-purple-400" />}
-      title="No hay datos estadísticos disponibles"
-      description="Las estadísticas se generarán automáticamente cuando tengas registros suficientes"
-      colorScheme="purple"
-    />
-  </div>
-);
 
 const EmptyState = ({
   icon,

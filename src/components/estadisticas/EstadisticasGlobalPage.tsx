@@ -63,7 +63,7 @@ const EstadisticasGlobalPage: React.FC = () => {
         <div className="absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-teal-200/20 to-blue-200/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}} />
       </div>
 
-      <div className="mx-auto px-4 relative z-10">
+      <div className="mx-auto px-4 relative">
         {/* Encabezado */}
         <div className="mb-8">
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-10 shadow-sm border border-gray-50 relative overflow-hidden">
