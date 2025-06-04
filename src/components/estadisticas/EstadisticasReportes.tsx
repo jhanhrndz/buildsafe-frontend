@@ -59,50 +59,90 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
   return (
     <section className="space-y-8">
       {/* Cards de resumen */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <BarChart3 className="text-blue-600" size={24} />
-            <h3 className="text-sm font-medium text-gray-500">Total Reportes</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-sm hover:shadow-blue-400/20 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative flex items-center gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <BarChart3 className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <p className="text-3xl font-black text-gray-900 group-hover:text-blue-400 transition-colors duration-300">{totalReportes}</p>
+              <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Total Reportes</p>
+            </div>
           </div>
-          <p className="text-3xl font-bold text-blue-600">{totalReportes}</p>
-          <span className="text-sm text-gray-500">en total</span>
+          <div className="mt-4 flex items-center text-blue-400">
+            <BarChart3 className="h-4 w-4 mr-1" />
+            <span className="text-xs font-medium">en total</span>
+          </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <AlertTriangle className="text-amber-600" size={24} />
-            <h3 className="text-sm font-medium text-gray-500">Pendientes</h3>
+        <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-sm hover:shadow-amber-500/20 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-400/5 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative flex items-center gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <AlertTriangle className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <p className="text-3xl font-black text-gray-900 group-hover:text-amber-500 transition-colors duration-300">{reportesPendientes}</p>
+              <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Pendientes</p>
+            </div>
           </div>
-          <p className="text-3xl font-bold text-amber-600">{reportesPendientes}</p>
-          <span className="text-sm text-gray-500">por resolver</span>
+          <div className="mt-4 flex items-center text-amber-500">
+            <AlertTriangle className="h-4 w-4 mr-1" />
+            <span className="text-xs font-medium">por resolver</span>
+          </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <Hourglass className="text-blue-600" size={24} />
-            <h3 className="text-sm font-medium text-gray-500">Revisión</h3>
+        <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-sm hover:shadow-blue-500/20 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative flex items-center gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <Hourglass className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <p className="text-3xl font-black text-gray-900 group-hover:text-blue-600 transition-colors duration-300">{reportesRevision}</p>
+              <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">En Revisión</p>
+            </div>
           </div>
-          <p className="text-3xl font-bold text-blue-600">{reportesRevision}</p>
-          <span className="text-sm text-gray-500">en revisión</span>
+          <div className="mt-4 flex items-center text-blue-600">
+            <Hourglass className="h-4 w-4 mr-1" />
+            <span className="text-xs font-medium">en revisión</span>
+          </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <CheckCircle2 className="text-emerald-600" size={24} />
-            <h3 className="text-sm font-medium text-gray-500">Resueltos</h3>
+        <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-sm hover:shadow-emerald-500/20 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-emerald-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative flex items-center gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <CheckCircle2 className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <p className="text-3xl font-black text-gray-900 group-hover:text-emerald-600 transition-colors duration-300">{reportesCerrados}</p>
+              <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Resueltos</p>
+            </div>
           </div>
-          <p className="text-3xl font-bold text-emerald-600">{reportesCerrados}</p>
-          <span className="text-sm text-gray-500">completados</span>
+          <div className="mt-4 flex items-center text-emerald-600">
+            <CheckCircle2 className="h-4 w-4 mr-1" />
+            <span className="text-xs font-medium">completados</span>
+          </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <Building2 className="text-indigo-600" size={24} />
-            <h3 className="text-sm font-medium text-gray-500">Tasa Resolución</h3>
+        <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-sm hover:shadow-indigo-500/20 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative flex items-center gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <Building2 className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <p className="text-3xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors duration-300">{tasaResolucion}%</p>
+              <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Tasa Resolución</p>
+            </div>
           </div>
-          <p className="text-3xl font-bold text-indigo-600">{tasaResolucion}%</p>
-          <span className="text-sm text-gray-500">promedio</span>
+          <div className="mt-4 flex items-center text-indigo-600">
+            <Building2 className="h-4 w-4 mr-1" />
+            <span className="text-xs font-medium">promedio</span>
+          </div>
         </div>
       </div>
 
@@ -153,9 +193,9 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
 
       {/* Tabla de últimos reportes */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-5">
-        <div className="px-6 py-5 border-b border-gray-200 bg-blue-50 hover:bg-blue-100 transition-all duration-300 ease-in-out cursor-pointer group">
+        <div className="px-6 py-5 border-b border-gray-200 bg-blue-500/50 hover:bg-blue-100 transition-all duration-300 ease-in-out cursor-pointer group">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors duration-300">
+            <div className="p-2 bg-blue-200 rounded-lg group-hover:bg-blue-200 transition-colors duration-300">
               <FileText 
                 className="h-5 w-5 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" 
               />
@@ -172,21 +212,21 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-100 ">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Fecha
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Obra
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Área
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Estado
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Usuario
                 </th>
               </tr>

@@ -143,46 +143,90 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
   return (
     <section className="space-y-8">
       {/* Cards de resumen */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <Building2 className="text-indigo-600" size={24} />
-            <h3 className="text-sm font-medium text-gray-500">Total Obras</h3>
-          </div>
-          <p className="text-3xl font-bold text-indigo-600">{totalObras}</p>
-          <span className="text-sm text-gray-500">{obrasActivas} activas</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-sm hover:shadow-indigo-400/20 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/5 to-indigo-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative flex items-center gap-6">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+          <Building2 className="h-8 w-8 text-white" />
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <LayoutGrid className="text-emerald-600" size={24} />
-            <h3 className="text-sm font-medium text-gray-500">Áreas</h3>
-          </div>
-          <p className="text-3xl font-bold text-emerald-600">{totalAreas}</p>
-          <span className="text-sm text-gray-500">en total</span>
+        <div>
+          <p className="text-3xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors duration-300">{totalObras}</p>
+          <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Total Obras</p>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <Users className="text-amber-600" size={24} />
-            <h3 className="text-sm font-medium text-gray-500">Supervisores</h3>
           </div>
-          <p className="text-3xl font-bold text-amber-600">{totalSupervisores}</p>
-          <span className="text-sm text-gray-500">asignados</span>
+          <div className="mt-4 flex items-center text-indigo-600">
+        <Activity className="h-4 w-4 mr-1" />
+        <span className="text-xs font-medium">{obrasActivas} activas</span>
+          </div>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <Camera className="text-blue-600" size={24} />
-            <h3 className="text-sm font-medium text-gray-500">Cámaras</h3>
-          </div>
-          <p className="text-3xl font-bold text-blue-600">{totalCamaras}</p>
-          <span className="text-sm text-gray-500">instaladas</span>
+
+        <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-sm hover:shadow-emerald-400/20 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative flex items-center gap-6">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+          <LayoutGrid className="h-8 w-8 text-white" />
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <FileText className="text-rose-600" size={24} />
-            <h3 className="text-sm font-medium text-gray-500">Reportes</h3>
+        <div>
+          <p className="text-3xl font-black text-gray-900 group-hover:text-emerald-600 transition-colors duration-300">{totalAreas}</p>
+          <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Áreas</p>
+        </div>
           </div>
-          <p className="text-3xl font-bold text-rose-600">{stats.totalReportes}</p>
-          <span className="text-sm text-gray-500">generados</span>
+          <div className="mt-4 flex items-center text-emerald-600">
+        <LayoutGrid className="h-4 w-4 mr-1" />
+        <span className="text-xs font-medium">Total áreas</span>
+          </div>
+        </div>
+
+        <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-sm hover:shadow-amber-400/20 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-400/5 to-amber-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative flex items-center gap-6">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+          <Users className="h-8 w-8 text-white" />
+        </div>
+        <div>
+          <p className="text-3xl font-black text-gray-900 group-hover:text-amber-600 transition-colors duration-300">{totalSupervisores}</p>
+          <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Supervisores</p>
+        </div>
+          </div>
+          <div className="mt-4 flex items-center text-amber-600">
+        <Users className="h-4 w-4 mr-1" />
+        <span className="text-xs font-medium">Personal asignado</span>
+          </div>
+        </div>
+
+        <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-sm hover:shadow-blue-400/20 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative flex items-center gap-6">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+          <Camera className="h-8 w-8 text-white" />
+        </div>
+        <div>
+          <p className="text-3xl font-black text-gray-900 group-hover:text-blue-600 transition-colors duration-300">{totalCamaras}</p>
+          <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Cámaras</p>
+        </div>
+          </div>
+          <div className="mt-4 flex items-center text-blue-600">
+        <Camera className="h-4 w-4 mr-1" />
+        <span className="text-xs font-medium">Instaladas</span>
+          </div>
+        </div>
+
+        <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-sm hover:shadow-rose-400/20 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-400/5 to-rose-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="relative flex items-center gap-6">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+          <FileText className="h-8 w-8 text-white" />
+        </div>
+        <div>
+          <p className="text-3xl font-black text-gray-900 group-hover:text-rose-600 transition-colors duration-300">{stats.totalReportes}</p>
+          <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Reportes</p>
+        </div>
+          </div>
+          <div className="mt-4 flex items-center text-rose-600">
+        <FileText className="h-4 w-4 mr-1" />
+        <span className="text-xs font-medium">Generados</span>
+          </div>
         </div>
       </div>
 
@@ -280,9 +324,9 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
 
       {/* Tabla detallada */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-5">
-        <div className="px-6 py-5 border-b border-gray-200 bg-blue-50 hover:bg-blue-100 transition-all duration-300 ease-in-out cursor-pointer group">
+        <div className="px-6 py-5 border-b border-gray-200 bg-blue-500/50 hover:bg-blue-100 transition-all duration-300 ease-in-out cursor-pointer group">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors duration-300">
+            <div className="p-2 bg-blue-200 rounded-lg group-hover:bg-blue-200 transition-colors duration-300">
               <Activity 
                 className="h-5 w-5 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" 
               />
@@ -299,30 +343,30 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Obra
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Estado
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Creación
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Inicio
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">
                   Áreas
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">
                   Supervisores
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">
                   Cámaras
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">
                   Reportes
                 </th>
               </tr>
