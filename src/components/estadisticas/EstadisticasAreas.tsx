@@ -253,24 +253,24 @@ const EstadisticasAreas = ({ stats }: EstadisticasAreasProps) => {
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Área
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Obra
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Supervisor
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">
                   Cámaras
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-center text-sm font-black text-gray-800 uppercase tracking-wider">
                   Reportes
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-5 text-left text-sm font-black text-gray-800 uppercase tracking-wider">
                   Último Reporte
                 </th>
               </tr>
