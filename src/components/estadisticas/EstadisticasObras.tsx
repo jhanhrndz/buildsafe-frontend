@@ -5,8 +5,9 @@ import {
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Building2, Users, Camera, FileText, LayoutGrid, Activity, Search, X,  Calendar } from 'lucide-react';
+import { Building2, Users, Camera, FileText, LayoutGrid, Activity, Search, X,  Calendar, ClipboardList } from 'lucide-react';
 import type { Obra, Area, User as Supervisor, Camara, ReporteResumen } from '../../types/entities';
+import EmptyState from './sharedStats/EmptyState';
 
 const COLORS = {
   primary: ['#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe'],
@@ -501,95 +502,107 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredObras.map((obra: any) => (
-                <tr key={obra.id_obra} className="group">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 group/obra rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center group-hover/obra:bg-indigo-200 transition-all duration-300">
-                        <Building2 className="h-3.5 w-3.5 text-indigo-600 group-hover/obra:text-indigo-700" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-900 group-hover/obra:text-indigo-700">{obra.nombre}</span>
-                        <span className="text-xs text-gray-500 group-hover/obra:text-indigo-600">{obra.descripcion}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 group/estado">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300
-                        ${obra.estado === 'activo' ? 'border border-green-300 bg-green-50 text-green-800 group-hover/estado:bg-green-100' : 
-                        obra.estado === 'inactivo' ? 'border border-amber-300 bg-amber-50 text-amber-800 group-hover/estado:bg-amber-100' : 
-                        'border border-gray-300 bg-gray-50 text-gray-800 group-hover/estado:bg-gray-100'}`}>
-                        <Activity className="h-3 w-3" />
-                        {obra.estado}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 group/date rounded-lg p-1.5 transition-all duration-300">
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover/date:bg-gray-200">
-                        <Calendar className="h-3.5 w-3.5 text-gray-500 group-hover/date:text-gray-700" />
-                      </div>
-                      <span className="text-sm text-gray-500 group-hover/date:text-gray-700">
-                        {obra.created_at ? format(parseISO(obra.created_at), 'dd/MM/yyyy') : '-'}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 group/inicio rounded-lg p-1.5 transition-all duration-300">
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover/inicio:bg-gray-200">
-                        <Calendar className="h-3.5 w-3.5 text-gray-500 group-hover/inicio:text-gray-700" />
-                      </div>
-                      <span className="text-sm text-gray-500 group-hover/inicio:text-gray-700">
-                        {obra.fecha_inicio ? format(parseISO(obra.fecha_inicio), 'dd/MM/yyyy') : '-'}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex justify-center">
-                      <div className="flex items-center gap-2 group/areas rounded-lg p-1.5 transition-all duration-300">
-                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center group-hover/areas:bg-emerald-200">
-                          <LayoutGrid className="h-3.5 w-3.5 text-emerald-600 group-hover/areas:text-emerald-700" />
+              {filteredObras.length > 0 ? (
+                filteredObras.map((obra: any) => (
+                  <tr key={obra.id_obra} className="group">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 group/obra rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center group-hover/obra:bg-indigo-200 transition-all duration-300">
+                          <Building2 className="h-3.5 w-3.5 text-indigo-600 group-hover/obra:text-indigo-700" />
                         </div>
-                        <span className="text-sm font-medium text-gray-900 group-hover/areas:text-emerald-700">{obra.totalAreas}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex justify-center">
-                      <div className="flex items-center gap-2 group/users rounded-lg p-1.5 transition-all duration-300">
-                        <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center group-hover/users:bg-amber-200">
-                          <Users className="h-3.5 w-3.5 text-amber-600 group-hover/users:text-amber-700" />
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-900 group-hover/obra:text-indigo-700">{obra.nombre}</span>
+                          <span className="text-xs text-gray-500 group-hover/obra:text-indigo-600">{obra.descripcion}</span>
                         </div>
-                        <span className="text-sm font-medium text-gray-900 group-hover/users:text-amber-700">{obra.totalSupervisores}</span>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex justify-center">
-                      <div className="flex items-center gap-2 group/cameras rounded-lg p-1.5 transition-all duration-300">
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover/cameras:bg-blue-200">
-                          <Camera className="h-3.5 w-3.5 text-blue-600 group-hover/cameras:text-blue-700" />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 group/estado">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300
+                          ${obra.estado === 'activo' ? 'border border-green-300 bg-green-50 text-green-800 group-hover/estado:bg-green-100' : 
+                          obra.estado === 'inactivo' ? 'border border-amber-300 bg-amber-50 text-amber-800 group-hover/estado:bg-amber-100' : 
+                          'border border-gray-300 bg-gray-50 text-gray-800 group-hover/estado:bg-gray-100'}`}>
+                          <Activity className="h-3 w-3" />
+                          {obra.estado}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 group/date rounded-lg p-1.5 transition-all duration-300">
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover/date:bg-gray-200">
+                          <Calendar className="h-3.5 w-3.5 text-gray-500 group-hover/date:text-gray-700" />
                         </div>
-                        <span className="text-sm font-medium text-gray-900 group-hover/cameras:text-blue-700">{obra.totalCamaras}</span>
+                        <span className="text-sm text-gray-500 group-hover/date:text-gray-700">
+                          {obra.created_at ? format(parseISO(obra.created_at), 'dd/MM/yyyy') : '-'}
+                        </span>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="flex items-center gap-2 group/reports rounded-lg p-1.5 transition-all duration-300">
-                        <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center group-hover/reports:bg-rose-200">
-                          <FileText className="h-3.5 w-3.5 text-rose-600 group-hover/reports:text-rose-700" />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 group/inicio rounded-lg p-1.5 transition-all duration-300">
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover/inicio:bg-gray-200">
+                          <Calendar className="h-3.5 w-3.5 text-gray-500 group-hover/inicio:text-gray-700" />
                         </div>
-                        <span className="text-sm font-medium text-gray-900 group-hover/reports:text-rose-700">{obra.totalReportes}</span>
+                        <span className="text-sm text-gray-500 group-hover/inicio:text-gray-700">
+                          {obra.fecha_inicio ? format(parseISO(obra.fecha_inicio), 'dd/MM/yyyy') : '-'}
+                        </span>
                       </div>
-                      {obra.reportesPendientes > 0 && (
-                            <span className="text-xs text-rose-500 group-hover/reports:text-rose-600">{obra.reportesPendientes} pendientes</span>
-                      )}
-                    </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex justify-center">
+                        <div className="flex items-center gap-2 group/areas rounded-lg p-1.5 transition-all duration-300">
+                          <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center group-hover/areas:bg-emerald-200">
+                            <LayoutGrid className="h-3.5 w-3.5 text-emerald-600 group-hover/areas:text-emerald-700" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-900 group-hover/areas:text-emerald-700">{obra.totalAreas}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex justify-center">
+                        <div className="flex items-center gap-2 group/users rounded-lg p-1.5 transition-all duration-300">
+                          <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center group-hover/users:bg-amber-200">
+                            <Users className="h-3.5 w-3.5 text-amber-600 group-hover/users:text-amber-700" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-900 group-hover/users:text-amber-700">{obra.totalSupervisores}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex justify-center">
+                        <div className="flex items-center gap-2 group/cameras rounded-lg p-1.5 transition-all duration-300">
+                          <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover/cameras:bg-blue-200">
+                            <Camera className="h-3.5 w-3.5 text-blue-600 group-hover/cameras:text-blue-700" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-900 group-hover/cameras:text-blue-700">{obra.totalCamaras}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="flex items-center gap-2 group/reports rounded-lg p-1.5 transition-all duration-300">
+                          <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center group-hover/reports:bg-rose-200">
+                            <FileText className="h-3.5 w-3.5 text-rose-600 group-hover/reports:text-rose-700" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-900 group-hover/reports:text-rose-700">{obra.totalReportes}</span>
+                        </div>
+                        {obra.reportesPendientes > 0 && (
+                          <span className="text-xs text-rose-500 group-hover/reports:text-rose-600">{obra.reportesPendientes} pendientes</span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8}>
+                    <EmptyState 
+                      title="No hay obras disponibles"
+                      message="No se encontraron obras que coincidan con los filtros seleccionados."
+                      icon={<Building2 className="w-16 h-16" />}
+                    />
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

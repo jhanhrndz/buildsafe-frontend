@@ -5,8 +5,9 @@ import {
 } from 'recharts';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { BarChart3, Building2, AlertTriangle, CheckCircle2, FileText, Hourglass, User, Clock, MapPin, Building, Search, Calendar, X } from 'lucide-react';
+import { BarChart3, Building2, AlertTriangle, CheckCircle2, FileText, Hourglass, User, Clock, MapPin, Building, Search, Calendar, X, ClipboardList } from 'lucide-react';
 import type { Area } from '../../types/entities';
+import EmptyState from './sharedStats/EmptyState';
 
 const COLORS = {
   primary: ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'],
@@ -329,86 +330,98 @@ const EstadisticasReportes = ({ stats }: { stats: any }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
-              {filteredReportes.slice(0, 5).map((reporte: any) => (
-                <tr key={reporte.id_reporte} className="group">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 group/date rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover/date:bg-gray-200 transition-all duration-300">
-                        <Calendar className="h-3.5 w-3.5 text-gray-500 group-hover/date:text-gray-700" />
+              {filteredReportes.length > 0 ? (
+                filteredReportes.slice(0, 5).map((reporte: any) => (
+                  <tr key={reporte.id_reporte} className="group">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 group/date rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover/date:bg-gray-200 transition-all duration-300">
+                          <Calendar className="h-3.5 w-3.5 text-gray-500 group-hover/date:text-gray-700" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-900 group-hover/date:text-gray-700">
+                            {format(new Date(reporte.fecha_hora), 'dd/MM/yyyy', { locale: es })}
+                          </span>
+                          <span className="text-xs text-gray-500 group-hover/date:text-gray-600">
+                            {format(new Date(reporte.fecha_hora), 'HH:mm', { locale: es })}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-900 group-hover/date:text-gray-700">
-                          {format(new Date(reporte.fecha_hora), 'dd/MM/yyyy', { locale: es })}
-                        </span>
-                        <span className="text-xs text-gray-500 group-hover/date:text-gray-600">
-                          {format(new Date(reporte.fecha_hora), 'HH:mm', { locale: es })}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 group/obra rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
-                      <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center group-hover/obra:bg-purple-200 transition-all duration-300">
-                        <Building className="h-3.5 w-3.5 text-purple-600 group-hover/obra:text-purple-700" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-900 group-hover/obra:text-purple-700 transition-colors duration-300">
-                        {reporte.nombre_obra}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 group/area rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
-                      <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center group-hover/area:bg-green-200 transition-all duration-300">
-                        <MapPin className="h-3.5 w-3.5 text-green-600 group-hover/area:text-green-700" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-900 group-hover/area:text-green-700 transition-colors duration-300">
-                        {reporte.nombre_area}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {reporte.estado === 'pendiente' && (
-                      <div className="group/estado inline-block">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-amber-300 bg-amber-50 text-amber-800 group-hover/estado:bg-amber-100 group-hover/estado:border-amber-400 group-hover/estado:text-amber-900 transition-all duration-300 cursor-pointer">
-                          <Clock className="h-3 w-3" />
-                          Pendiente
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 group/obra rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
+                        <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center group-hover/obra:bg-purple-200 transition-all duration-300">
+                          <Building className="h-3.5 w-3.5 text-purple-600 group-hover/obra:text-purple-700" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 group-hover/obra:text-purple-700 transition-colors duration-300">
+                          {reporte.nombre_obra}
                         </span>
                       </div>
-                    )}
-                    {reporte.estado === 'en revisión' && (
-                      <div className="group/estado inline-block">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-blue-300 bg-blue-50 text-blue-800 group-hover/estado:bg-blue-100 group-hover/estado:border-blue-400 group-hover/estado:text-blue-900 transition-all duration-300 cursor-pointer">
-                          <Search className="h-3 w-3" />
-                          En Revisión
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 group/area rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
+                        <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center group-hover/area:bg-green-200 transition-all duration-300">
+                          <MapPin className="h-3.5 w-3.5 text-green-600 group-hover/area:text-green-700" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 group-hover/area:text-green-700 transition-colors duration-300">
+                          {reporte.nombre_area}
                         </span>
                       </div>
-                    )}
-                    {reporte.estado === 'cerrado' && (
-                      <div className="group/estado inline-block">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-emerald-300 bg-emerald-50 text-emerald-800 group-hover/estado:bg-emerald-100 group-hover/estado:border-emerald-400 group-hover/estado:text-emerald-900 transition-all duration-300 cursor-pointer">
-                          <CheckCircle2 className="h-3 w-3" />
-                          Cerrado
-                        </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {reporte.estado === 'pendiente' && (
+                        <div className="group/estado inline-block">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-amber-300 bg-amber-50 text-amber-800 group-hover/estado:bg-amber-100 group-hover/estado:border-amber-400 group-hover/estado:text-amber-900 transition-all duration-300 cursor-pointer">
+                            <Clock className="h-3 w-3" />
+                            Pendiente
+                          </span>
+                        </div>
+                      )}
+                      {reporte.estado === 'en revisión' && (
+                        <div className="group/estado inline-block">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-blue-300 bg-blue-50 text-blue-800 group-hover/estado:bg-blue-100 group-hover/estado:border-blue-400 group-hover/estado:text-blue-900 transition-all duration-300 cursor-pointer">
+                            <Search className="h-3 w-3" />
+                            En Revisión
+                          </span>
+                        </div>
+                      )}
+                      {reporte.estado === 'cerrado' && (
+                        <div className="group/estado inline-block">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-emerald-300 bg-emerald-50 text-emerald-800 group-hover/estado:bg-emerald-100 group-hover/estado:border-emerald-400 group-hover/estado:text-emerald-900 transition-all duration-300 cursor-pointer">
+                            <CheckCircle2 className="h-3 w-3" />
+                            Cerrado
+                          </span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 group/user rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
+                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover/user:bg-blue-200 transition-all duration-300">
+                          <User className="h-3.5 w-3.5 text-blue-600 group-hover/user:text-blue-700" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-900 group-hover/user:text-blue-800 transition-colors duration-300">
+                            {reporte.usuario?.nombres} {reporte.usuario?.apellidos}
+                          </span>
+                          <span className="text-xs text-blue-400 group-hover/user:text-blue-900 font-medium">
+                            {reporte.usuario?.global_role}
+                          </span>
+                        </div>
                       </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 group/user rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
-                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover/user:bg-blue-200 transition-all duration-300">
-                        <User className="h-3.5 w-3.5 text-blue-600 group-hover/user:text-blue-700" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-900 group-hover/user:text-blue-800 transition-colors duration-300">
-                          {reporte.usuario?.nombres} {reporte.usuario?.apellidos}
-                        </span>
-                        <span className="text-xs text-blue-400 group-hover/user:text-blue-900 font-medium">
-                          {reporte.usuario?.global_role}
-                        </span>
-                      </div>
-                    </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5}>
+                    <EmptyState 
+                      title="No hay reportes disponibles"
+                      message="No se encontraron reportes que coincidan con los filtros seleccionados."
+                      icon={<ClipboardList className="w-16 h-16" />}
+                    />
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

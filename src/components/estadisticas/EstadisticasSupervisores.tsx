@@ -3,6 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Users, AlertTriangle, CheckCircle2, FileText, Calendar, Activity, Search, X, LayoutGrid } from 'lucide-react';
+import EmptyState from './sharedStats/EmptyState';
 
 const COLORS = {
   primary: ['#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe'],
@@ -333,85 +334,97 @@ const EstadisticasSupervisores = ({ stats }: { stats: any }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredSupervisores.map((supervisor: any) => (
-                <tr key={supervisor.id_usuario} className="group">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 group/user rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center group-hover/user:bg-indigo-200 transition-all duration-300">
-                        <Users className="h-3.5 w-3.5 text-indigo-600 group-hover/user:text-indigo-700" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-900 group-hover/user:text-indigo-700">
-                          {supervisor.nombres} {supervisor.apellidos}
-                        </span>
-                        <span className="text-xs text-gray-500 group-hover/user:text-indigo-600">
-                          {supervisor.correo}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex justify-center">
-                      <div className="flex items-center gap-2 group/areas rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
-                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center group-hover/areas:bg-emerald-200 transition-all duration-300">
-                          <LayoutGrid className="h-3.5 w-3.5 text-emerald-600 group-hover/areas:text-emerald-700" />
+              {filteredSupervisores.length > 0 ? (
+                filteredSupervisores.map((supervisor: any) => (
+                  <tr key={supervisor.id_usuario} className="group">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 group/user rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center group-hover/user:bg-indigo-200 transition-all duration-300">
+                          <Users className="h-3.5 w-3.5 text-indigo-600 group-hover/user:text-indigo-700" />
                         </div>
-                        <div className="flex flex-col items-center">
-                          <span className="text-sm font-medium text-gray-900 group-hover/areas:text-emerald-700">
-                            {supervisor.totalAreas}
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-900 group-hover/user:text-indigo-700">
+                            {supervisor.nombres} {supervisor.apellidos}
                           </span>
-                          <span className="text-xs text-emerald-500 group-hover/areas:text-emerald-600">
-                            asignadas
+                          <span className="text-xs text-gray-500 group-hover/user:text-indigo-600">
+                            {supervisor.correo}
                           </span>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="flex items-center gap-2 group/reports rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
-                        <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center group-hover/reports:bg-rose-200 transition-all duration-300">
-                          <FileText className="h-3.5 w-3.5 text-rose-600 group-hover/reports:text-rose-700" />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex justify-center">
+                        <div className="flex items-center gap-2 group/areas rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
+                          <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center group-hover/areas:bg-emerald-200 transition-all duration-300">
+                            <LayoutGrid className="h-3.5 w-3.5 text-emerald-600 group-hover/areas:text-emerald-700" />
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <span className="text-sm font-medium text-gray-900 group-hover/areas:text-emerald-700">
+                              {supervisor.totalAreas}
+                            </span>
+                            <span className="text-xs text-emerald-500 group-hover/areas:text-emerald-600">
+                              asignadas
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-sm font-medium text-gray-900 group-hover/reports:text-rose-700">
-                          {supervisor.totalReportes}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="flex items-center gap-2 group/reports rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
+                          <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center group-hover/reports:bg-rose-200 transition-all duration-300">
+                            <FileText className="h-3.5 w-3.5 text-rose-600 group-hover/reports:text-rose-700" />
+                          </div>
+                          <span className="text-sm font-medium text-gray-900 group-hover/reports:text-rose-700">
+                            {supervisor.totalReportes}
+                          </span>
+                        </div>
+                        {supervisor.reportesPendientes > 0 && (
+                          <span className="text-xs text-rose-500 group-hover/reports:text-rose-600">
+                            {supervisor.reportesPendientes} pendientes
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 group/date rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
+                        <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center group-hover/date:bg-amber-200 transition-all duration-300">
+                          <Calendar className="h-3.5 w-3.5 text-amber-600 group-hover/date:text-amber-700" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 group-hover/date:text-amber-700">
+                          {supervisor.ultimoReporte 
+                            ? format(new Date(supervisor.ultimoReporte), 'dd/MM/yyyy HH:mm', { locale: es })
+                            : 'Sin reportes'}
                         </span>
                       </div>
-                      {supervisor.reportesPendientes > 0 && (
-                        <span className="text-xs text-rose-500 group-hover/reports:text-rose-600">
-                          {supervisor.reportesPendientes} pendientes
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 group/date rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
-                      <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center group-hover/date:bg-amber-200 transition-all duration-300">
-                        <Calendar className="h-3.5 w-3.5 text-amber-600 group-hover/date:text-amber-700" />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex justify-center">
+                        <div className="group/estado inline-block">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300
+                            ${supervisor.totalAreas > 0 
+                              ? 'border border-green-300 bg-green-50 text-green-800 group-hover/estado:bg-green-100 group-hover/estado:border-green-400 group-hover/estado:text-green-900' 
+                              : 'border border-gray-300 bg-gray-50 text-gray-800 group-hover/estado:bg-gray-100 group-hover/estado:border-gray-400 group-hover/estado:text-gray-900'}`}
+                          >
+                            <Activity className="h-3 w-3" />
+                            {supervisor.totalAreas > 0 ? 'Activo' : 'Sin áreas'}
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-sm font-medium text-gray-900 group-hover/date:text-amber-700">
-                        {supervisor.ultimoReporte 
-                          ? format(new Date(supervisor.ultimoReporte), 'dd/MM/yyyy HH:mm', { locale: es })
-                          : 'Sin reportes'}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex justify-center">
-                      <div className="group/estado inline-block">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300
-                          ${supervisor.totalAreas > 0 
-                            ? 'border border-green-300 bg-green-50 text-green-800 group-hover/estado:bg-green-100 group-hover/estado:border-green-400 group-hover/estado:text-green-900' 
-                            : 'border border-gray-300 bg-gray-50 text-gray-800 group-hover/estado:bg-gray-100 group-hover/estado:border-gray-400 group-hover/estado:text-gray-900'}`}
-                        >
-                          <Activity className="h-3 w-3" />
-                          {supervisor.totalAreas > 0 ? 'Activo' : 'Sin áreas'}
-                        </span>
-                      </div>
-                    </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5}>
+                    <EmptyState 
+                      title="No hay supervisores disponibles"
+                      message="No se encontraron supervisores que coincidan con los filtros seleccionados."
+                      icon={<Users className="w-16 h-16" />}
+                    />
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
