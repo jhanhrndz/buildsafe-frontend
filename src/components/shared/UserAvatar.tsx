@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserIcon } from 'lucide-react';
 import { useUserContext } from '../../context/UserContext';
 
@@ -14,8 +14,21 @@ const UserAvatar = ({ className = '' }: UserAvatarProps) => {
   const userName = user?.nombres || user?.usuario || 'Usuario';
   const userInitials = userName.charAt(0).toUpperCase();
 
+  useEffect(() => {
+    setImageError(false);
+  }, [userPicture]);
+
   const handleImageError = () => {
     setImageError(true);
+  };
+
+  // Función para procesar URLs de Google
+  const processGoogleUrl = (url: string) => {
+    if(url.includes('googleusercontent')) {
+      // Elimina parámetros de tamaño que pueden causar problemas
+      return url.split('=')[0] + '=s400-c'; // Tamaño fijo 400px
+    }
+    return url;
   };
 
   return (
@@ -28,12 +41,14 @@ const UserAvatar = ({ className = '' }: UserAvatarProps) => {
         ${className}
       `}
     >
-      {userPicture ?(
+      {userPicture && !imageError ? (
         <img
-          src={userPicture}
+          src={processGoogleUrl(userPicture)}
           alt={`Foto de perfil de ${userName}`}
           className="w-full h-full object-cover rounded-full"
           loading="lazy"
+          onError={handleImageError}
+          referrerPolicy="no-referrer"
         />
       ) : (
         <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
@@ -44,4 +59,4 @@ const UserAvatar = ({ className = '' }: UserAvatarProps) => {
   );
 };
 
-export default UserAvatar;  
+export default UserAvatar;
