@@ -134,7 +134,7 @@ const EstadisticasSupervisores = ({ stats }: { stats: any }) => {
             </div>
             <div>
               <p className="text-3xl font-black text-gray-900 group-hover:text-amber-600 transition-colors duration-300">
-                {stats.supervisoresStats?.reduce((acc: number, s: any) => acc + s.totalReportes, 0)}
+                {stats.supervisoresStats?.reduce((acc: number, s: any) => acc + s.totalReportes, 0) || 0}
               </p>
               <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Reportes Totales</p>
             </div>
@@ -153,7 +153,7 @@ const EstadisticasSupervisores = ({ stats }: { stats: any }) => {
             </div>
             <div>
               <p className="text-3xl font-black text-gray-900 group-hover:text-rose-600 transition-colors duration-300">
-                {stats.supervisoresStats?.reduce((acc: number, s: any) => acc + s.reportesPendientes, 0)}
+                {stats.supervisoresStats?.reduce((acc: number, s: any) => acc + s.reportesPendientes, 0) || 0}
               </p>
               <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Reportes Pendientes</p>
             </div>

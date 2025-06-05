@@ -38,36 +38,45 @@ export const Register = () => {
   // Validar un campo individual
   const validateField = (field: keyof RegisterPayload, value: string): string => {
     const trimmedValue = value.trim();
-    
+
     switch (field) {
       case 'usuario':
         if (!trimmedValue) return 'El nombre de usuario es obligatorio';
         if (trimmedValue.length < 3) return 'El usuario debe tener al menos 3 caracteres';
         return '';
-        
+
       case 'contrasena':
         if (!trimmedValue) return 'La contraseña es obligatoria';
-        const cumpleRequisitos = /^(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/.test(trimmedValue);
+        const cumpleRequisitos = /^(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>_\-]).{8,}$/.test(trimmedValue);
         if (!cumpleRequisitos) return 'La contraseña debe tener al menos 8 caracteres, un número y un carácter especial';
-
         return '';
-        
-      case 'correo':  
+
+      case 'correo':
         if (!trimmedValue) return 'El correo electrónico es obligatorio';
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(trimmedValue)) return 'Ingrese un correo electrónico válido';
         return '';
-        
+
       case 'telefono':
-        if (trimmedValue && !/^\d{7,15}$/.test(trimmedValue)) 
+        if (!trimmedValue) return 'El teléfono es obligatorio';
+        if (!/^\d{7,15}$/.test(trimmedValue))
           return 'Ingrese un número de teléfono válido (7-15 dígitos)';
         return '';
-        
+
       case 'documento':
-        if (trimmedValue && !/^\d{5,20}$/.test(trimmedValue)) 
+        if (!trimmedValue) return 'El documento es obligatorio';
+        if (!/^\d{5,20}$/.test(trimmedValue))
           return 'Ingrese un número de documento válido (5-20 dígitos)';
         return '';
-        
+
+      case 'nombres':
+        if (!trimmedValue) return 'Los nombres son obligatorios';
+        return '';
+
+      case 'apellidos':
+        if (!trimmedValue) return 'Los apellidos son obligatorios';
+        return '';
+
       default:
         return '';
     }
@@ -75,26 +84,26 @@ export const Register = () => {
 
   // Verificar si el formulario es válido
   const isFormValid = (): boolean => {
-    // Campos requeridos - deben estar presentes y válidos
-    const requiredFields: (keyof RegisterPayload)[] = ['usuario', 'contrasena', 'correo'];
-    
+    // Todos los campos excepto global_role son requeridos
+    const requiredFields: (keyof RegisterPayload)[] = ['usuario', 'contrasena', 'correo', 'telefono', 'documento', 'nombres', 'apellidos'];
+
     // Verificar que todos los campos requeridos tienen valor
-    const hasAllRequired = requiredFields.every(field => 
+    const hasAllRequired = requiredFields.every(field =>
       userData[field]?.toString().trim()
     );
-    
+
     // Verificar que no hay errores de validación en ningún campo con valor
     const hasNoErrors = Object.keys(userData).every(key => {
       const field = key as keyof RegisterPayload;
       const value = userData[field]?.toString() || '';
-      
+
       // Si el campo está vacío y no es requerido, no hay error
       if (!value && !requiredFields.includes(field)) return true;
-      
+
       // Validar el campo
       return !validateField(field, value);
     });
-    
+
     return hasAllRequired && hasNoErrors;
   };
 
@@ -313,6 +322,7 @@ export const Register = () => {
                       disabled={isLoading}
                       className={getInputClasses('documento')}
                       placeholder="Número de documento"
+                      required
                     />
                   </div>
                   {hasError('documento') && (
@@ -371,6 +381,7 @@ export const Register = () => {
                       disabled={isLoading}
                       className={getInputClasses('nombres')}
                       placeholder="Tus nombres"
+                      required
                     />
                   </div>
                   {hasError('nombres') && (
@@ -399,6 +410,7 @@ export const Register = () => {
                       disabled={isLoading}
                       className={getInputClasses('apellidos')}
                       placeholder="Tus apellidos"
+                      required
                     />
                   </div>
                   {hasError('apellidos') && (
@@ -427,6 +439,7 @@ export const Register = () => {
                       disabled={isLoading}
                       className={getInputClasses('telefono')}
                       placeholder="Número de teléfono"
+                      required
                     />
                   </div>
                   {hasError('telefono') && (
