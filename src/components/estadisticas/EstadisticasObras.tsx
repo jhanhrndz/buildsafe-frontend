@@ -265,7 +265,7 @@ const EstadisticasObras = ({ stats }: EstadisticasObrasProps) => {
           <FileText className="h-8 w-8 text-white" />
         </div>
         <div>
-          <p className="text-3xl font-black text-gray-900 group-hover:text-rose-600 transition-colors duration-300">{stats.totalReportes}</p>
+          <p className="text-3xl font-black text-gray-900 group-hover:text-rose-600 transition-colors duration-300">{stats.totalReportes || 0}</p>
           <p className="text-sm text-gray-600 font-semibold tracking-wide uppercase">Reportes</p>
         </div>
           </div>
