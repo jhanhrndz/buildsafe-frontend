@@ -37,7 +37,7 @@ const features = [
 const Home = () => { 
 	const { user } = useUserContext();
   const { totalAreas, totalObras, totalReportes, totalSupervisores } = useEstadisticasGlobal();
-
+ console.log('useEstadisticas 	', useEstadisticasGlobal());
   // Modificamos el array stats para incluir los iconos
   const stats = [
     { 
@@ -69,13 +69,7 @@ const Home = () => {
 	return (
 		<div className="min-h-screen xl:mx-30 relative px-4 sm:px-6 lg:px-8">
 			{/* Fondo fijo mejorado */}
-			<div className="fixed inset-0 z-[-2] h-full w-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40" />
 			
-			{/* Elementos decorativos de fondo */}
-			<div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-				<div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse"></div>
-				<div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
-			</div>
 
 			<div className="relative">
 				{/* Header mejorado y responsive */}
@@ -144,7 +138,7 @@ const Home = () => {
 							<div className="flex flex-col sm:flex-row gap-4 pt-4">
 								<Link
 									to="/obras"
-									className="group relative overflow-hidden inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-xl hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
+									className="group relative overflow-hidden inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-xl hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
 								>
 									<span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
 									<span className="relative flex items-center">
@@ -171,7 +165,7 @@ const Home = () => {
 								{stats.map((stat, index) => (
 									<div
 										key={stat.label}
-										className="group relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+										className="group relative backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
 										style={{ animationDelay: `${index * 100}ms` }}
 									>
 										<div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -217,10 +211,9 @@ const Home = () => {
 								{/* Glow effect */}
 								<div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-indigo-400/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110"></div>
 								
-								<div className="relative bg-white/90 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 group-hover:bg-white h-full flex flex-col">
+								<div className="relative bg-white/90 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-3 group-hover:bg-white h-full flex flex-col">
 									{/* Icon container */}
 									<div className="relative mb-6">
-										<div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
 										<div className={`relative w-16 h-16 bg-gradient-to-br ${
 											feature.color === 'blue' ? 'from-blue-500 to-blue-600' :
 											feature.color === 'emerald' ? 'from-emerald-500 to-emerald-600' :
@@ -252,7 +245,7 @@ const Home = () => {
 				<section className="py-20">
 					<div className="relative">
 						{/* Background gradient */}
-						<div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl shadow-2xl"></div>
+						<div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl shadow-xl"></div>
 						<div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-indigo-700/90 rounded-3xl"></div>
 						
 						{/* Decorative elements */}

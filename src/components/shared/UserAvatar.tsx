@@ -28,12 +28,11 @@ const UserAvatar = ({ className = '' }: UserAvatarProps) => {
         ${className}
       `}
     >
-      {userPicture && !imageError ? (
+      {userPicture ?(
         <img
           src={userPicture}
           alt={`Foto de perfil de ${userName}`}
           className="w-full h-full object-cover rounded-full"
-          onError={handleImageError}
           loading="lazy"
         />
       ) : (
