@@ -62,14 +62,8 @@ const Sidebar = () => {
       path: '/estadisticas',
       icon: <AreaChart size={20} />,
       allowedRoles: ['coordinador'], // Solo coordinador
-    },
-    {
-      name: 'Configuración',
-      path: '/configuracion',
-      icon: <SettingsIcon size={20} />,
-      allowedRoles: ['coordinador', 'supervisor']
     }
-    
+
   ];
 
   // Filtrar menú items según el rol del usuario
