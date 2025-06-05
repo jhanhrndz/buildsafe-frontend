@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useUserContext } from '../../context/UserContext';
 import { useLocation, useNavigate } from 'react-router-dom';
-import UserAvatar from './UserAvatar';
+import UserAvatar from '../shared/UserAvatar';
 
 interface NavbarProps {
   setPageTitle?: (title: string) => void;
