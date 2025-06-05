@@ -216,12 +216,7 @@ const AreaList: React.FC<AreaListProps> = ({
   // Lista principal
   return (
     <div className="p-8 space-y-8">
-      {/* Enhanced Search and Actions Bar */}
-            {/* Enhanced Header Section */}
-      
-      
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
-        {/* Enhanced Search Input */}
         <div className="relative flex-1 max-w-lg">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" />
@@ -235,7 +230,6 @@ const AreaList: React.FC<AreaListProps> = ({
           />
         </div>
 
-        {/* Enhanced Create Button */}
         {isCoordinador && (
           <button
             onClick={() => setIsModalOpen(true)}
@@ -247,7 +241,6 @@ const AreaList: React.FC<AreaListProps> = ({
         )}
       </div>
 
-      {/* Enhanced Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {filteredAreas.map((area) => {
           // Calcula el número de cámaras para esta área
@@ -292,7 +285,6 @@ const AreaList: React.FC<AreaListProps> = ({
         />
       )}
       
-      {/* Enhanced Confirm Dialog */}
       {areaToDelete && (
         <ConfirmDialog
           title="Eliminar área"

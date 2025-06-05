@@ -6,7 +6,7 @@ import { useArea } from '../../hooks/features/useArea';
 import AreaTabsContent from '../areas/AreaTabContent';
 import SupervisoresTab from '../supervisores/SupervisoresTab';
 import ObraReportesTab from '../reportes/ObraReportesTab';
-import { obraUsuarioService } from '../../services/obraUsuario'; // <-- IMPORTANTE
+import { obraUsuarioService } from '../../services/obraUsuario';
 import { useReportsContext } from '../../context/ReportsContext';
 import type { Area, SupervisorWithAreas, User } from '../../types/entities';
 
@@ -179,8 +179,8 @@ const ObraTabs = ({ obraId, isCoordinador }: ObraTabsProps) => {
   // Convierte SupervisorWithAreas[] a User[]
   const supervisoresUsers: User[] = supervisores.map(s => ({
     id_usuario: s.id_usuario,
-    usuario: '', // o puedes dejarlo vacío si no lo tienes
-    auth_provider: 'local', // o el valor correcto si lo tienes
+    usuario: '',
+    auth_provider: 'local',
     correo: s.correo,
     nombres: s.nombres,
     apellidos: s.apellidos,
