@@ -5,7 +5,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useUserContext } from '../../context/UserContext';
 import { useEstadisticasGlobal} from '../../hooks/features/useEstadisticasGlobal';
-import React from 'react';
+import UserAvatar from '../shared/UserAvatar';
 
 const features = [
 	{
@@ -72,76 +72,58 @@ const Home = () => {
 			<div className="fixed inset-0 z-[-2] h-full w-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40" />
 			
 			{/* Elementos decorativos de fondo */}
-      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
+			<div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+				<div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse"></div>
+				<div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
+			</div>
 
-			<div className="relative z-10">
+			<div className="relative">
 				{/* Header mejorado y responsive */}
 				<header className="pt-6 pb-12 sm:pt-8 sm:pb-16">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            {/* Logo y nombre */}
-            <div className="flex items-center space-x-4 group">
-              <div className="relative">
-                <div className="absolute inset-0 bg-blue-600/20 rounded-2xl blur-xl group-hover:bg-blue-600/30 transition-all duration-500"></div>
-                <div className="relative bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-white/50 group-hover:shadow-xl group-hover:scale-105 transition-all duration-500">
-                  <HardHat className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600" />
-                </div>
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-800 tracking-tight">
-                  Build<span className="text-blue-600">Safe</span>
-                </h1>
-                <p className="text-sm sm:text-base text-gray-500 font-medium">Sistema de Gestión</p>
-              </div>
-            </div>
+					<div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+						{/* Logo y nombre */}
+						<div className="flex items-center space-x-4 group">
+						<div className="relative">
+							<div className="absolute inset-0 bg-blue-600/20 rounded-2xl blur-xl group-hover:bg-blue-600/30 transition-all duration-500"></div>
+							<div className="relative bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-white/50 group-hover:shadow-xl group-hover:scale-105 transition-all duration-500">
+							<HardHat className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600" />
+							</div>
+						</div>
+						<div>
+							<h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-800 tracking-tight">
+							Build<span className="text-blue-600">Safe</span>
+							</h1>
+							<p className="text-sm sm:text-base text-gray-500 font-medium">Sistema de Gestión</p>
+						</div>
+						</div>
 
-            {/* Tarjeta de usuario mejorada */}
-            <div className="w-full lg:w-auto bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:bg-white/90">
-              <div className="flex items-center gap-6 p-4 sm:p-6">
-                {/* Foto de perfil */}
-                <div className="relative flex-shrink-0">
-                  {user?.picture ? (
-                    <div className="relative w-14 h-14 sm:w-12 sm:h-12">
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl blur-lg opacity-50"></div>
-                      <img
-                        src={user.picture}
-                        alt={user?.nombres || 'Usuario'}
-                        className="relative w-full h-full object-cover rounded-2xl border-2 border-white shadow-lg"
-                      />
-                    </div>
-                  ) : (
-                    <div className="relative w-14 h-14 sm:w-12 sm:h-12">
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl blur-lg opacity-50"></div>
-                      <div className="relative w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-                        <span className="text-xl sm:text-2xl font-bold text-white">
-                          {user?.nombres?.charAt(0) || 'U'}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
+						{/* Tarjeta de usuario mejorada */}
+						<div className="w-full lg:w-auto bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/50 overflow-hidden transition-all duration-300 hover:shadow-xl hover:bg-white/90">
+							<div className="flex items-center gap-6 p-3 sm:p-4">
+								{/* Foto de perfil */}
+								<div className="relative flex-shrink-0">
+									<UserAvatar />
+								</div>
 
-                {/* Información del usuario */}
-                <div className="flex-grow">
-                  <p className="text-sm sm:text-base text-gray-500 font-medium">
-                    Bienvenido al panel
-                  </p>
-                  <p className="text-lg sm:text-xl font-bold text-gray-800 truncate">
-                    {user?.nombres || 'Usuario'}
-                  </p>
-                </div>
+								{/* Información del usuario */}
+								<div className="flex-grow">
+								<p className="text-sm sm:text-base text-gray-500 font-medium">
+									Bienvenido al panel
+								</p>
+								<p className="text-lg sm:text-xl font-bold text-gray-800 truncate">
+									{user?.nombres || 'Usuario'}
+								</p>
+								</div>
 
-                {/* Indicador de estado */}
-                <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-50 rounded-xl">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-green-600">Activo</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
+								{/* Indicador de estado */}
+								<div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-50 rounded-xl">
+								<div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+								<span className="text-sm font-medium text-green-600">Activo</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</header>
 
 				{/* Hero Section mejorado */}
 				<section className="py-16">

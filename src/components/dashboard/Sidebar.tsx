@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../context/UserContext';
-import UserAvatar from './UserAvatar'
+import UserAvatar from '../shared/UserAvatar'
 
 // Tipos para las rutas y roles
 type UserRole = 'coordinador' | 'supervisor';
