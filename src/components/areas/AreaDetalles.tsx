@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { ArrowLeft, User, Camera, ClipboardList, Edit, Trash2 } from 'lucide-react';
 import type { Area, User as UserType } from '../../types/entities';
 import CamaraList from '../camaras/CamaraList';
-import AreaReportesTab from '../reportes/AreaReportesTab'; // <--- Importa el tab de reportes
-import { useReportsContext } from '../../context/ReportsContext'; // Agrega esto arriba
+import AreaReportesTab from '../reportes/AreaReportesTab';
+import { useReportsContext } from '../../context/ReportsContext';
 
 interface AreaDetallesProps {
   area: Area & {

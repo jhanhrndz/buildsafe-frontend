@@ -40,7 +40,7 @@ const AreaReportesTab: React.FC<AreaReportesTabProps> = ({ areaId }) => {
             id_camara: data.id_camara ?? '',
             selectedEpp: data.infracciones?.map((i) => i.id_epp) || [],
             imagen_url: data.imagen_url,
-            estado: data.estado, // <-- ¡IMPORTANTE!
+            estado: data.estado,
           });
         }
       });

@@ -30,6 +30,7 @@ const AreaDetallesPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [supervisores, setSupervisores] = useState<User[]>([]);
   const handleOpenEditModal = () => setIsEditModalOpen(true);
+
   // Handler para cerrar el modal
   const handleCloseEditModal = () => setIsEditModalOpen(false);
   const handleSubmitEdit = async (areaData: Area | Omit<Area, 'id_area'>) => {
@@ -47,6 +48,7 @@ const AreaDetallesPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
   // Cargar el área al montar
   useEffect(() => {
     const loadArea = async () => {
@@ -172,7 +174,7 @@ const AreaDetallesPage: React.FC = () => {
           areaToEdit={area}
           onSubmit={handleSubmitEdit}
           isLoading={isSubmitting}
-          supervisores={supervisores} // <-- PASA LA LISTA AQUÍ
+          supervisores={supervisores}
           isCoordinador={isCoordinador}
         />
       )}

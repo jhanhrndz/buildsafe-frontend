@@ -4,16 +4,16 @@ import type { Area, User } from '../../types/entities';
 import { AlertCircle, AlertTriangle, MapPin } from 'lucide-react';
 import AreaForm from './AreaForm';
 import { useCamarasContext } from '../../context/CamarasContext';
-import { useReportsContext } from '../../context/ReportsContext'; // <-- AGREGA ESTO
+import { useReportsContext } from '../../context/ReportsContext';
 
 interface AreaTabsContentProps {
   obraId: number;
   isCoordinador: boolean;
-  currentUserId?: number; // ID del usuario actual para supervisores
+  currentUserId?: number;
   areas: Area[];
   isLoading: boolean;
-  error: string | null; // Cambiar de Error | null a string | null
-  supervisores?: User[]; // Lista de supervisores disponibles
+  error: string | null;
+  supervisores?: User[];
   onCreateArea?: (areaData: Omit<Area, 'id_area'>) => Promise<boolean>;
   onUpdateArea?: (areaData: Area) => Promise<boolean>;
   onDeleteArea?: (areaId: number) => Promise<boolean>;
@@ -38,7 +38,7 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
   const [editingArea, setEditingArea] = useState<Area | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { refreshByObra: refreshCamarasByObra } = useCamarasContext();
-  const { refreshByObra: refreshReportesByObra } = useReportsContext(); // <-- AGREGA ESTO
+  const { refreshByObra: refreshReportesByObra } = useReportsContext();
 
   // Si hay errores, mostramos mensaje de error
   if (error) {
@@ -73,7 +73,7 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
   useEffect(() => {
     if (obraId) {
       refreshCamarasByObra(obraId);
-      refreshReportesByObra(obraId); // <--- ¡Esto es CLAVE!
+      refreshReportesByObra(obraId);
     }
   }, [obraId, refreshCamarasByObra, refreshReportesByObra]);
 
@@ -138,7 +138,7 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
           isCoordinador={isCoordinador}
           currentUserId={currentUserId}
           obraId={obraId}
-          supervisores={supervisores} // <-- PASA AQUÍ
+          supervisores={supervisores}
           onCreateArea={onCreateArea}
           onUpdateArea={onUpdateArea}
           onDeleteArea={onDeleteArea}
@@ -155,7 +155,7 @@ const AreaTabsContent: React.FC<AreaTabsContentProps> = ({
           areaToEdit={editingArea ?? undefined}
           onSubmit={handleSubmit}
           isLoading={isSubmitting}
-          supervisores={supervisores} // <-- PASA AQUÍ
+          supervisores={supervisores}
           isCoordinador={isCoordinador}
         />
       )}
