@@ -73,7 +73,6 @@ export function useEstadisticasGlobal() {
 
   // Procesamiento de estadísticas después de cargar los datos
   const processStats = () => {
-    if (!areas.length || !supervisores.length || !reportes.length) return;
 
     // 1. Estadísticas de Reportes
     const reportesPorEstado = reportes.reduce((acc: Record<string, number>, r: any) => {

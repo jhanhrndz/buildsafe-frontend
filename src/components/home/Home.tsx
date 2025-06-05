@@ -36,41 +36,37 @@ const features = [
 
 const Home = () => { 
 	const { user } = useUserContext();
-  const { totalAreas, totalObras, totalReportes, totalSupervisores } = useEstadisticasGlobal();
- console.log('useEstadisticas 	', useEstadisticasGlobal());
-  // Modificamos el array stats para incluir los iconos
-  const stats = [
-    { 
-      label: 'Obras creadas', 
-      value: totalObras,
-      icon: Warehouse,
-      color: 'from-blue-500 to-blue-600'
-    },
-    { 
-      label: 'Supervisores registrados', 
-      value: totalSupervisores,
-      icon: Users2,
-      color: 'from-emerald-500 to-emerald-600'
-    },
-    { 
-      label: 'Reportes Generados', 
-      value: totalReportes,
-      icon: FileText,
-      color: 'from-orange-500 to-orange-600'
-    },
-    { 
-      label: 'Áreas creadas', 
-      value: totalAreas,
-      icon: Layout,
-      color: 'from-violet-500 to-violet-600'
-    }
-  ];
+	const { totalAreas, totalObras, totalReportes, totalSupervisores } = useEstadisticasGlobal();
+
+	const stats = [
+		{ 
+		label: 'Obras creadas', 
+		value: totalObras,
+		icon: Warehouse,
+		color: 'from-blue-500 to-blue-600'
+		},
+		{ 
+		label: 'Supervisores registrados', 
+		value: totalSupervisores,
+		icon: Users2,
+		color: 'from-emerald-500 to-emerald-600'
+		},
+		{ 
+		label: 'Reportes Generados', 
+		value: totalReportes,
+		icon: FileText,
+		color: 'from-orange-500 to-orange-600'
+		},
+		{ 
+		label: 'Áreas creadas', 
+		value: totalAreas,
+		icon: Layout,
+		color: 'from-violet-500 to-violet-600'
+		}
+	];
 
 	return (
 		<div className="min-h-screen xl:mx-30 relative px-4 sm:px-6 lg:px-8">
-			{/* Fondo fijo mejorado */}
-			
-
 			<div className="relative">
 				{/* Header mejorado y responsive */}
 				<header className="pt-6 pb-12 sm:pt-8 sm:pb-16">
@@ -120,77 +116,93 @@ const Home = () => {
 				</header>
 
 				{/* Hero Section mejorado */}
-				<section className="py-16">
+				<section className="py-8">
 					<div className="grid grid-cols-1 xl:grid-cols-5 gap-12 items-center">
-						<div className="xl:col-span-3 space-y-8">
-							<div className="space-y-6">
-								<h1 className="text-4xl lg:text-6xl xl:text-7xl font-black text-gray-900 leading-tight">
-									Panel de
-									<span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+						<div
+							className={
+								user?.global_role === 'coordinador'
+								? "xl:col-span-3 space-y-8" // Alineado a la izquierda para coordinador
+								: "xl:col-span-5 flex flex-col items-center space-y-8" // Centrado para supervisor
+							}
+						>
+							<div className={
+								user?.global_role === 'coordinador' 
+								? "space-y-6" // Sin centrar texto para coordinador
+								: "space-y-6 text-center " // Texto centrado para supervisor
+							}>
+								<h2 className="text-4xl lg:text-6xl xl:text-7xl font-black text-gray-900 leading-tight max-w-2xl">
+									Panel de {' '}
+									<span className=" bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
 										Control
 									</span>
-								</h1>
+								</h2>
 								<p className="text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-2xl">
 									Gestiona la seguridad de tus obras con herramientas avanzadas y monitoreo en tiempo real
 								</p>
 							</div>
-							
-							<div className="flex flex-col sm:flex-row gap-4 pt-4">
+
+							<div className={
+								user?.global_role === 'coordinador'
+								? "flex flex-col sm:flex-row gap-4 pt-4" // Sin justificar centro para coordinador
+								: "flex flex-col sm:flex-row gap-4 pt-4 justify-center" // Centrado para supervisor
+							}>
 								<Link
-									to="/obras"
-									className="group relative overflow-hidden inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-xl hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
+								to="/obras"
+								className="group relative overflow-hidden inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-xl hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
 								>
-									<span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-									<span className="relative flex items-center">
-										Ver Obras Activas
-										<ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-									</span>
+								<span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+								<span className="relative flex items-center">
+									Ver Obras Activas
+									<ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+								</span>
 								</Link>
-								
+
 								<Link
-									to="/estadisticas"
-									className="group inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-white/80 backdrop-blur-sm text-gray-700 font-bold border-2 border-gray-200/50 hover:border-blue-300 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+								to="/estadisticas"
+								className="group inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-white/80 backdrop-blur-sm text-gray-700 font-bold border-2 border-gray-200/50 hover:border-blue-300 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
 								>
-									<span className="flex items-center">
-										Ver Estadísticas
-										<TrendingUp className="ml-3 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-									</span>
+								<span className="flex items-center">
+									Ver Estadísticas
+									<TrendingUp className="ml-3 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+								</span>
 								</Link>
 							</div>
 						</div>
-						
-						{/* Stats Cards mejoradas */}
-						<div className="xl:col-span-2">
-							<div className="grid grid-cols-2 gap-4">
+
+						{/* Stats Cards solo para coordinador */}
+						{user?.global_role === 'coordinador' && (
+							<div className="xl:col-span-2">
+								<div className="grid grid-cols-2 gap-4">
 								{stats.map((stat, index) => (
 									<div
-										key={stat.label}
-										className="group relative backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
-										style={{ animationDelay: `${index * 100}ms` }}
+									key={stat.label}
+									className="group relative backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
+									style={{ animationDelay: `${index * 100}ms` }}
 									>
-										<div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-										<div className="relative">
-											<div className="flex items-center justify-between mb-3">
-												<div className={`w-10 h-10 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-													<stat.icon className="h-5 w-5 text-white" />
-												</div>
-												<div className="text-2xl lg:text-3xl font-black text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-													{stat.value}
-												</div>
-											</div>
-											<p className="text-sm font-semibold text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
-												{stat.label}
-											</p>
+									<div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+									<div className="relative">
+										<div className="flex items-center justify-between mb-3">
+										<div className={`w-10 h-10 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+											<stat.icon className="h-5 w-5 text-white" />
 										</div>
+										<div className="text-2xl lg:text-3xl font-black text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
+											{stat.value}
+										</div>
+										</div>
+										<p className="text-sm font-semibold text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
+										{stat.label}
+										</p>
+									</div>
 									</div>
 								))}
+								</div>
 							</div>
-						</div>
+						)}
 					</div>
 				</section>
 
 				{/* Features Section completamente rediseñada */}
-				<section className="py-20">
+				<section className="py-30">
 					<div className="text-center mb-16">
 						<h2 className="text-3xl lg:text-4xl font-black text-gray-900 mb-4">
 							Funcionalidades
