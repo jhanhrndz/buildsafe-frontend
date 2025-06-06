@@ -111,7 +111,7 @@ const AreaReportesTab: React.FC<AreaReportesTabProps> = ({ areaId }) => {
       </div>
 
       {/* Enhanced Error Alert */}
-      {error && (
+      {/* {error && (
         <div className="relative rounded-2xl border border-red-200/50 bg-gradient-to-r from-red-50/80 to-red-100/30 backdrop-blur-sm p-8 shadow-sm transform hover:scale-[1.02] transition-transform duration-300">
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg">
@@ -123,7 +123,7 @@ const AreaReportesTab: React.FC<AreaReportesTabProps> = ({ areaId }) => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Enhanced Reports Section */}
       <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-sm overflow-hidden transform transition-all duration-500">

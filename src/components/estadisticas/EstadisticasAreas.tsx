@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { LayoutGrid, Camera, Users, AlertTriangle, X, Search, Calendar, FileText, User, Building } from 'lucide-react';
 import type { Obra, Area, User as Supervisor, Camara, ReporteResumen } from '../../types/entities';
+import EmptyState from './sharedStats/EmptyState';
 
 const COLORS = {
   primary: ['#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe'],
@@ -414,8 +415,9 @@ const EstadisticasAreas = ({ stats }: EstadisticasAreasProps) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredAreas.map((area: EstadisticaArea) => (
-                <tr key={area.id_area} className="group">
+              {filteredAreas.length > 0 ? (
+                filteredAreas.map((area: EstadisticaArea) => (
+                  <tr key={area.id_area} className="group">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2 group/area rounded-lg p-1.5 transition-all duration-300 cursor-pointer">
                       <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center group-hover/area:bg-indigo-200 transition-all duration-300">
@@ -482,7 +484,18 @@ const EstadisticasAreas = ({ stats }: EstadisticasAreasProps) => {
                     </div>
                   </td>
                 </tr>
-              ))}
+                ))
+              ) : (
+                <tr>
+      <td colSpan={6}>
+        <EmptyState 
+          title="No hay áreas disponibles"
+          message="No se encontraron áreas que coincidan con los filtros seleccionados."
+          icon={<LayoutGrid className="w-16 h-16" />}
+        />
+      </td>
+    </tr>
+              )}
             </tbody>
           </table>
         </div>
