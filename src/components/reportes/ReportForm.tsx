@@ -75,15 +75,18 @@ const ReportForm: React.FC<ReportFormProps> = ({
     clearError();
   }, [loadCategoriasEpp, clearError]);
 
-  useEffect(() => {
-    if (initialValues) {
-      setDescripcion(initialValues.descripcion || '');
-      setIdCamara(initialValues.id_camara ?? '');
-      setSelectedEpp(initialValues.selectedEpp || []);
-      if (initialValues.estado) setEstado(initialValues.estado);
-      if (initialValues.imagen_url) setImagePreview(initialValues.imagen_url);
-    }
-  }, [initialValues]);
+const [isInitialized, setIsInitialized] = useState(false);
+
+useEffect(() => {
+  if (initialValues && !isInitialized) {
+    setDescripcion(initialValues.descripcion || '');
+    setIdCamara(initialValues.id_camara ?? '');
+    setSelectedEpp(initialValues.selectedEpp || []);
+    if (initialValues.estado) setEstado(initialValues.estado);
+    if (initialValues.imagen_url) setImagePreview(initialValues.imagen_url);
+    setIsInitialized(true);
+  }
+}, [initialValues, isInitialized]);
 
   useEffect(() => {
     if (imagenFile) {
