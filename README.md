@@ -52,3 +52,8 @@ export default tseslint.config({
   },
 })
 ```
+
+
+___
+
+**Original repository**: _https://github.com/Nasor2/buildsafe-frontend_
